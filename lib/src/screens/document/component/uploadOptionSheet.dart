@@ -1,9 +1,26 @@
+import 'dart:io';
+
 import 'package:care_sync/src/component/text/btnText.dart';
 import 'package:care_sync/src/component/text/sectionTittleText.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class UploadOptionSheet extends StatelessWidget {
-  const UploadOptionSheet({super.key});
+  UploadOptionSheet({super.key});
+
+  final ImagePicker _picker = ImagePicker();
+
+  Future<void> _pickImage(ImageSource source, BuildContext context) async {
+    final navigator = Navigator.of(context);
+    final XFile? image = await _picker.pickImage(source: source);
+    if (image != null) {
+      navigator.push(
+        MaterialPageRoute(
+          builder: (context) => DisplayImageScreen(imageFile: File(image.path)),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,16 +33,14 @@ class UploadOptionSheet extends StatelessWidget {
           icon: Icons.image_outlined,
           label: 'Select from Gallery',
           onTap: () {
-            // Navigator.pop(context);
-            // handle gallery
+            _pickImage(ImageSource.gallery, context);
           },
         ),
         _UploadOptionTile(
           icon: Icons.camera_alt_outlined,
           label: 'Take a Photo',
           onTap: () {
-            // Navigator.pop(context);
-            // handle camera
+            _pickImage(ImageSource.camera, context);
           },
         ),
         _UploadOptionTile(
@@ -65,6 +80,22 @@ class _UploadOptionTile extends StatelessWidget {
         color: Theme.of(context).colorScheme.onSurface,
       ),
       onTap: onTap,
+    );
+  }
+}
+
+class DisplayImageScreen extends StatelessWidget {
+  final File imageFile;
+
+  const DisplayImageScreen({Key? key, required this.imageFile}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Preview')),
+      body: Center(
+        child: Image.file(imageFile),
+      ),
     );
   }
 }
