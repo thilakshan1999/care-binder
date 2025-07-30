@@ -49,6 +49,7 @@
 	<string>Need camera access to take pictures</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Need access to photo library to select pictures</string>
-
+	<key>NSDocumentsFolderUsageDescription</key>
+	<string>We need access to pick documents</string>
 </dict>
 </plist>
