@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:care_sync/src/component/text/btnText.dart';
 import 'package:care_sync/src/component/text/sectionTittleText.dart';
+import 'package:care_sync/src/screens/document/textAnalysisScreen.dart';
 import 'package:care_sync/src/service/documentPickerService.dart';
 import 'package:care_sync/src/service/imagePickerService.dart';
 import 'package:flutter/material.dart';
@@ -10,30 +11,30 @@ import 'package:image_picker/image_picker.dart';
 class UploadOptionSheet extends StatelessWidget {
   const UploadOptionSheet({super.key});
 
-  Future<void> _pickImage(ImageSource source,BuildContext context) async {
-  final navigator = Navigator.of(context);
-  final imageFile = await ImagePickerService.pickImage(source);
-  if (imageFile != null) {
-    navigator.push(
-      MaterialPageRoute(
-        builder: (_) => DisplayImageScreen(imageFile: imageFile),
-      ),
-    );
+  Future<void> _pickImage(ImageSource source, BuildContext context) async {
+    final navigator = Navigator.of(context);
+    final imageFile = await ImagePickerService.pickImage(source);
+    if (imageFile != null) {
+      navigator.push(
+        MaterialPageRoute(
+          builder: (_) => TextAnalysisScreen(imageFile: imageFile),
+        ),
+      );
+    }
   }
-}
 
   Future<void> _pickDocument(BuildContext context) async {
-  final navigator = Navigator.of(context);
-  final filePath = await DocumentPickerService.pickDocument();
+    final navigator = Navigator.of(context);
+    final filePath = await DocumentPickerService.pickDocument();
 
-  if (filePath != null) {
-    navigator.push(
-      MaterialPageRoute(
-        builder: (context) => FilePathScreen(filePath: filePath),
-      ),
-    );
+    if (filePath != null) {
+      navigator.push(
+        MaterialPageRoute(
+          builder: (context) => FilePathScreen(filePath: filePath),
+        ),
+      );
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -100,7 +101,8 @@ class _UploadOptionTile extends StatelessWidget {
 class DisplayImageScreen extends StatelessWidget {
   final File imageFile;
 
-  const DisplayImageScreen({Key? key, required this.imageFile}) : super(key: key);
+  const DisplayImageScreen({Key? key, required this.imageFile})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
