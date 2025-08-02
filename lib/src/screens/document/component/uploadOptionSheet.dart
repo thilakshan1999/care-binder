@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:care_sync/src/component/text/btnText.dart';
 import 'package:care_sync/src/component/text/sectionTittleText.dart';
 import 'package:care_sync/src/screens/document/textAnalysisScreen.dart';
@@ -94,23 +92,6 @@ class _UploadOptionTile extends StatelessWidget {
         color: Theme.of(context).colorScheme.onSurface,
       ),
       onTap: onTap,
-    );
-  }
-}
-
-class DisplayImageScreen extends StatelessWidget {
-  final File imageFile;
-
-  const DisplayImageScreen({Key? key, required this.imageFile})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Preview')),
-      body: Center(
-        child: Image.file(imageFile),
-      ),
     );
   }
 }

@@ -1,6 +1,11 @@
 import 'dart:io';
+import 'package:care_sync/src/component/appBar/appBar.dart';
+import 'package:care_sync/src/component/errorBox/ErrorBox.dart';
+import 'package:care_sync/src/component/text/subText.dart';
 import 'package:care_sync/src/service/cloudVisionService.dart';
 import 'package:flutter/material.dart';
+import '../../component/btn/primaryBtn/primaryBtn.dart';
+import '../../component/textField/multiLine/multiLineTextField.dart';
 
 class TextAnalysisScreen extends StatefulWidget {
   final File? imageFile;
@@ -14,6 +19,9 @@ class TextAnalysisScreen extends StatefulWidget {
 class _TextAnalysisScreenState extends State<TextAnalysisScreen> {
   String extractedText = '';
   bool isProcessing = true;
+  bool hasError = false;
+  String? errorMessage;
+  String? errorTittle;
 
   final CloudVisionService visionService = CloudVisionService();
 
@@ -22,24 +30,43 @@ class _TextAnalysisScreenState extends State<TextAnalysisScreen> {
     super.initState();
     if (widget.imageFile != null) {
       //_analyzeImage(widget.imageFile!);
+      setState(() {
+        extractedText = '';
+        isProcessing = false;
+      });
     } else {
       setState(() {
-        extractedText = 'No image provided.';
+        extractedText = '';
         isProcessing = false;
+        hasError = true;
+        errorTittle = 'No Image Provided';
+        errorMessage = 'Please select or capture a document image to proceed.';
       });
     }
   }
 
   Future<void> _analyzeImage(File imageFile) async {
     try {
-      final text = await visionService.analyzeImage(imageFile);
+      final result = await visionService.analyzeImage(imageFile);
+
       setState(() {
-        extractedText = text;
+        if (result.success) {
+          extractedText = result.text ?? 'No text found.';
+          hasError = false;
+          errorMessage = null;
+          errorTittle = null;
+        } else {
+          hasError = true;
+          errorMessage = result.errorMessage ?? 'Unknown error';
+          errorTittle = result.errorTitle ?? 'Unknown error';
+        }
         isProcessing = false;
       });
     } catch (e) {
       setState(() {
-        extractedText = e.toString();
+        hasError = true;
+        errorMessage = '$e';
+        errorTittle = 'Unexpected Error';
         isProcessing = false;
       });
     }
@@ -48,17 +75,63 @@ class _TextAnalysisScreenState extends State<TextAnalysisScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Text Analysis")),
+      appBar: CustomAppBar(
+        tittle: isProcessing ? "Reading Document" : "Document Summary",
+        showBackButton: !isProcessing,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: isProcessing
-            ? const Center(child: CircularProgressIndicator())
-            : SingleChildScrollView(
-                child: Text(
-                  extractedText,
-                  style: const TextStyle(fontSize: 16),
-                ),
-              ),
+            ? _buildLoadingIndicator()
+            : hasError
+                ? ErrorBox(
+                    message: errorMessage ?? 'Something went wrong.',
+                    title: errorTittle ?? 'Something went wrong.',
+                    onRetry: () {
+                      setState(() {
+                        isProcessing = true;
+                        hasError = false;
+                        errorMessage = null;
+                        errorTittle = null;
+                      });
+                      _analyzeImage(widget.imageFile!);
+                    },
+                  )
+                : Column(
+                    children: [
+                      Expanded(
+                        child: SingleChildScrollView(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          child: MultiLineTextField(
+                            initialText: extractedText,
+                            labelText: 'Extracted Text',
+                            onChanged: (value) {
+                              extractedText = value;
+                            },
+                          ),
+                        ),
+                      ),
+                      PrimaryBtn(
+                        label: 'Confirm',
+                        onPressed: () {
+                          debugPrint("Confirmed Text: $extractedText");
+                        },
+                      ),
+                    ],
+                  ),
+      ),
+    );
+  }
+
+  Widget _buildLoadingIndicator() {
+    return const Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SubText(text: "Processing document... Please wait."),
+          SizedBox(height: 24),
+          CircularProgressIndicator(),
+        ],
       ),
     );
   }

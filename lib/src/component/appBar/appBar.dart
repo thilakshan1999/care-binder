@@ -4,16 +4,29 @@ import '../text/screenTittleText.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String tittle;
-  const CustomAppBar({super.key, required this.tittle});
+  final bool showBackButton;
+  const CustomAppBar({
+    super.key,
+    required this.tittle,
+    this.showBackButton = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
       centerTitle: true,
-      backgroundColor: Theme.of(context).colorScheme.primary,
+      backgroundColor: Colors.transparent,
+      elevation: 0,
       title: ScreenTittleText(
         text: tittle,
       ),
+      leading: showBackButton
+          ? IconButton(
+              icon: Icon(Icons.arrow_back_ios,
+                  color: Theme.of(context).colorScheme.onPrimary),
+              onPressed: () => Navigator.pop(context),
+            )
+          : const SizedBox.shrink(),
       flexibleSpace: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(

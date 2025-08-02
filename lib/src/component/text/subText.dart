@@ -1,17 +1,13 @@
 import 'package:flutter/material.dart';
 
-class BtnText extends StatelessWidget {
+class SubText extends StatelessWidget {
   final String text;
   final TextAlign textAlign;
-  final Color color;
-  final FontWeight fontWeight;
 
-  const BtnText({
+  const SubText({
     super.key,
     required this.text,
-    required this.color,
     this.textAlign = TextAlign.left,
-    this.fontWeight = FontWeight.w400,
   });
 
   @override
@@ -20,11 +16,12 @@ class BtnText extends StatelessWidget {
       text,
       textAlign: textAlign,
       style: TextStyle(
-          height: 1,
-          letterSpacing: 0.6,
-          fontSize: 16,
-          fontWeight: fontWeight,
-          color: color),
+        height: 1,
+        letterSpacing: 0.5,
+        fontSize: 14,
+        fontWeight: FontWeight.w400,
+        color: Theme.of(context).colorScheme.onSecondary,
+      ),
     );
   }
 }
