@@ -23,12 +23,14 @@ class UploadOptionSheet extends StatelessWidget {
 
   Future<void> _pickDocument(BuildContext context) async {
     final navigator = Navigator.of(context);
-    final filePath = await DocumentPickerService.pickDocument();
+    final docData = await DocumentPickerService.pickDocument();
 
-    if (filePath != null) {
+    if (docData != null) {
       navigator.push(
         MaterialPageRoute(
-          builder: (context) => FilePathScreen(filePath: filePath),
+          builder: (_) => TextAnalysisScreen(
+            documentData: docData,
+          ),
         ),
       );
     }
@@ -59,7 +61,6 @@ class UploadOptionSheet extends StatelessWidget {
           icon: Icons.folder_outlined,
           label: 'Choose File',
           onTap: () {
-            //  Navigator.pop(context);
             _pickDocument(context);
           },
         ),
@@ -92,26 +93,6 @@ class _UploadOptionTile extends StatelessWidget {
         color: Theme.of(context).colorScheme.onSurface,
       ),
       onTap: onTap,
-    );
-  }
-}
-
-class FilePathScreen extends StatelessWidget {
-  final String filePath;
-
-  const FilePathScreen({super.key, required this.filePath});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Selected File')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Text(
-          'Selected File Path:\n\n$filePath',
-          style: const TextStyle(fontSize: 16),
-        ),
-      ),
     );
   }
 }

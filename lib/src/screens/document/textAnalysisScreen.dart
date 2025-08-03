@@ -6,11 +6,14 @@ import 'package:care_sync/src/service/cloudVisionService.dart';
 import 'package:flutter/material.dart';
 import '../../component/btn/primaryBtn/primaryBtn.dart';
 import '../../component/textField/multiLine/multiLineTextField.dart';
+import '../../service/documentAIService.dart';
+import '../../service/documentPickerService.dart';
 
 class TextAnalysisScreen extends StatefulWidget {
   final File? imageFile;
+  final DocumentData? documentData;
 
-  const TextAnalysisScreen({super.key, required this.imageFile});
+  const TextAnalysisScreen({super.key, this.imageFile, this.documentData});
 
   @override
   State<TextAnalysisScreen> createState() => _TextAnalysisScreenState();
@@ -31,7 +34,13 @@ class _TextAnalysisScreenState extends State<TextAnalysisScreen> {
     if (widget.imageFile != null) {
       //_analyzeImage(widget.imageFile!);
       setState(() {
-        extractedText = '';
+        extractedText = 'Image';
+        isProcessing = false;
+      });
+    } else if (widget.documentData != null) {
+      //_extractText();
+      setState(() {
+        extractedText = 'Document';
         isProcessing = false;
       });
     } else {
@@ -39,8 +48,8 @@ class _TextAnalysisScreenState extends State<TextAnalysisScreen> {
         extractedText = '';
         isProcessing = false;
         hasError = true;
-        errorTittle = 'No Image Provided';
-        errorMessage = 'Please select or capture a document image to proceed.';
+        errorTittle = 'No Document Provided';
+        errorMessage = 'Please select or capture a document to proceed.';
       });
     }
   }
@@ -67,6 +76,29 @@ class _TextAnalysisScreenState extends State<TextAnalysisScreen> {
         hasError = true;
         errorMessage = '$e';
         errorTittle = 'Unexpected Error';
+        isProcessing = false;
+      });
+    }
+  }
+
+  Future<void> _extractText() async {
+    try {
+      final text = await DocumentAIService.processDocument(
+        fileBytes: widget.documentData!.fileBytes,
+        mimeType: widget.documentData!.mimeType,
+      );
+      setState(() {
+        extractedText = text;
+        isProcessing = false;
+        hasError = false;
+        errorMessage = null;
+        errorTittle = null;
+      });
+    } catch (e) {
+      setState(() {
+        hasError = true;
+        errorMessage = '$e';
+        errorTittle = 'Failed to extract text';
         isProcessing = false;
       });
     }
