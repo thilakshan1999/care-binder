@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:care_sync/src/component/appBar/appBar.dart';
 import 'package:care_sync/src/component/errorBox/ErrorBox.dart';
 import 'package:care_sync/src/component/text/subText.dart';
-import 'package:care_sync/src/service/cloudVisionService.dart';
+import 'package:care_sync/src/service/api/httpService.dart';
 import 'package:flutter/material.dart';
 import '../../component/btn/primaryBtn/primaryBtn.dart';
 import '../../component/textField/multiLine/multiLineTextField.dart';
@@ -26,17 +26,13 @@ class _TextAnalysisScreenState extends State<TextAnalysisScreen> {
   String? errorMessage;
   String? errorTittle;
 
-  final CloudVisionService visionService = CloudVisionService();
+  final HttpService httpService = HttpService();
 
   @override
   void initState() {
     super.initState();
     if (widget.imageFile != null) {
-      //_analyzeImage(widget.imageFile!);
-      setState(() {
-        extractedText = 'Image';
-        isProcessing = false;
-      });
+      _analyzeImage(widget.imageFile!);
     } else if (widget.documentData != null) {
       //_extractText();
       setState(() {
@@ -56,18 +52,19 @@ class _TextAnalysisScreenState extends State<TextAnalysisScreen> {
 
   Future<void> _analyzeImage(File imageFile) async {
     try {
-      final result = await visionService.analyzeImage(imageFile);
+      final result =
+          await httpService.visionService.extractTextFromImage(imageFile);
 
       setState(() {
         if (result.success) {
-          extractedText = result.text ?? 'No text found.';
+          extractedText = result.data ?? 'No text found.';
           hasError = false;
           errorMessage = null;
           errorTittle = null;
         } else {
           hasError = true;
-          errorMessage = result.errorMessage ?? 'Unknown error';
-          errorTittle = result.errorTitle ?? 'Unknown error';
+          errorMessage = result.message;
+          errorTittle = result.errorTittle ?? "Request Failed";
         }
         isProcessing = false;
       });
