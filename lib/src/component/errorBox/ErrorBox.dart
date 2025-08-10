@@ -1,6 +1,5 @@
 import 'package:care_sync/src/component/text/btnText.dart';
 import 'package:care_sync/src/component/text/primaryText.dart';
-import 'package:care_sync/src/component/text/sectionTittleText.dart';
 import 'package:care_sync/src/component/text/subText.dart';
 import 'package:care_sync/src/theme/customColors.dart';
 import 'package:flutter/material.dart';

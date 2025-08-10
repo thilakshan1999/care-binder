@@ -6,7 +6,6 @@ import 'package:care_sync/src/service/api/httpService.dart';
 import 'package:flutter/material.dart';
 import '../../component/btn/primaryBtn/primaryBtn.dart';
 import '../../component/textField/multiLine/multiLineTextField.dart';
-import '../../service/documentAIService.dart';
 import '../../service/documentPickerService.dart';
 
 class TextAnalysisScreen extends StatefulWidget {
@@ -80,16 +79,21 @@ class _TextAnalysisScreenState extends State<TextAnalysisScreen> {
 
   Future<void> _extractText() async {
     try {
-      final text = await DocumentAIService.processDocument(
-        fileBytes: widget.documentData!.fileBytes,
-        mimeType: widget.documentData!.mimeType,
-      );
+      final result = await httpService.documentAiService
+          .extractTextFromDocument(
+              widget.documentData!.file, widget.documentData!.mimeType);
       setState(() {
-        extractedText = text;
+        if (result.success) {
+          extractedText = result.data ?? 'No text found.';
+          hasError = false;
+          errorMessage = null;
+          errorTittle = null;
+        } else {
+          hasError = true;
+          errorMessage = result.message;
+          errorTittle = result.errorTittle ?? "Request Failed";
+        }
         isProcessing = false;
-        hasError = false;
-        errorMessage = null;
-        errorTittle = null;
       });
     } catch (e) {
       setState(() {

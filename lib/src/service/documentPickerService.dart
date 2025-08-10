@@ -1,4 +1,4 @@
-import 'dart:typed_data';
+import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:path/path.dart' as p;
 
@@ -6,12 +6,13 @@ class DocumentPickerService {
   static Future<DocumentData?> pickDocument() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
-      allowedExtensions: ['pdf', 'doc', 'docx', 'txt'],
+      allowedExtensions: ['pdf'], //['pdf', 'doc', 'docx', 'txt'],
       withData: true,
     );
 
     if (result != null && result.files.single.path != null) {
-      final fileBytes = result.files.single.bytes!;
+      final filePath = result.files.single.path!;
+      final file = File(filePath);
       final ext = p.extension(result.files.single.name).toLowerCase();
 
       String? mimeType;
@@ -34,15 +35,15 @@ class DocumentPickerService {
           return null; // Unsupported file type
       }
 
-      return DocumentData(fileBytes: fileBytes, mimeType: mimeType);
+      return DocumentData(file: file, mimeType: mimeType);
     }
     return null;
   }
 }
 
 class DocumentData {
-  final Uint8List fileBytes;
+  final File file;
   final String mimeType;
 
-  DocumentData({required this.fileBytes, required this.mimeType});
+  DocumentData({required this.file, required this.mimeType});
 }
