@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:care_sync/src/service/api/httpService.dart';
+import 'package:care_sync/src/models/apiResponse.dart';
 import 'package:http/http.dart';
 
 class ApiHelper {

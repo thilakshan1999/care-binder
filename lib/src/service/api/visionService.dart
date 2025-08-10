@@ -1,6 +1,6 @@
 import 'dart:io';
+import 'package:care_sync/src/models/apiResponse.dart';
 import 'package:care_sync/src/service/api/apiHelper.dart';
-import 'package:care_sync/src/service/api/httpService.dart';
 import 'package:http/http.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:path/path.dart' as path;

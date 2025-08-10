@@ -1,7 +1,8 @@
 import 'dart:io';
 import 'package:care_sync/src/component/appBar/appBar.dart';
 import 'package:care_sync/src/component/errorBox/ErrorBox.dart';
-import 'package:care_sync/src/component/text/subText.dart';
+import 'package:care_sync/src/screens/document/component/documentLoadingIndicator.dart';
+import 'package:care_sync/src/screens/document/documentAnalyzedScreen.dart';
 import 'package:care_sync/src/service/api/httpService.dart';
 import 'package:flutter/material.dart';
 import '../../component/btn/primaryBtn/primaryBtn.dart';
@@ -105,6 +106,15 @@ class _TextAnalysisScreenState extends State<TextAnalysisScreen> {
     }
   }
 
+  Future<void> _confirmText(String extractedText, BuildContext context) async {
+    final navigator = Navigator.of(context);
+    navigator.push(
+      MaterialPageRoute(
+        builder: (_) => DocumentAnalyzedScreen(extractedText: extractedText),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -115,7 +125,9 @@ class _TextAnalysisScreenState extends State<TextAnalysisScreen> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: isProcessing
-            ? _buildLoadingIndicator()
+            ? const DocumentLoadingIndicator(
+                message: "Processing document... Please wait.",
+              )
             : hasError
                 ? ErrorBox(
                     message: errorMessage ?? 'Something went wrong.',
@@ -147,24 +159,11 @@ class _TextAnalysisScreenState extends State<TextAnalysisScreen> {
                       PrimaryBtn(
                         label: 'Confirm',
                         onPressed: () {
-                          debugPrint("Confirmed Text: $extractedText");
+                          _confirmText(extractedText, context);
                         },
                       ),
                     ],
                   ),
-      ),
-    );
-  }
-
-  Widget _buildLoadingIndicator() {
-    return const Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SubText(text: "Processing document... Please wait."),
-          SizedBox(height: 24),
-          CircularProgressIndicator(),
-        ],
       ),
     );
   }
