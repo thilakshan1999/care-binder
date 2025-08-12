@@ -41,7 +41,7 @@ class VisionService {
     final mimeParts = mimeType.split('/');
 
     return ApiHelper.handleRequest<String>(() async {
-      var uri = Uri.parse('$baseUrl/vision/extracts');
+      var uri = Uri.parse('$baseUrl/vision/extract');
       var request = MultipartRequest('POST', uri);
 
       request.files.add(await MultipartFile.fromPath(

@@ -47,6 +47,7 @@ dependencies:
   googleapis_auth: ^1.6.0
   http_parser: ^4.0.2
   http_interceptor: ^2.0.0
+  dropdown_textfield: ^1.2.0
 
 dev_dependencies:
   flutter_test:

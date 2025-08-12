@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:care_sync/src/models/analyzedDocumnet.dart';
+import 'package:care_sync/src/models/analyzedDocument.dart';
 import 'package:care_sync/src/models/apiResponse.dart';
 import 'package:care_sync/src/models/document.dart';
 import 'package:care_sync/src/models/documentSummary.dart';
