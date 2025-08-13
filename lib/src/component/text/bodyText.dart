@@ -16,7 +16,7 @@ class BodyText extends StatelessWidget {
       text,
       textAlign: textAlign,
       style: TextStyle(
-        height: 1,
+        height: 1.2,
         letterSpacing: 0.5,
         fontSize: 15,
         fontWeight: FontWeight.w400,

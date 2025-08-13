@@ -1,10 +1,14 @@
 import 'package:care_sync/src/models/appointmentWithStatus.dart';
+import 'package:care_sync/src/models/doctor.dart';
 import 'package:care_sync/src/models/doctorWithStatus.dart';
+import 'package:care_sync/src/models/enums/appointmentType.dart';
 import 'package:care_sync/src/models/enums/entityStatus.dart';
 import 'package:care_sync/src/models/enums/intakeInstruction.dart';
 import 'package:care_sync/src/models/enums/medForm.dart';
 import 'package:care_sync/src/models/medWithStatus.dart';
+import 'package:care_sync/src/models/vitalMeasurement.dart';
 import 'package:care_sync/src/models/vitalWithStatus.dart';
+import 'package:googleapis/driveactivity/v2.dart';
 import 'enums/documentType.dart';
 
 class AnalyzedDocument {
@@ -12,18 +16,18 @@ class AnalyzedDocument {
   DocumentType documentType;
   String summary;
   List<DoctorWithStatus> doctors;
-  // final List<VitalWithStatus> vitals;
+  List<VitalWithStatus> vitals;
   List<MedWithStatus> medicines;
-  // final List<AppointmentWithStatus> appointments;
+  List<AppointmentWithStatus> appointments;
 
   AnalyzedDocument({
     required this.documentName,
     required this.documentType,
     required this.summary,
     required this.doctors,
-    // required this.vitals,
+    required this.vitals,
     required this.medicines,
-    // required this.appointments,
+    required this.appointments,
   });
 
   factory AnalyzedDocument.fromJson(Map<String, dynamic> json) =>
@@ -35,18 +39,18 @@ class AnalyzedDocument {
                 ?.map((e) => DoctorWithStatus.fromJson(e))
                 .toList() ??
             [],
-        // vitals: (json['vitals'] as List<dynamic>?)
-        //         ?.map((e) => VitalWithStatus.fromJson(e))
-        //         .toList() ??
-        //     [],
-        medicines: (json['medicines'] as List<dynamic>?)
+        vitals: (json['vitals'] as List<dynamic>?)
+                ?.map((e) => VitalWithStatus.fromJson(e))
+                .toList() ??
+            [],
+        medicines: (json['meds'] as List<dynamic>?)
                 ?.map((e) => MedWithStatus.fromJson(e))
                 .toList() ??
             [],
-        // appointments: (json['appointments'] as List<dynamic>?)
-        //         ?.map((e) => AppointmentWithStatus.fromJson(e))
-        //         .toList() ??
-        //     [],
+        appointments: (json['appointments'] as List<dynamic>?)
+                ?.map((e) => AppointmentWithStatus.fromJson(e))
+                .toList() ??
+            [],
       );
 
   Map<String, dynamic> toJson() => {
@@ -54,9 +58,9 @@ class AnalyzedDocument {
         'documentType': documentType.toJson(),
         'summary': summary,
         'doctors': doctors.map((e) => e.toJson()).toList(),
-        // 'vitals': vitals.map((e) => e.toJson()).toList(),
-        'medicines': medicines.map((e) => e.toJson()).toList(),
-        // 'appointments': appointments.map((e) => e.toJson()).toList(),
+        'vitals': vitals.map((e) => e.toJson()).toList(),
+        'meds': medicines.map((e) => e.toJson()).toList(),
+        'appointments': appointments.map((e) => e.toJson()).toList(),
       };
 }
 
@@ -81,18 +85,21 @@ final sampleAnalyzedDocument = AnalyzedDocument(
       entityStatus: EntityStatus.NEW,
     ),
   ],
-  // vitals: [
-  //   VitalWithStatus(
-  //     name: "Blood Pressure",
-  //     value: "120/80 mmHg",
-  //     status: "verified",
-  //   ),
-  //   VitalWithStatus(
-  //     name: "Heart Rate",
-  //     value: "76 bpm",
-  //     status: "verified",
-  //   ),
-  // ],
+  vitals: [
+    VitalWithStatus(
+      name: "Blood Pressure",
+      measurements: [VitalMeasurement(dateTime: DateTime.now(), value: "420")],
+      entityStatus: EntityStatus.NEW,
+    ),
+    VitalWithStatus(
+      name: "Heart Rate",
+      unit: "kg",
+      remindDuration: const Duration(hours: 2),
+      startDateTime: DateTime.now(),
+      measurements: [VitalMeasurement(dateTime: DateTime.now(), value: "40")],
+      entityStatus: EntityStatus.SAME,
+    ),
+  ],
   medicines: [
     MedWithStatus(
       name: "Paracetamol",
@@ -115,13 +122,23 @@ final sampleAnalyzedDocument = AnalyzedDocument(
       entityStatus: EntityStatus.UPDATED,
     ),
   ],
-  // appointments: [
-  //   AppointmentWithStatus(
-  //     date: DateTime.now().add(const Duration(days: 7)),
-  //     purpose: "Follow-up consultation",
-  //     status: "scheduled",
-  //   ),
-  // ],
+  appointments: [
+    AppointmentWithStatus(
+        name: "Appointment 1",
+        type: AppointmentType.CHECKUP,
+        appointmentDateTime: DateTime.now(),
+        entityStatus: EntityStatus.NEW),
+    AppointmentWithStatus(
+        name: "Appointment 2",
+        type: AppointmentType.CONSULTATION,
+        appointmentDateTime: DateTime.now(),
+        doctor: Doctor(
+          name: "Dr.Ravi Kumar",
+          specialization: "Cardiologist",
+          id: 0,
+        ),
+        entityStatus: EntityStatus.NEW)
+  ],
 );
 
 final sampleAnalyzedDocumentJson = {
@@ -149,7 +166,7 @@ final sampleAnalyzedDocumentJson = {
       "entityStatus": "NEW"
     }
   ],
-  "medicines": [
+  "meds": [
     {
       "id": null,
       "name": "Paracetamol",
@@ -177,6 +194,44 @@ final sampleAnalyzedDocumentJson = {
       "reminderLimit": 5,
       "instruction": "BEFORE_EAT",
       "entityStatus": "UPDATED"
+    }
+  ],
+  "appointments": [
+    {
+      "name": "Appointment 1",
+      "type": "CHECKUP",
+      "appointmentDateTime": "2025-08-13T08:00:00Z",
+      "entityStatus": "NEW"
+    },
+    {
+      "name": "Appointment 2",
+      "type": "CONSULTATION",
+      "appointmentDateTime": "2025-08-13T08:00:00Z",
+      "doctor": {
+        "name": "Dr.Ravi Kumar",
+        "specialization": "Cardiologist",
+        "id": 0
+      },
+      "entityStatus": "NEW"
+    }
+  ],
+  "vitals": [
+    {
+      "name": "Blood Pressure",
+      "measurements": [
+        {"dateTime": "2025-08-13T08:00:00.000Z", "value": "420"}
+      ],
+      "entityStatus": "NEW"
+    },
+    {
+      "name": "Heart Rate",
+      "unit": "kg",
+      "remindDuration": "PT2H",
+      "startDateTime": "2025-08-13T08:00:00.000Z",
+      "measurements": [
+        {"dateTime": "2025-08-13T08:00:00.000Z", "value": "40"}
+      ],
+      "entityStatus": "SAME"
     }
   ]
 };

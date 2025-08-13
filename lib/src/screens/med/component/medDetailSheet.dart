@@ -1,5 +1,4 @@
 import 'package:care_sync/src/component/text/bodyText.dart';
-import 'package:care_sync/src/component/text/btnText.dart';
 import 'package:care_sync/src/component/text/primaryText.dart';
 import 'package:care_sync/src/component/text/sectionTittleText.dart';
 import 'package:care_sync/src/component/text/subText.dart';
@@ -18,8 +17,6 @@ class MedDetailSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     Widget buildInfoRow(String label, String value) {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 6),
@@ -27,7 +24,10 @@ class MedDetailSheet extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            BodyText(text: label),
+            Padding(
+              padding: const EdgeInsets.only(right: 10),
+              child: BodyText(text: label),
+            ),
             Flexible(child: BodyText(text: value)),
           ],
         ),
@@ -61,6 +61,9 @@ class MedDetailSheet extends StatelessWidget {
             child: Column(
               children: [
                 SectionTittleText(text: med.name),
+                const SizedBox(
+                  height: 3,
+                ),
                 SubText(text: TextFormatUtils.formatEnum(med.medForm)),
               ],
             ),

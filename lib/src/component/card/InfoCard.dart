@@ -8,7 +8,7 @@ import 'package:iconify_flutter/iconify_flutter.dart';
 class InfoCard extends StatelessWidget {
   final String icon;
   final String mainText;
-  final String subText;
+  final String? subText;
   final EntityStatus? status;
   final VoidCallback onTap;
   final VoidCallback? onEdit;
@@ -71,8 +71,10 @@ class InfoCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     PrimaryText(text: mainText),
-                    const SizedBox(height: 4),
-                    SubText(text: subText),
+                    if (subText != null) ...[
+                      const SizedBox(height: 4),
+                      SubText(text: subText!)
+                    ],
                     if (status != null) ...[
                       const SizedBox(height: 6),
                       Container(

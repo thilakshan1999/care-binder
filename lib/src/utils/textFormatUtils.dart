@@ -16,7 +16,9 @@ class TextFormatUtils {
     return formatEnumName(e.name);
   }
 
-  static String formatDate(DateTime? date) {
+  static String formatDate(
+    DateTime? date,
+  ) {
     if (date == null) return '-';
     const months = [
       'Jan',

@@ -1,3 +1,4 @@
+import '../utils/durationFormatUtils.dart';
 import 'enums/entityStatus.dart';
 import 'enums/intakeInstruction.dart';
 import 'enums/medForm.dart';
@@ -68,7 +69,8 @@ class MedWithStatus {
         'name': name,
         'medForm': medForm.toJson(),
         'healthCondition': healthCondition,
-        'intakeInterval': intakeInterval?.inSeconds,
+        'intakeInterval':
+            DurationFormatUtils.formatIso8601Duration(intakeInterval),
         'startDate': startDate.toIso8601String(),
         'endDate': endDate?.toIso8601String(),
         'dosage': dosage,

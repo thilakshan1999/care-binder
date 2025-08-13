@@ -1,26 +1,28 @@
+import '../utils/durationFormatUtils.dart';
 import 'vitalMeasurement.dart';
 
 class Vital {
-  final int? id;
+  final int id;
   final String name;
-  final Duration remindDuration;
-  final DateTime startDateTime;
-  final String unit;
+  final Duration? remindDuration;
+  final DateTime? startDateTime;
+  final String? unit;
   final List<VitalMeasurement> measurements;
 
   Vital({
-    this.id,
+    required this.id,
     required this.name,
-    required this.remindDuration,
-    required this.startDateTime,
-    required this.unit,
+    this.remindDuration,
+    this.startDateTime,
+    this.unit,
     required this.measurements,
   });
 
   factory Vital.fromJson(Map<String, dynamic> json) => Vital(
         id: json['id'],
         name: json['name'],
-        remindDuration: Duration(seconds: json['remindDuration']),
+        remindDuration:
+            DurationFormatUtils.parseIso8601Duration(json['remindDuration']),
         startDateTime: DateTime.parse(json['startDateTime']),
         unit: json['unit'],
         measurements: (json['measurements'] as List<dynamic>)
@@ -31,8 +33,9 @@ class Vital {
   Map<String, dynamic> toJson() => {
         'id': id,
         'name': name,
-        'remindDuration': remindDuration.inSeconds,
-        'startDateTime': startDateTime.toIso8601String(),
+        'remindDuration':
+            DurationFormatUtils.formatIso8601Duration(remindDuration),
+        'startDateTime': startDateTime?.toIso8601String(),
         'unit': unit,
         'measurements': measurements.map((e) => e.toJson()).toList(),
       };

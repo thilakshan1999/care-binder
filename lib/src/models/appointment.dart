@@ -2,17 +2,17 @@ import 'doctor.dart';
 import 'enums/appointmentType.dart';
 
 class Appointment {
-  final int? id;
+  final int id;
   final String name;
   final AppointmentType type;
-  final Doctor doctor;
+  final Doctor? doctor;
   final DateTime appointmentDateTime;
 
   Appointment({
-    this.id,
+    required this.id,
     required this.name,
     required this.type,
-    required this.doctor,
+    this.doctor,
     required this.appointmentDateTime,
   });
 
@@ -20,7 +20,7 @@ class Appointment {
         id: json['id'],
         name: json['name'],
         type: AppointmentType.fromJson(json['type']),
-        doctor: Doctor.fromJson(json['doctor']),
+        doctor: json['doctor'] != null ? Doctor.fromJson(json['doctor']) : null,
         appointmentDateTime: DateTime.parse(json['appointmentDateTime']),
       );
 
@@ -28,7 +28,7 @@ class Appointment {
         'id': id,
         'name': name,
         'type': type.toJson(),
-        'doctor': doctor.toJson(),
+        'doctor': doctor?.toJson(),
         'appointmentDateTime': appointmentDateTime.toIso8601String(),
       };
 }

@@ -27,6 +27,9 @@ class DoctorProfileSheet extends StatelessWidget {
               child: Column(
                 children: [
                   SectionTittleText(text: doctor.name),
+                  const SizedBox(
+                    height: 3,
+                  ),
                   SubText(
                     text:
                         doctor.specialization ?? "Specialization not available",
@@ -60,20 +63,21 @@ class DoctorProfileSheet extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(icon, size: 22, color: color),
           const SizedBox(width: 20),
-          value != null
-              ? BodyText(
-                  text: value,
-                  textAlign: TextAlign.right,
-                )
-              : const SubText(
-                  text: "Not available",
-                  textAlign: TextAlign.right,
-                )
+          Expanded(
+            child: value != null
+                ? BodyText(
+                    text: value,
+                    textAlign: TextAlign.left, // Use left to wrap naturally
+                  )
+                : const SubText(
+                    text: "Not available",
+                    textAlign: TextAlign.left,
+                  ),
+          ),
         ],
       ),
     );

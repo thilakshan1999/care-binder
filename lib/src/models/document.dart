@@ -38,7 +38,7 @@ class Document {
         vitals: (json['vitals'] as List<dynamic>)
             .map((e) => Vital.fromJson(e))
             .toList(),
-        medicines: (json['medicines'] as List<dynamic>)
+        medicines: (json['meds'] as List<dynamic>)
             .map((e) => Med.fromJson(e))
             .toList(),
         appointments: (json['appointments'] as List<dynamic>)
@@ -54,7 +54,7 @@ class Document {
         'summary': summary,
         'doctors': doctors.map((e) => e.toJson()).toList(),
         'vitals': vitals.map((e) => e.toJson()).toList(),
-        'medicines': medicines.map((e) => e.toJson()).toList(),
+        'meds': medicines.map((e) => e.toJson()).toList(),
         'appointments': appointments.map((e) => e.toJson()).toList(),
         'updatedTime': updatedTime.toIso8601String(),
       };

@@ -1,12 +1,14 @@
+import '../utils/durationFormatUtils.dart';
 import 'enums/entityStatus.dart';
+import 'vitalMeasurement.dart';
 
 class VitalWithStatus {
   final int? id;
   final String name;
   final String? unit;
-  final Duration?
-      remindDuration; // store as ISO8601 or seconds in JSON? Adapt as needed
+  final Duration? remindDuration;
   final DateTime? startDateTime;
+  final List<VitalMeasurement> measurements;
   final EntityStatus entityStatus;
 
   VitalWithStatus({
@@ -15,6 +17,7 @@ class VitalWithStatus {
     this.unit,
     this.remindDuration,
     this.startDateTime,
+    required this.measurements,
     required this.entityStatus,
   });
 
@@ -23,13 +26,15 @@ class VitalWithStatus {
       id: json['id'],
       name: json['name'],
       unit: json['unit'],
-      remindDuration: json['remindDuration'] != null
-          ? Duration(seconds: json['remindDuration'])
-          : null,
+      remindDuration:
+          DurationFormatUtils.parseIso8601Duration(json['remindDuration']),
       startDateTime: json['startDateTime'] != null
           ? DateTime.parse(json['startDateTime'])
           : null,
-      entityStatus: EntityStatus.fromJson(json['entityStatus'] ?? 'SAME'),
+      measurements: (json['measurements'] as List<dynamic>)
+          .map((e) => VitalMeasurement.fromJson(e))
+          .toList(),
+      entityStatus: EntityStatus.fromJson(json['entityStatus']),
     );
   }
 
@@ -37,8 +42,10 @@ class VitalWithStatus {
         'id': id,
         'name': name,
         'unit': unit,
-        'remindDuration': remindDuration?.inSeconds,
+        'remindDuration':
+            DurationFormatUtils.formatIso8601Duration(remindDuration),
         'startDateTime': startDateTime?.toIso8601String(),
+        'measurements': measurements.map((e) => e.toJson()).toList(),
         'entityStatus': entityStatus.toJson(),
       };
 }

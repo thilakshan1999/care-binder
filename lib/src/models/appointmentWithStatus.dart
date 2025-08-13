@@ -1,12 +1,12 @@
 import 'doctor.dart';
-import 'enums/AppointmentType.dart';
+import 'enums/appointmentType.dart';
 import 'enums/entityStatus.dart';
 
 class AppointmentWithStatus {
   final int? id;
   final String name;
   final AppointmentType type;
-  final Doctor doctor;
+  final Doctor? doctor;
   final DateTime appointmentDateTime;
   final EntityStatus entityStatus;
 
@@ -14,7 +14,7 @@ class AppointmentWithStatus {
     this.id,
     required this.name,
     required this.type,
-    required this.doctor,
+    this.doctor,
     required this.appointmentDateTime,
     required this.entityStatus,
   });
@@ -24,7 +24,7 @@ class AppointmentWithStatus {
       id: json['id'],
       name: json['name'],
       type: AppointmentType.fromJson(json['type']),
-      doctor: Doctor.fromJson(json['doctor']),
+      doctor: json['doctor'] != null ? Doctor.fromJson(json['doctor']) : null,
       appointmentDateTime: DateTime.parse(json['appointmentDateTime']),
       entityStatus: EntityStatus.fromJson(json['entityStatus'] ?? 'SAME'),
     );
@@ -34,7 +34,7 @@ class AppointmentWithStatus {
         'id': id,
         'name': name,
         'type': type.toJson(),
-        'doctor': doctor.toJson(),
+        'doctor': doctor?.toJson(),
         'appointmentDateTime': appointmentDateTime.toIso8601String(),
         'entityStatus': entityStatus.toJson(),
       };
