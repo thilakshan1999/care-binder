@@ -2,58 +2,74 @@ import 'enums/intakeInstruction.dart';
 import 'enums/medForm.dart';
 
 class Med {
-  final int? id;
+  final int id;
   final String name;
   final MedForm medForm;
-  final String healthCondition;
-  final Duration intakeInterval;
+  final String? healthCondition;
+  final Duration? intakeInterval;
   final DateTime startDate;
   final DateTime? endDate;
-  final String dosage;
-  final int stock;
-  final int reminderLimit;
-  final IntakeInstruction instruction;
+  final String? dosage;
+  final int? stock;
+  final int? reminderLimit;
+  final IntakeInstruction? instruction;
 
   Med({
-    this.id,
+    required this.id,
     required this.name,
     required this.medForm,
-    required this.healthCondition,
-    required this.intakeInterval,
+    this.healthCondition,
+    this.intakeInterval,
     required this.startDate,
     this.endDate,
-    required this.dosage,
-    required this.stock,
-    required this.reminderLimit,
-    required this.instruction,
+    this.dosage,
+    this.stock,
+    this.reminderLimit,
+    this.instruction,
   });
 
-  factory Med.fromJson(Map<String, dynamic> json) => Med(
-        id: json['id'],
-        name: json['name'],
-        medForm: MedForm.fromJson(json['medForm']),
-        healthCondition: json['healthCondition'],
-        intakeInterval: Duration(seconds: json['intakeInterval']),
-        startDate: DateTime.parse(json['startDate']),
-        endDate:
-            json['endDate'] != null ? DateTime.parse(json['endDate']) : null,
-        dosage: json['dosage'],
-        stock: json['stock'],
-        reminderLimit: json['reminderLimit'],
-        instruction: IntakeInstruction.fromJson(json['instruction']),
-      );
+  factory Med.fromJson(Map<String, dynamic> json) {
+    Duration? parseIso8601Duration(String? input) {
+      if (input == null) return null;
+      final regex = RegExp(r'PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?');
+      final match = regex.firstMatch(input);
+      if (match == null) return null;
+
+      final hours = int.tryParse(match.group(1) ?? '0') ?? 0;
+      final minutes = int.tryParse(match.group(2) ?? '0') ?? 0;
+      final seconds = int.tryParse(match.group(3) ?? '0') ?? 0;
+
+      return Duration(hours: hours, minutes: minutes, seconds: seconds);
+    }
+
+    return Med(
+      id: json['id'],
+      name: json['name'],
+      medForm: MedForm.fromJson(json['medForm']),
+      healthCondition: json['healthCondition'],
+      intakeInterval: parseIso8601Duration(json['intakeInterval']),
+      startDate: DateTime.parse(json['startDate']),
+      endDate: json['endDate'] != null ? DateTime.parse(json['endDate']) : null,
+      dosage: json['dosage'],
+      stock: json['stock'],
+      reminderLimit: json['reminderLimit'],
+      instruction: json['instruction'] != null
+          ? IntakeInstruction.fromJson(json['instruction'])
+          : null,
+    );
+  }
 
   Map<String, dynamic> toJson() => {
         'id': id,
         'name': name,
         'medForm': medForm.toJson(),
         'healthCondition': healthCondition,
-        'intakeInterval': intakeInterval.inSeconds,
+        'intakeInterval': intakeInterval?.inSeconds,
         'startDate': startDate.toIso8601String(),
         'endDate': endDate?.toIso8601String(),
         'dosage': dosage,
         'stock': stock,
         'reminderLimit': reminderLimit,
-        'instruction': instruction.toJson(),
+        'instruction': instruction?.toJson(),
       };
 }

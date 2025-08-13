@@ -1,6 +1,8 @@
 import 'package:dropdown_textfield/dropdown_textfield.dart';
 import 'package:flutter/material.dart';
 
+import '../../utils/textFormatUtils.dart';
+
 class SimpleDropdownField<T extends Enum> extends StatefulWidget {
   final T initialValue;
   final List<T> values;
@@ -30,7 +32,7 @@ class _SimpleDropdownFieldState<T extends Enum>
 
     _controller = SingleValueDropDownController(
       data: DropDownValueModel(
-        name: _formatEnumName(widget.initialValue.name),
+        name: TextFormatUtils.formatEnumName(widget.initialValue.name),
         value: widget.initialValue,
       ),
     );
@@ -57,7 +59,7 @@ class _SimpleDropdownFieldState<T extends Enum>
       enableSearch: false,
       dropDownList: widget.values
           .map((e) => DropDownValueModel(
-                name: _formatEnumName(e.name),
+                name: TextFormatUtils.formatEnumName(e.name),
                 value: e,
               ))
           .toList(),
@@ -72,6 +74,7 @@ class _SimpleDropdownFieldState<T extends Enum>
         border: const OutlineInputBorder(),
         labelText: widget.labelText,
         alignLabelWithHint: true,
+        floatingLabelBehavior: FloatingLabelBehavior.always,
         labelStyle: TextStyle(
           height: 1,
           letterSpacing: 0.5,
@@ -89,14 +92,5 @@ class _SimpleDropdownFieldState<T extends Enum>
         color: theme.colorScheme.onSurface,
       ),
     );
-  }
-
-  String _formatEnumName(String name) {
-    return name
-        .toLowerCase()
-        .replaceAll('_', ' ')
-        .split(' ')
-        .map((word) => word[0].toUpperCase() + word.substring(1))
-        .join(' ');
   }
 }

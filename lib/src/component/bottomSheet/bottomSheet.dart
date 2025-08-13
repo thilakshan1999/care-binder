@@ -7,6 +7,7 @@ class CustomBottomSheet {
     required Widget child,
   }) {
     showModalBottomSheet(
+      isScrollControlled: true,
       backgroundColor:
           Theme.of(context).extension<CustomColors>()?.primarySurface,
       context: context,

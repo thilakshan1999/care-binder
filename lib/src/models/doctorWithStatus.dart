@@ -27,7 +27,7 @@ class DoctorWithStatus {
       phoneNumber: json['phoneNumber'],
       email: json['email'],
       address: json['address'],
-      entityStatus: EntityStatus.fromJson(json['entityStatus'] ?? 'SAME'),
+      entityStatus: EntityStatus.fromJson(json['entityStatus']),
     );
   }
 
