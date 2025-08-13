@@ -8,7 +8,6 @@ import 'package:care_sync/src/models/enums/medForm.dart';
 import 'package:care_sync/src/models/medWithStatus.dart';
 import 'package:care_sync/src/models/vitalMeasurement.dart';
 import 'package:care_sync/src/models/vitalWithStatus.dart';
-import 'package:googleapis/driveactivity/v2.dart';
 import 'enums/documentType.dart';
 
 class AnalyzedDocument {
