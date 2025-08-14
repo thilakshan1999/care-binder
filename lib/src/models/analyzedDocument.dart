@@ -61,6 +61,26 @@ class AnalyzedDocument {
         'meds': medicines.map((e) => e.toJson()).toList(),
         'appointments': appointments.map((e) => e.toJson()).toList(),
       };
+
+  AnalyzedDocument copyWith({
+    String? documentName,
+    DocumentType? documentType,
+    String? summary,
+    List<DoctorWithStatus>? doctors,
+    List<MedWithStatus>? medicines,
+    List<AppointmentWithStatus>? appointments,
+    List<VitalWithStatus>? vitals,
+  }) {
+    return AnalyzedDocument(
+      documentName: documentName ?? this.documentName,
+      documentType: documentType ?? this.documentType,
+      summary: summary ?? this.summary,
+      doctors: doctors ?? this.doctors,
+      medicines: medicines ?? this.medicines,
+      appointments: appointments ?? this.appointments,
+      vitals: vitals ?? this.vitals,
+    );
+  }
 }
 
 final sampleAnalyzedDocument = AnalyzedDocument(

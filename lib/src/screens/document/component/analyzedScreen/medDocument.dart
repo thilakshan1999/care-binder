@@ -1,9 +1,13 @@
+import 'package:care_sync/src/bloc/analyzedDocumentBloc.dart';
 import 'package:care_sync/src/models/medWithStatus.dart';
+import 'package:care_sync/src/screens/med/medWithStatusEditScreen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:iconify_flutter/icons/ph.dart';
 
 import '../../../../component/bottomSheet/bottomSheet.dart';
 import '../../../../component/card/InfoCard.dart';
+import '../../../../component/dialog/confirmDeleteDialog.dart';
 import '../../../../models/med.dart';
 import '../../../../utils/textFormatUtils.dart';
 import '../../../med/component/medDetailSheet.dart';
@@ -17,12 +21,13 @@ class MedDocument extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        DocumentSectionHeader(
-          title: "Medicines",
-          onIconPressed: () {
-            print("Add Med clicked");
-          },
-        ),
+        if (medicines.isNotEmpty)
+          DocumentSectionHeader(
+            title: "Medicines",
+            onIconPressed: () {
+              print("Add Med clicked");
+            },
+          ),
 
         // Doctors list -> InfoCard for each
         ...medicines.map((med) {
@@ -51,8 +56,29 @@ class MedDocument extends StatelessWidget {
                           instruction: med.instruction),
                     ));
               },
-              onEdit: () {},
-              onDelete: () {},
+              onEdit: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => MedWithStatusEditScreen(
+                      med: med,
+                      index: medicines.indexOf(med),
+                    ),
+                  ),
+                );
+              },
+              onDelete: () {
+                showConfirmDeleteDialog(
+                  context: context,
+                  title: "Delete Medicine",
+                  message: "Are you sure you want to delete this medicine?",
+                  onConfirm: () {
+                    context
+                        .read<AnalyzedDocumentBloc>()
+                        .deleteMedicine(medicines.indexOf(med));
+                  },
+                );
+              },
             ),
           );
         }),

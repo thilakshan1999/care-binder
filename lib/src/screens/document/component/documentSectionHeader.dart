@@ -20,10 +20,13 @@ class DocumentSectionHeader extends StatelessWidget {
           text: title,
           textAlign: TextAlign.left,
         )),
-        IconButton(
-          icon: Icon(Icons.add, color: Theme.of(context).colorScheme.primary),
-          onPressed: onIconPressed,
-        ),
+        const SizedBox(
+          height: 30,
+        )
+        // IconButton(
+        //   icon: Icon(Icons.add, color: Theme.of(context).colorScheme.primary),
+        //   onPressed: onIconPressed,
+        // ),
       ],
     );
   }

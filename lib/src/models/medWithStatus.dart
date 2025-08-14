@@ -5,17 +5,17 @@ import 'enums/medForm.dart';
 
 class MedWithStatus {
   final int? id;
-  final String name;
-  final MedForm medForm;
-  final String? healthCondition;
-  final Duration? intakeInterval;
-  final DateTime startDate;
-  final DateTime? endDate;
-  final String? dosage;
-  final int? stock;
-  final int? reminderLimit;
-  final IntakeInstruction? instruction;
-  final EntityStatus entityStatus;
+  String name;
+  MedForm medForm;
+  String? healthCondition;
+  Duration? intakeInterval;
+  DateTime startDate;
+  DateTime? endDate;
+  String? dosage;
+  int? stock;
+  int? reminderLimit;
+  IntakeInstruction? instruction;
+  EntityStatus entityStatus;
 
   MedWithStatus({
     this.id,
@@ -79,4 +79,34 @@ class MedWithStatus {
         'instruction': instruction?.toJson(),
         'entityStatus': entityStatus.toJson(),
       };
+
+  MedWithStatus copyWith({
+    int? id,
+    String? name,
+    MedForm? medForm,
+    String? healthCondition,
+    Duration? intakeInterval,
+    DateTime? startDate,
+    DateTime? endDate,
+    String? dosage,
+    int? stock,
+    int? reminderLimit,
+    IntakeInstruction? instruction,
+    EntityStatus? entityStatus,
+  }) {
+    return MedWithStatus(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      medForm: medForm ?? this.medForm,
+      healthCondition: healthCondition ?? this.healthCondition,
+      intakeInterval: intakeInterval ?? this.intakeInterval,
+      startDate: startDate ?? this.startDate,
+      endDate: endDate ?? this.endDate,
+      dosage: dosage ?? this.dosage,
+      stock: stock ?? this.stock,
+      reminderLimit: reminderLimit ?? this.reminderLimit,
+      instruction: instruction ?? this.instruction,
+      entityStatus: entityStatus ?? this.entityStatus,
+    );
+  }
 }

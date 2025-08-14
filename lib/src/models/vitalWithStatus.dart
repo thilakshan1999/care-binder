@@ -4,12 +4,12 @@ import 'vitalMeasurement.dart';
 
 class VitalWithStatus {
   final int? id;
-  final String name;
-  final String? unit;
-  final Duration? remindDuration;
-  final DateTime? startDateTime;
-  final List<VitalMeasurement> measurements;
-  final EntityStatus entityStatus;
+  String name;
+  String? unit;
+  Duration? remindDuration;
+  DateTime? startDateTime;
+  List<VitalMeasurement> measurements;
+  EntityStatus entityStatus;
 
   VitalWithStatus({
     this.id,
@@ -48,4 +48,31 @@ class VitalWithStatus {
         'measurements': measurements.map((e) => e.toJson()).toList(),
         'entityStatus': entityStatus.toJson(),
       };
+
+  VitalWithStatus copyWith({
+    int? id,
+    String? name,
+    String? unit,
+    bool unitSetNull = false,
+    Duration? remindDuration,
+    bool remindDurationSetNull = false,
+    DateTime? startDateTime,
+    bool startDateTimeSetNull = false,
+    List<VitalMeasurement>? measurements,
+    EntityStatus? entityStatus,
+  }) {
+    return VitalWithStatus(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      unit: unitSetNull ? null : (unit ?? this.unit),
+      remindDuration: remindDurationSetNull
+          ? null
+          : (remindDuration ?? this.remindDuration),
+      startDateTime:
+          startDateTimeSetNull ? null : (startDateTime ?? this.startDateTime),
+      measurements:
+          measurements ?? List<VitalMeasurement>.from(this.measurements),
+      entityStatus: entityStatus ?? this.entityStatus,
+    );
+  }
 }

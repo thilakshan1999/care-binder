@@ -2,12 +2,12 @@ import 'enums/entityStatus.dart';
 
 class DoctorWithStatus {
   final int? id;
-  final String name;
-  final String? specialization;
-  final String? phoneNumber;
-  final String? email;
-  final String? address;
-  final EntityStatus entityStatus;
+  String name;
+  String? specialization;
+  String? phoneNumber;
+  String? email;
+  String? address;
+  EntityStatus entityStatus;
 
   DoctorWithStatus({
     this.id,
@@ -40,4 +40,24 @@ class DoctorWithStatus {
         'address': address,
         'entityStatus': entityStatus.toJson(),
       };
+
+  DoctorWithStatus copyWith({
+    int? id,
+    String? name,
+    String? specialization,
+    String? phoneNumber,
+    String? email,
+    String? address,
+    EntityStatus? entityStatus,
+  }) {
+    return DoctorWithStatus(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      specialization: specialization ?? this.specialization,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      email: email ?? this.email,
+      address: address ?? this.address,
+      entityStatus: entityStatus ?? this.entityStatus,
+    );
+  }
 }

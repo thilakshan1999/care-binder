@@ -3,13 +3,19 @@ import 'package:flutter/material.dart';
 class SimpleTextField extends StatefulWidget {
   final String initialText;
   final String labelText;
-  final ValueChanged<String> onChanged;
+  final void Function(String)? onChanged;
+  final TextInputType keyboardType;
+  final String? Function(String?)? validator;
+  final TextEditingController? controller;
 
   const SimpleTextField({
     super.key,
     required this.initialText,
     required this.onChanged,
     this.labelText = 'Text',
+    this.keyboardType = TextInputType.text,
+    this.validator,
+    this.controller,
   });
 
   @override
@@ -38,9 +44,11 @@ class _SimpleTextFieldState extends State<SimpleTextField> {
 
     return TextFormField(
       focusNode: _focusNode,
+      controller: widget.controller,
       initialValue: widget.initialText,
       onChanged: widget.onChanged,
-      keyboardType: TextInputType.text,
+      validator: widget.validator,
+      keyboardType: widget.keyboardType,
       decoration: InputDecoration(
         border: const OutlineInputBorder(),
         labelText: widget.labelText,

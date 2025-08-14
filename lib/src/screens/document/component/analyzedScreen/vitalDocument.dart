@@ -1,9 +1,12 @@
 import 'package:care_sync/src/models/vitalWithStatus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:iconify_flutter/icons/ri.dart';
 
+import '../../../../bloc/analyzedDocumentBloc.dart';
 import '../../../../component/bottomSheet/bottomSheet.dart';
 import '../../../../component/card/InfoCard.dart';
+import '../../../../component/dialog/confirmDeleteDialog.dart';
 import '../../../../models/vital.dart';
 import '../../../vital/component/vitalDetailSheet.dart';
 import '../documentSectionHeader.dart';
@@ -16,12 +19,13 @@ class VitalDocument extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        DocumentSectionHeader(
-          title: "Vitals",
-          onIconPressed: () {
-            print("Add vita; clicked");
-          },
-        ),
+        if (vitals.isNotEmpty)
+          DocumentSectionHeader(
+            title: "Vitals",
+            onIconPressed: () {
+              print("Add vita; clicked");
+            },
+          ),
         ...vitals.map((vital) {
           return Padding(
             padding: const EdgeInsets.only(bottom: 12),
@@ -44,7 +48,18 @@ class VitalDocument extends StatelessWidget {
                     ));
               },
               onEdit: () {},
-              onDelete: () {},
+              onDelete: () {
+                showConfirmDeleteDialog(
+                  context: context,
+                  title: "Delete Vital",
+                  message: "Are you sure you want to delete this vital?",
+                  onConfirm: () {
+                    context
+                        .read<AnalyzedDocumentBloc>()
+                        .deleteVitals(vitals.indexOf(vital));
+                  },
+                );
+              },
             ),
           );
         }),

@@ -4,11 +4,11 @@ import 'enums/entityStatus.dart';
 
 class AppointmentWithStatus {
   final int? id;
-  final String name;
-  final AppointmentType type;
-  final Doctor? doctor;
-  final DateTime appointmentDateTime;
-  final EntityStatus entityStatus;
+  String name;
+  AppointmentType type;
+  Doctor? doctor;
+  DateTime appointmentDateTime;
+  EntityStatus entityStatus;
 
   AppointmentWithStatus({
     this.id,
@@ -38,4 +38,22 @@ class AppointmentWithStatus {
         'appointmentDateTime': appointmentDateTime.toIso8601String(),
         'entityStatus': entityStatus.toJson(),
       };
+
+  AppointmentWithStatus copyWith({
+    int? id,
+    String? name,
+    AppointmentType? type,
+    Doctor? doctor,
+    DateTime? appointmentDateTime,
+    EntityStatus? entityStatus,
+  }) {
+    return AppointmentWithStatus(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      type: type ?? this.type,
+      doctor: doctor ?? this.doctor,
+      appointmentDateTime: appointmentDateTime ?? this.appointmentDateTime,
+      entityStatus: entityStatus ?? this.entityStatus,
+    );
+  }
 }
