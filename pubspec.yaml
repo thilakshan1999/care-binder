@@ -49,6 +49,7 @@ dependencies:
   http_interceptor: ^2.0.0
   dropdown_textfield: ^1.2.0
   flutter_bloc: ^9.1.1
+  top_snackbar_flutter: ^3.3.0
 
 dev_dependencies:
   flutter_test:

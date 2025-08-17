@@ -1,4 +1,5 @@
 import 'package:care_sync/src/bloc/analyzedDocumentBloc.dart';
+import 'package:care_sync/src/component/btn/primaryBtn/priamaryLoadingBtn.dart';
 import 'package:care_sync/src/component/dropdown/simpleEnumDropdown.dart';
 import 'package:care_sync/src/component/textField/simpleTextField/simpleTextField.dart';
 import 'package:care_sync/src/models/analyzedDocument.dart';
@@ -13,6 +14,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../component/appBar/appBar.dart';
 import '../../component/btn/primaryBtn/primaryBtn.dart';
 import '../../component/errorBox/ErrorBox.dart';
+import '../../component/snakbar/customSnakbar.dart';
 import '../../component/textField/multiLine/multiLineTextField.dart';
 import '../../service/api/httpService.dart';
 import 'component/documentLoadingIndicator.dart';
@@ -27,6 +29,7 @@ class DocumentAnalyzedScreen extends StatefulWidget {
 
 class _DocumentAnalyzedScreenState extends State<DocumentAnalyzedScreen> {
   bool isProcessing = true;
+  bool isLoading = false;
   bool hasError = false;
   String? errorMessage;
   String? errorTittle;
@@ -170,10 +173,16 @@ class _DocumentAnalyzedScreenState extends State<DocumentAnalyzedScreen> {
                                     ],
                                   )),
                             ),
-                            PrimaryBtn(
+                            PrimaryLoadingBtn(
                               label: 'Save',
+                              loading: isLoading,
                               onPressed: () {
                                 print(document.toJson());
+                                CustomSnackbar.showCustomSnackbar(
+                                    context: context,
+                                    message: "Cannot delete at this moment",
+                                    backgroundColor:
+                                        Theme.of(context).colorScheme.error);
                               },
                             ),
                           ],

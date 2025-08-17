@@ -16,8 +16,6 @@ class AppointmentDetailSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Padding(
       padding: const EdgeInsets.all(16),
       child: SizedBox(

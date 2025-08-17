@@ -1,13 +1,13 @@
 import 'package:care_sync/src/component/text/btnText.dart';
 import 'package:flutter/material.dart';
 
-class PrimaryBtn extends StatelessWidget {
+class PrimaryLoadingBtn extends StatelessWidget {
   final String label;
   final VoidCallback onPressed;
   final bool fullWidth;
   final bool loading;
 
-  const PrimaryBtn({
+  const PrimaryLoadingBtn({
     super.key,
     required this.loading,
     required this.label,
@@ -31,8 +31,8 @@ class PrimaryBtn extends StatelessWidget {
           ),
           child: loading
               ? SizedBox(
-                  height: 22,
-                  width: 22,
+                  height: 18,
+                  width: 18,
                   child: CircularProgressIndicator(
                     valueColor: AlwaysStoppedAnimation<Color>(
                         Theme.of(context).colorScheme.surface),

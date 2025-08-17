@@ -17,7 +17,7 @@ class DocumentScreen extends StatelessWidget {
       floatingActionButton: CustomFloatingBtn(
         onPressed: () {
           CustomBottomSheet.show(
-              context: context, child:  const UploadOptionSheet());
+              context: context, child: const UploadOptionSheet());
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
