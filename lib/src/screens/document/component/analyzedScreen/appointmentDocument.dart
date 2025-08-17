@@ -15,7 +15,9 @@ import '../documentSectionHeader.dart';
 
 class AppointmentDocument extends StatelessWidget {
   final List<AppointmentWithStatus> appointments;
-  const AppointmentDocument({super.key, required this.appointments});
+  final bool isEditable;
+  const AppointmentDocument(
+      {super.key, required this.appointments, this.isEditable = true});
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +37,7 @@ class AppointmentDocument extends StatelessWidget {
             padding: const EdgeInsets.only(bottom: 12),
             child: InfoCard(
               icon: Uim.calender,
+              isEditable: isEditable,
               mainText: appointment.name,
               subText: TextFormatUtils.formatEnumName(appointment.type.name),
               status: appointment.entityStatus,

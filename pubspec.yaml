@@ -50,6 +50,8 @@ dependencies:
   dropdown_textfield: ^1.2.0
   flutter_bloc: ^9.1.1
   top_snackbar_flutter: ^3.3.0
+  accordion: ^2.6.0
+  skeletonizer: ^1.4.3
 
 dev_dependencies:
   flutter_test:

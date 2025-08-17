@@ -8,6 +8,7 @@ class SimpleTextField extends StatefulWidget {
   final String? Function(String?)? validator;
   final TextEditingController? controller;
   final String? suffixText;
+  final bool readOnly;
 
   const SimpleTextField({
     super.key,
@@ -18,6 +19,7 @@ class SimpleTextField extends StatefulWidget {
     this.validator,
     this.controller,
     this.suffixText,
+    this.readOnly = false,
   });
 
   @override
@@ -47,6 +49,7 @@ class _SimpleTextFieldState extends State<SimpleTextField> {
     return TextFormField(
       focusNode: _focusNode,
       controller: widget.controller,
+      readOnly: widget.readOnly,
       initialValue: widget.controller != null ? null : widget.initialText,
       onChanged: widget.onChanged,
       validator: widget.validator,

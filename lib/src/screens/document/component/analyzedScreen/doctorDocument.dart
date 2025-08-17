@@ -13,7 +13,9 @@ import '../documentSectionHeader.dart';
 
 class DoctorDocument extends StatelessWidget {
   final List<DoctorWithStatus> doctors;
-  const DoctorDocument({super.key, required this.doctors});
+  final bool isEditable;
+  const DoctorDocument(
+      {super.key, required this.doctors, this.isEditable = true});
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +35,7 @@ class DoctorDocument extends StatelessWidget {
             padding: const EdgeInsets.only(bottom: 12),
             child: InfoCard(
               icon: Map.doctor,
+              isEditable: isEditable,
               mainText: doctor.name,
               subText: doctor.specialization ?? "Specialization not available",
               status: doctor.entityStatus,

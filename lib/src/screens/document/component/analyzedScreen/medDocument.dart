@@ -15,7 +15,9 @@ import '../documentSectionHeader.dart';
 
 class MedDocument extends StatelessWidget {
   final List<MedWithStatus> medicines;
-  const MedDocument({super.key, required this.medicines});
+  final bool isEditable;
+  const MedDocument(
+      {super.key, required this.medicines, this.isEditable = true});
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +37,7 @@ class MedDocument extends StatelessWidget {
             padding: const EdgeInsets.only(bottom: 12),
             child: InfoCard(
               icon: Ph.pill_duotone,
+              isEditable: isEditable,
               mainText: med.name,
               subText: TextFormatUtils.formatEnumName(med.medForm.name),
               status: med.entityStatus,

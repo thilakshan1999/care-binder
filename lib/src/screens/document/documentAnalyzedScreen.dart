@@ -12,7 +12,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../component/appBar/appBar.dart';
-import '../../component/btn/primaryBtn/primaryBtn.dart';
 import '../../component/errorBox/ErrorBox.dart';
 import '../../component/snakbar/customSnakbar.dart';
 import '../../component/textField/multiLine/multiLineTextField.dart';

@@ -14,7 +14,9 @@ import '../documentSectionHeader.dart';
 
 class VitalDocument extends StatelessWidget {
   final List<VitalWithStatus> vitals;
-  const VitalDocument({super.key, required this.vitals});
+  final bool isEditable;
+  const VitalDocument(
+      {super.key, required this.vitals, this.isEditable = true});
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +34,7 @@ class VitalDocument extends StatelessWidget {
             padding: const EdgeInsets.only(bottom: 12),
             child: InfoCard(
               icon: Ri.heart_pulse_fill,
+              isEditable: isEditable,
               mainText: vital.name,
               subText: null,
               status: vital.entityStatus,

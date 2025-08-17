@@ -6,6 +6,7 @@ class PrimaryLoadingBtn extends StatelessWidget {
   final VoidCallback onPressed;
   final bool fullWidth;
   final bool loading;
+  final Color? backgroundColor;
 
   const PrimaryLoadingBtn({
     super.key,
@@ -13,6 +14,7 @@ class PrimaryLoadingBtn extends StatelessWidget {
     required this.label,
     required this.onPressed,
     this.fullWidth = true,
+    this.backgroundColor,
   });
 
   @override
@@ -22,7 +24,8 @@ class PrimaryLoadingBtn extends StatelessWidget {
       child: ElevatedButton(
           onPressed: loading ? () => {} : onPressed,
           style: ElevatedButton.styleFrom(
-            backgroundColor: Theme.of(context).colorScheme.primary,
+            backgroundColor:
+                backgroundColor ?? Theme.of(context).colorScheme.primary,
             foregroundColor: Theme.of(context).colorScheme.onPrimary,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),

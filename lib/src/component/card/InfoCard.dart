@@ -2,6 +2,7 @@ import 'package:care_sync/src/component/text/btnText.dart';
 import 'package:care_sync/src/component/text/primaryText.dart';
 import 'package:care_sync/src/component/text/subText.dart';
 import 'package:care_sync/src/models/enums/entityStatus.dart';
+import 'package:care_sync/src/utils/textFormatUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 
@@ -13,16 +14,19 @@ class InfoCard extends StatelessWidget {
   final VoidCallback onTap;
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
+  final bool isEditable;
 
-  const InfoCard(
-      {super.key,
-      required this.icon,
-      required this.mainText,
-      required this.subText,
-      required this.onTap,
-      this.status,
-      this.onEdit,
-      this.onDelete});
+  const InfoCard({
+    super.key,
+    required this.icon,
+    required this.mainText,
+    required this.subText,
+    required this.onTap,
+    this.status,
+    this.onEdit,
+    this.onDelete,
+    this.isEditable = false,
+  });
 
   Color _getStatusColor(EntityStatus status, BuildContext context) {
     switch (status) {
@@ -33,17 +37,6 @@ class InfoCard extends StatelessWidget {
       case EntityStatus.SAME:
       default:
         return Colors.grey;
-    }
-  }
-
-  String _getStatusText(EntityStatus status) {
-    switch (status) {
-      case EntityStatus.NEW:
-        return "New";
-      case EntityStatus.UPDATED:
-        return "Updated";
-      case EntityStatus.SAME:
-        return "Same";
     }
   }
 
@@ -85,7 +78,7 @@ class InfoCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(
-                          _getStatusText(status!),
+                          TextFormatUtils.formatEnum(status),
                           style: TextStyle(
                             color: _getStatusColor(status!, context),
                             fontWeight: FontWeight.w600,
@@ -97,7 +90,7 @@ class InfoCard extends StatelessWidget {
                   ],
                 ),
               ),
-              if (onDelete != null || onEdit != null)
+              if (isEditable && (onDelete != null || onEdit != null))
                 PopupMenuButton<String>(
                   icon: const Icon(Icons.more_vert),
                   onSelected: (value) {
