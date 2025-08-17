@@ -1,4 +1,5 @@
 import 'package:care_sync/src/models/vitalWithStatus.dart';
+import 'package:care_sync/src/screens/vital/vitalWithStatusEditScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:iconify_flutter/icons/ri.dart';
@@ -47,7 +48,17 @@ class VitalDocument extends StatelessWidget {
                           measurements: vital.measurements),
                     ));
               },
-              onEdit: () {},
+              onEdit: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => VitalWithStatusEditScreen(
+                      vital: vital,
+                      index: vitals.indexOf(vital),
+                    ),
+                  ),
+                );
+              },
               onDelete: () {
                 showConfirmDeleteDialog(
                   context: context,

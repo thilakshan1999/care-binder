@@ -28,14 +28,18 @@ class VitalDetailSheet extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 20),
-          buildInfoRow(
-              'Start Date', TextFormatUtils.formatDate(vital.startDateTime)),
+          buildInfoRow('Start Date',
+              TextFormatUtils.formatDateTime(vital.startDateTime)),
           buildInfoRow(
               'Duration', TextFormatUtils.formatDuration(vital.remindDuration)),
           buildInfoRow('Unit', vital.unit ?? '-'),
           buildInfoRow(
+            'Last Measure At',
+            TextFormatUtils.formatDateTime(lastMeasurement?.dateTime),
+          ),
+          buildInfoRow(
             'Last Value',
-            lastMeasurement?.value ?? 'N/A',
+            lastMeasurement?.value ?? '-',
           ),
         ],
       ),

@@ -39,14 +39,79 @@ class TextFormatUtils {
         '${date.year}';
   }
 
+  static String formatDateTime(DateTime? dateTime) {
+    if (dateTime == null) return '-';
+
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec'
+    ];
+
+    final day = dateTime.day.toString().padLeft(2, '0');
+    final month = months[dateTime.month - 1];
+    final year = dateTime.year;
+    final hour = dateTime.hour.toString().padLeft(2, '0');
+    final minute = dateTime.minute.toString().padLeft(2, '0');
+
+    return '$day $month $year, $hour:$minute';
+  }
+
   static String formatDuration(Duration? duration) {
     if (duration == null) return '-';
-    if (duration.inHours > 0) {
-      return '${duration.inHours} hour${duration.inHours > 1 ? 's' : ''}';
+
+    const int minutesInHour = 60;
+    const int hoursInDay = 24;
+    const int daysInMonth = 30;
+
+    int totalMinutes = duration.inMinutes;
+    int totalHours = duration.inHours;
+    int totalDays = totalHours ~/ hoursInDay;
+    int months = totalDays ~/ daysInMonth;
+    int days = totalDays % daysInMonth;
+    int hours = totalHours % hoursInDay;
+    int minutes = totalMinutes % minutesInHour;
+
+    final parts = <String>[];
+
+    if (months > 0) parts.add('$months month${months > 1 ? 's' : ''}');
+    if (days > 0) parts.add('$days day${days > 1 ? 's' : ''}');
+    if (hours > 0) parts.add('$hours hour${hours > 1 ? 's' : ''}');
+    if (minutes > 0) parts.add('$minutes minute${minutes > 1 ? 's' : ''}');
+
+    return parts.isEmpty
+        ? '${duration.inSeconds} second${duration.inSeconds > 1 ? 's' : ''}'
+        : parts.join(' ');
+  }
+
+  static Map<String, dynamic> parseQuantity(String input) {
+    input = input.trim();
+    if (input.isEmpty) return {'number': null, 'unit': null};
+
+    // Regular expression to separate number and text
+    final regex = RegExp(r'^(\d+)(?:\s*(\D.*))?$');
+    final match = regex.firstMatch(input);
+
+    if (match == null) {
+      // No number found
+      return {'number': null, 'unit': input};
     }
-    if (duration.inMinutes > 0) {
-      return '${duration.inMinutes} minute${duration.inMinutes > 1 ? 's' : ''}';
-    }
-    return '${duration.inSeconds} second${duration.inSeconds > 1 ? 's' : ''}';
+
+    final numberPart = int.tryParse(match.group(1)!);
+    final unitPart = match.group(2)?.trim(); // may be null
+
+    return {
+      'number': numberPart,
+      'unit': unitPart,
+    };
   }
 }

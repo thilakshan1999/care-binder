@@ -44,6 +44,7 @@ class _MultiLineTextFieldState extends State<MultiLineTextField> {
       minLines: 5,
       maxLines: null,
       decoration: InputDecoration(
+        isDense: true,
         border: const OutlineInputBorder(),
         labelText: widget.labelText,
         alignLabelWithHint: true,

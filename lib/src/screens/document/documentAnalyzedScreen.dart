@@ -1,5 +1,5 @@
 import 'package:care_sync/src/bloc/analyzedDocumentBloc.dart';
-import 'package:care_sync/src/component/dropdown/simpleDropdown.dart';
+import 'package:care_sync/src/component/dropdown/simpleEnumDropdown.dart';
 import 'package:care_sync/src/component/textField/simpleTextField/simpleTextField.dart';
 import 'package:care_sync/src/models/analyzedDocument.dart';
 import 'package:care_sync/src/models/enums/documentType.dart';
@@ -129,12 +129,12 @@ class _DocumentAnalyzedScreenState extends State<DocumentAnalyzedScreen> {
                                         height: 20,
                                       ),
 
-                                      SimpleDropdownField<DocumentType>(
+                                      SimpleEnumDropdownField<DocumentType>(
                                         initialValue: document.documentType,
                                         values: DocumentType.values,
                                         labelText: "Document Type",
                                         onChanged: (value) {
-                                          document.documentType = value;
+                                          document.documentType = value!;
                                         },
                                       ),
 

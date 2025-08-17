@@ -81,6 +81,17 @@ class AnalyzedDocument {
       vitals: vitals ?? this.vitals,
     );
   }
+
+  List<Doctor> get doctorsPlain => doctors.map((dws) {
+        return Doctor(
+          id: dws.id ?? 0,
+          name: dws.name,
+          specialization: dws.specialization,
+          phoneNumber: dws.phoneNumber,
+          email: dws.email,
+          address: dws.address,
+        );
+      }).toList();
 }
 
 final sampleAnalyzedDocument = AnalyzedDocument(

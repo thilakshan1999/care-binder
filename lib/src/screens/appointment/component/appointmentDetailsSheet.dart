@@ -39,8 +39,10 @@ class AppointmentDetailSheet extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            buildInfoRow('Appointment Date',
-                TextFormatUtils.formatDate(appointment.appointmentDateTime)),
+            buildInfoRow(
+                'Appointment Date',
+                TextFormatUtils.formatDateTime(
+                    appointment.appointmentDateTime)),
             buildInfoRow('Doctor',
                 appointment.doctor != null ? appointment.doctor!.name : "-"),
           ],

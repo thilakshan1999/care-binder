@@ -5,6 +5,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../bloc/analyzedDocumentBloc.dart';
 import '../../component/appBar/appBar.dart';
 import '../../component/btn/primaryBtn/primaryBtn.dart';
+import '../../component/datePicker/dateTimePickerField.dart';
+import '../../component/durationPicker/durationPickerField.dart';
+import '../../component/textField/simpleTextField/simpleTextField.dart';
 import '../../models/enums/entityStatus.dart';
 
 class VitalWithStatusEditScreen extends StatefulWidget {
@@ -45,6 +48,9 @@ class _VitalWithStatusEditScreenState extends State<VitalWithStatusEditScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final lastMeasurement = updatedVital.measurements.isNotEmpty
+        ? updatedVital.measurements.last
+        : null;
     return Scaffold(
       appBar: CustomAppBar(
         tittle: "Edit ${updatedVital.name}",
@@ -54,7 +60,87 @@ class _VitalWithStatusEditScreenState extends State<VitalWithStatusEditScreen> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            Expanded(child: Form(key: _formKey, child: SizedBox())),
+            Expanded(
+                child: Form(
+                    key: _formKey,
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      child: Column(
+                        children: [
+                          //Start Date
+                          DateTimePickerField(
+                            labelText: "Start Date",
+                            initialDateTime: updatedVital.startDateTime,
+                            showTime: true,
+                            allowClear: true,
+                            onChanged: (dateTime) {
+                              setState(() {
+                                updatedVital.startDateTime = dateTime;
+                              });
+                            },
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          //Reminder
+                          DurationPickerField(
+                            initialDuration: updatedVital.remindDuration,
+                            labelText: "Reminder Interval",
+                            allowClear: true,
+                            onChanged: (d) {
+                              setState(() => updatedVital.remindDuration = d);
+                            },
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          //Unit
+                          SimpleTextField(
+                            initialText: updatedVital.unit ?? "",
+                            labelText: 'Unit',
+                            onChanged: (value) {
+                              setState(() {
+                                updatedVital.unit =
+                                    value.isEmpty ? null : value;
+                              });
+                            },
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+
+                          //Last Measured At
+                          DateTimePickerField(
+                            labelText: "Last Measured At",
+                            initialDateTime: lastMeasurement?.dateTime,
+                            showTime: true,
+                            onChanged: (dateTime) {
+                              setState(() {
+                                lastMeasurement?.dateTime = dateTime!;
+                              });
+                            },
+                          ),
+
+                          const SizedBox(
+                            height: 20,
+                          ),
+
+                          //Last value
+                          SimpleTextField(
+                            initialText:
+                                lastMeasurement?.value.toString() ?? '',
+                            labelText: 'Last value',
+                            suffixText: updatedVital.unit,
+                            keyboardType: TextInputType.number,
+                            onChanged: (value) {
+                              setState(() {
+                                lastMeasurement?.value = value;
+                              });
+                            },
+                          ),
+                        ],
+                      ),
+                    ))),
             PrimaryBtn(
               label: 'Save',
               onPressed: saveVital,

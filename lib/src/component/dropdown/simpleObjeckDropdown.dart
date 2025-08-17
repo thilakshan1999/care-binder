@@ -1,28 +1,32 @@
 import 'package:dropdown_textfield/dropdown_textfield.dart';
 import 'package:flutter/material.dart';
 
-import '../../utils/textFormatUtils.dart';
-
-class SimpleDropdownField<T extends Enum> extends StatefulWidget {
-  final T initialValue;
+class SimpleObjectDropdownField<T> extends StatefulWidget {
+  final T? initialValue;
   final List<T> values;
   final String labelText;
-  final ValueChanged<T> onChanged;
+  final ValueChanged<T?> onChanged;
+  final String Function(T) displayText;
+  final bool clearOption;
+  final bool searchOption;
 
-  const SimpleDropdownField({
-    super.key,
-    required this.initialValue,
-    required this.values,
-    required this.onChanged,
-    this.labelText = 'Select',
-  });
+  const SimpleObjectDropdownField(
+      {super.key,
+      required this.initialValue,
+      required this.values,
+      required this.onChanged,
+      required this.displayText,
+      this.labelText = 'Select',
+      this.clearOption = false,
+      this.searchOption = false});
 
   @override
-  State<SimpleDropdownField<T>> createState() => _SimpleDropdownFieldState<T>();
+  State<SimpleObjectDropdownField<T>> createState() =>
+      _SimpleObjectDropdownFieldState<T>();
 }
 
-class _SimpleDropdownFieldState<T extends Enum>
-    extends State<SimpleDropdownField<T>> {
+class _SimpleObjectDropdownFieldState<T>
+    extends State<SimpleObjectDropdownField<T>> {
   late SingleValueDropDownController _controller;
   late FocusNode _focusNode;
 
@@ -30,11 +34,14 @@ class _SimpleDropdownFieldState<T extends Enum>
   void initState() {
     super.initState();
 
+    final initial = widget.initialValue;
     _controller = SingleValueDropDownController(
-      data: DropDownValueModel(
-        name: TextFormatUtils.formatEnumName(widget.initialValue.name),
-        value: widget.initialValue,
-      ),
+      data: initial != null
+          ? DropDownValueModel(
+              name: widget.displayText(initial),
+              value: initial,
+            )
+          : null,
     );
 
     _focusNode = FocusNode();
@@ -55,11 +62,11 @@ class _SimpleDropdownFieldState<T extends Enum>
     return DropDownTextField(
       controller: _controller,
       textFieldFocusNode: _focusNode,
-      clearOption: false,
-      enableSearch: false,
+      clearOption: widget.clearOption,
+      enableSearch: widget.searchOption,
       dropDownList: widget.values
           .map((e) => DropDownValueModel(
-                name: TextFormatUtils.formatEnumName(e.name),
+                name: widget.displayText(e),
                 value: e,
               ))
           .toList(),
@@ -68,9 +75,12 @@ class _SimpleDropdownFieldState<T extends Enum>
       onChanged: (val) {
         if (val is DropDownValueModel && val.value is T) {
           widget.onChanged(val.value as T);
+        } else {
+          widget.onChanged(null);
         }
       },
       textFieldDecoration: InputDecoration(
+        isDense: true,
         border: const OutlineInputBorder(),
         labelText: widget.labelText,
         alignLabelWithHint: true,

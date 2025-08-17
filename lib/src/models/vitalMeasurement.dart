@@ -1,7 +1,7 @@
 class VitalMeasurement {
   final int? id;
-  final DateTime dateTime;
-  final String value;
+  DateTime dateTime;
+  String value;
 
   VitalMeasurement({
     this.id,

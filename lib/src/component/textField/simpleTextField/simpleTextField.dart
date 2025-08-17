@@ -7,6 +7,7 @@ class SimpleTextField extends StatefulWidget {
   final TextInputType keyboardType;
   final String? Function(String?)? validator;
   final TextEditingController? controller;
+  final String? suffixText;
 
   const SimpleTextField({
     super.key,
@@ -16,6 +17,7 @@ class SimpleTextField extends StatefulWidget {
     this.keyboardType = TextInputType.text,
     this.validator,
     this.controller,
+    this.suffixText,
   });
 
   @override
@@ -45,14 +47,16 @@ class _SimpleTextFieldState extends State<SimpleTextField> {
     return TextFormField(
       focusNode: _focusNode,
       controller: widget.controller,
-      initialValue: widget.initialText,
+      initialValue: widget.controller != null ? null : widget.initialText,
       onChanged: widget.onChanged,
       validator: widget.validator,
       keyboardType: widget.keyboardType,
       decoration: InputDecoration(
+        isDense: true,
         border: const OutlineInputBorder(),
         labelText: widget.labelText,
         alignLabelWithHint: true,
+        suffixText: widget.suffixText,
         labelStyle: TextStyle(
           height: 1,
           letterSpacing: 0.5,
