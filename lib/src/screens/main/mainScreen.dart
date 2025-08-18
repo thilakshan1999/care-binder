@@ -11,15 +11,23 @@ import 'package:iconify_flutter/icons/material_symbols.dart';
 import 'package:iconify_flutter/icons/ri.dart';
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
+  final int initialSelected;
+  const MainScreen({super.key, this.initialSelected = 0});
 
   @override
   State<MainScreen> createState() => _MainScreenState();
 }
 
 class _MainScreenState extends State<MainScreen> {
-  int selected = 0;
-  final controller = PageController();
+  late int selected;
+  late PageController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    selected = widget.initialSelected;
+    controller = PageController(initialPage: selected);
+  }
 
   @override
   void dispose() {

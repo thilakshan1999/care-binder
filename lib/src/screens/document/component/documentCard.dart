@@ -1,7 +1,6 @@
 import 'package:care_sync/src/component/text/bodyText.dart';
 import 'package:care_sync/src/component/text/primaryText.dart';
 import 'package:care_sync/src/component/text/subText.dart';
-import 'package:care_sync/src/models/enums/appointmentType.dart';
 import 'package:care_sync/src/models/enums/documentType.dart';
 import 'package:care_sync/src/utils/textFormatUtils.dart';
 import 'package:flutter/material.dart';

@@ -11,16 +11,16 @@ class ApiHelper {
     T Function(dynamic) fromJson,
   ) async {
     try {
-      final response = await requestFn().timeout(const Duration(seconds: 10));
+      final response = await requestFn().timeout(const Duration(seconds: 30));
 
-      if (response.statusCode == 200) {
+      if (response.statusCode >= 200 && response.statusCode < 300) {
         final jsonMap = jsonDecode(response.body);
         return ApiResponse<T>.fromJson(jsonMap, fromJson);
       } else {
+        final jsonMap = jsonDecode(response.body);
         return ApiResponse<T>(
           success: false,
-          message:
-              'Server error: ${response.statusCode} - ${response.reasonPhrase}',
+          message: 'Server error: ${jsonMap["message"]}',
           errorTittle: "Server Error",
           data: null,
         );

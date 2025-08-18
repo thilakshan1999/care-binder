@@ -8,6 +8,7 @@ import 'package:care_sync/src/screens/document/component/analyzedScreen/appointm
 import 'package:care_sync/src/screens/document/component/analyzedScreen/doctorDocument.dart';
 import 'package:care_sync/src/screens/document/component/analyzedScreen/medDocument.dart';
 import 'package:care_sync/src/screens/document/component/analyzedScreen/vitalDocument.dart';
+import 'package:care_sync/src/screens/main/mainScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -16,6 +17,7 @@ import '../../component/errorBox/ErrorBox.dart';
 import '../../component/snakbar/customSnakbar.dart';
 import '../../component/textField/multiLine/multiLineTextField.dart';
 import '../../service/api/httpService.dart';
+import '../../theme/customColors.dart';
 import 'component/documentLoadingIndicator.dart';
 
 class DocumentAnalyzedScreen extends StatefulWidget {
@@ -38,14 +40,14 @@ class _DocumentAnalyzedScreenState extends State<DocumentAnalyzedScreen> {
   @override
   void initState() {
     super.initState();
-    //_extractDocument(widget.extractedText);
+    _extractDocument(widget.extractedText);
 
-    final initialDoc = AnalyzedDocument.fromJson(sampleAnalyzedDocumentJson);
-    context.read<AnalyzedDocumentBloc>().setDocument(initialDoc);
+    // final initialDoc = AnalyzedDocument.fromJson(sampleAnalyzedDocumentJson);
+    // context.read<AnalyzedDocumentBloc>().setDocument(initialDoc);
 
-    setState(() {
-      isProcessing = false;
-    });
+    // setState(() {
+    //   isProcessing = false;
+    // });
   }
 
   Future<void> _extractDocument(String extractedText) async {
@@ -73,6 +75,50 @@ class _DocumentAnalyzedScreenState extends State<DocumentAnalyzedScreen> {
         errorTittle = 'Unexpected Error';
         isProcessing = false;
       });
+    }
+  }
+
+  Future<void> _saveDocument(AnalyzedDocument dto) async {
+    final navigator = Navigator.of(context);
+    final theme = Theme.of(context);
+
+    try {
+      final result = await httpService.documentService.saveDocument(dto);
+
+      if (mounted) {
+        // check if widget is still mounted
+        setState(() => isLoading = false);
+
+        if (result.success) {
+          navigator.push(
+            MaterialPageRoute(
+              builder: (_) => const MainScreen(initialSelected: 3),
+            ),
+          );
+          CustomSnackbar.showCustomSnackbar(
+            context: context,
+            message: result.message,
+            backgroundColor: theme.extension<CustomColors>()!.success,
+          );
+        } else {
+          CustomSnackbar.showCustomSnackbar(
+            context: context,
+            message: result.message,
+            backgroundColor: theme.colorScheme.error,
+          );
+        }
+
+        isProcessing = false;
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => isLoading = false);
+        CustomSnackbar.showCustomSnackbar(
+          context: context,
+          message: '$e',
+          backgroundColor: theme.colorScheme.error,
+        );
+      }
     }
   }
 
@@ -177,11 +223,10 @@ class _DocumentAnalyzedScreenState extends State<DocumentAnalyzedScreen> {
                               loading: isLoading,
                               onPressed: () {
                                 print(document.toJson());
-                                CustomSnackbar.showCustomSnackbar(
-                                    context: context,
-                                    message: "Cannot delete at this moment",
-                                    backgroundColor:
-                                        Theme.of(context).colorScheme.error);
+                                setState(() {
+                                  isLoading = true;
+                                });
+                                _saveDocument(document);
                               },
                             ),
                           ],

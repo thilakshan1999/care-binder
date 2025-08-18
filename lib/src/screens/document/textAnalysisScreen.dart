@@ -34,11 +34,11 @@ class _TextAnalysisScreenState extends State<TextAnalysisScreen> {
     if (widget.imageFile != null) {
       //_analyzeImage(widget.imageFile!);
     } else if (widget.documentData != null) {
-      //_extractText();
-      setState(() {
-        extractedText = 'Document';
-        isProcessing = false;
-      });
+      _extractText();
+      // setState(() {
+      //   extractedText = 'Document';
+      //   isProcessing = false;
+      // });
     } else {
       setState(() {
         extractedText = '';

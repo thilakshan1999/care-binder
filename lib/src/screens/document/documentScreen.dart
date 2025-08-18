@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../component/bottomSheet/bottomSheet.dart';
+import '../../component/errorBox/ErrorBox.dart';
 import '../../models/documentSummary.dart';
 import '../../theme/customColors.dart';
 import 'component/documentCard.dart';
@@ -19,6 +20,9 @@ class DocumentScreen extends StatefulWidget {
 
 class _DocumentScreenState extends State<DocumentScreen> {
   bool isLoading = false;
+  bool hasError = false;
+  String? errorMessage;
+  String? errorTittle;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,27 +38,40 @@ class _DocumentScreenState extends State<DocumentScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: Skeletonizer(
         enabled: isLoading,
-        child: Accordion(
-          maxOpenSections: 1,
-          headerBackgroundColor:
-              Theme.of(context).extension<CustomColors>()?.primarySurface,
-          headerBackgroundColorOpened: Colors.blue.shade50,
-          headerBorderColor: Colors.blue.shade50,
-          headerBorderWidth: 1,
-          paddingListTop: 16,
-          paddingListBottom: 16,
-          paddingListHorizontal: 12,
-          children: mockDocumentSummaries.map((doc) {
-            return documentCard(
-              context: context,
-              id: doc.id,
-              name: doc.documentName,
-              updatedTime: doc.updatedTime,
-              summary: doc.summary,
-              type: doc.documentType,
-            );
-          }).toList(),
-        ),
+        child: hasError
+            ? ErrorBox(
+                message: errorMessage ?? 'Something went wrong.',
+                title: errorTittle ?? 'Something went wrong.',
+                onRetry: () {
+                  setState(() {
+                    isLoading = true;
+                    hasError = false;
+                    errorMessage = null;
+                    errorTittle = null;
+                  });
+                },
+              )
+            : Accordion(
+                maxOpenSections: 1,
+                headerBackgroundColor:
+                    Theme.of(context).extension<CustomColors>()?.primarySurface,
+                headerBackgroundColorOpened: Colors.blue.shade50,
+                headerBorderColor: Colors.blue.shade50,
+                headerBorderWidth: 1,
+                paddingListTop: 16,
+                paddingListBottom: 16,
+                paddingListHorizontal: 12,
+                children: mockDocumentSummaries.map((doc) {
+                  return documentCard(
+                    context: context,
+                    id: doc.id,
+                    name: doc.documentName,
+                    updatedTime: doc.updatedTime,
+                    summary: doc.summary,
+                    type: doc.documentType,
+                  );
+                }).toList(),
+              ),
       ),
     );
   }
