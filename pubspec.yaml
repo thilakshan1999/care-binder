@@ -52,6 +52,7 @@ dependencies:
   top_snackbar_flutter: ^3.3.0
   accordion: ^2.6.0
   skeletonizer: ^1.4.3
+  chips_choice: ^3.0.1
 
 dev_dependencies:
   flutter_test:

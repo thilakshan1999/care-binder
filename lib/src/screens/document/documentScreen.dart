@@ -2,13 +2,15 @@ import 'package:accordion/accordion.dart';
 import 'package:care_sync/src/component/appBar/appBar.dart';
 import 'package:care_sync/src/component/btn/floatingBtn/floatingBtn.dart';
 import 'package:care_sync/src/component/text/bodyText.dart';
-import 'package:care_sync/src/component/text/primaryText.dart';
+import 'package:care_sync/src/models/enums/documentType.dart';
 import 'package:care_sync/src/screens/document/component/uploadOptionSheet.dart';
+import 'package:care_sync/src/utils/textFormatUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../component/bottomSheet/bottomSheet.dart';
 import '../../component/errorBox/ErrorBox.dart';
+import '../../component/filterBar/filterBar.dart';
 import '../../models/documentSummary.dart';
 import '../../service/api/httpService.dart';
 import '../../theme/customColors.dart';
@@ -22,18 +24,20 @@ class DocumentScreen extends StatefulWidget {
 }
 
 class _DocumentScreenState extends State<DocumentScreen> {
-  bool isLoading = true;
+  bool isLoading = false;
   bool hasError = false;
   String? errorMessage;
   String? errorTittle;
-  late List<DocumentSummary> documentList;
+  List<DocumentSummary> documentList = mockDocumentSummaries;
+  List<String> categories = TextFormatUtils.enumListToStringList(DocumentType.values);
+  int selectedIndex = 0;
 
   final HttpService httpService = HttpService();
 
   @override
   void initState() {
     super.initState();
-    _fetchAllDocumentsSummary();
+    //_fetchAllDocumentsSummary();
   }
 
   Future<void> _fetchAllDocumentsSummary() async {
@@ -101,7 +105,18 @@ class _DocumentScreenState extends State<DocumentScreen> {
                       textAlign: TextAlign.center,
                     ),
                   ))
-                : Accordion(
+                :Column(
+                  children: [
+                    DocumentFilterBar(
+                    categories:  categories,
+                    selectedIndex: selectedIndex,
+                    onChanged: (value) {
+                      setState(() {
+                      selectedIndex = value;
+                      });
+                    },
+                  ),
+                    Accordion(
                     maxOpenSections: 1,
                     headerBackgroundColor: Theme.of(context)
                         .extension<CustomColors>()
@@ -112,18 +127,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
                     paddingListTop: 16,
                     paddingListBottom: 16,
                     paddingListHorizontal: 12,
-                    children: isLoading
-                        ? mockDocumentSummaries.map((doc) {
-                            return documentCard(
-                              context: context,
-                              id: doc.id,
-                              name: doc.documentName,
-                              updatedTime: doc.updatedTime,
-                              summary: doc.summary,
-                              type: doc.documentType,
-                            );
-                          }).toList()
-                        : documentList.map((doc) {
+                    children:  documentList.map((doc) {
                             return documentCard(
                               context: context,
                               id: doc.id,
@@ -134,6 +138,9 @@ class _DocumentScreenState extends State<DocumentScreen> {
                             );
                           }).toList(),
                   ),
+                  ],
+                ),
+                 
       ),
     );
   }

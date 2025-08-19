@@ -11,6 +11,12 @@ class TextFormatUtils {
         .join(' ');
   }
 
+  static List<String> enumListToStringList<T>(List<T> enumList) {
+    return [
+      ...enumList.map((e) => formatEnumName(e.toString().split('.').last)).toList(),
+    ];
+  }
+
   static String formatEnum(Enum? e) {
     if (e == null) return '-';
     return formatEnumName(e.name);

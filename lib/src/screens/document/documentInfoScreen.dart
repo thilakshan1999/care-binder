@@ -11,7 +11,6 @@ import '../../component/appBar/appBar.dart';
 import '../../component/btn/primaryBtn/priamaryLoadingBtn.dart';
 import '../../component/errorBox/ErrorBox.dart';
 import '../../component/snakbar/customSnakbar.dart';
-import '../../models/analyzedDocument.dart';
 import '../../service/api/httpService.dart';
 import '../../theme/customColors.dart';
 import 'component/analyzedScreen/appointmentDocument.dart';
