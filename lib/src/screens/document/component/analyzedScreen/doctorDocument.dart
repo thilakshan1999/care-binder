@@ -8,20 +8,42 @@ import '../../../../component/bottomSheet/bottomSheet.dart';
 import '../../../../component/card/InfoCard.dart';
 import '../../../../component/dialog/confirmDeleteDialog.dart';
 import '../../../../models/doctor.dart';
+import '../../../../models/enums/entityStatus.dart';
 import '../../../doctor/component/doctorProfileSheet.dart';
 import '../documentSectionHeader.dart';
 
 class DoctorDocument extends StatelessWidget {
-  final List<DoctorWithStatus> doctors;
+  final List<DoctorWithStatus>? doctorsWithStatus;
+  final List<Doctor>? doctors;
   final bool isEditable;
-  const DoctorDocument(
-      {super.key, required this.doctors, this.isEditable = true});
+  const DoctorDocument({
+    super.key,
+    this.doctorsWithStatus,
+    this.doctors,
+    this.isEditable = true,
+  }) : assert(
+          doctorsWithStatus != null || doctors != null,
+          'Either doctorsWithStatus or doctors must be provided',
+        );
 
   @override
   Widget build(BuildContext context) {
+    final normalizedDoctors = doctorsWithStatus ??
+        doctors!.map((doc) {
+          return DoctorWithStatus(
+            id: doc.id,
+            name: doc.name,
+            specialization: doc.specialization,
+            phoneNumber: doc.phoneNumber,
+            email: doc.email,
+            address: doc.address,
+            entityStatus: EntityStatus.SAME,
+          );
+        }).toList();
+
     return Column(
       children: [
-        if (doctors.isNotEmpty)
+        if (normalizedDoctors.isNotEmpty)
           DocumentSectionHeader(
             title: "Doctors",
             onIconPressed: () {
@@ -30,7 +52,7 @@ class DoctorDocument extends StatelessWidget {
           ),
 
         // Doctors list -> InfoCard for each
-        ...doctors.map((doctor) {
+        ...normalizedDoctors.map((doctor) {
           return Padding(
             padding: const EdgeInsets.only(bottom: 12),
             child: InfoCard(
@@ -38,7 +60,7 @@ class DoctorDocument extends StatelessWidget {
               isEditable: isEditable,
               mainText: doctor.name,
               subText: doctor.specialization ?? "Specialization not available",
-              status: doctor.entityStatus,
+              status: doctorsWithStatus != null ? doctor.entityStatus : null,
               onTap: () {
                 CustomBottomSheet.show(
                     context: context,
@@ -58,7 +80,7 @@ class DoctorDocument extends StatelessWidget {
                   MaterialPageRoute(
                     builder: (_) => DoctorWithStatusEditScreen(
                       doctor: doctor,
-                      index: doctors.indexOf(doctor),
+                      index: normalizedDoctors.indexOf(doctor),
                     ),
                   ),
                 );
@@ -71,7 +93,7 @@ class DoctorDocument extends StatelessWidget {
                   onConfirm: () {
                     context
                         .read<AnalyzedDocumentBloc>()
-                        .deleteDoctor(doctors.indexOf(doctor));
+                        .deleteDoctor(normalizedDoctors.indexOf(doctor));
                   },
                 );
               },

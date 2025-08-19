@@ -8,28 +8,47 @@ import '../../../../bloc/analyzedDocumentBloc.dart';
 import '../../../../component/bottomSheet/bottomSheet.dart';
 import '../../../../component/card/InfoCard.dart';
 import '../../../../component/dialog/confirmDeleteDialog.dart';
+import '../../../../models/enums/entityStatus.dart';
 import '../../../../models/vital.dart';
 import '../../../vital/component/vitalDetailSheet.dart';
 import '../documentSectionHeader.dart';
 
 class VitalDocument extends StatelessWidget {
-  final List<VitalWithStatus> vitals;
+  final List<VitalWithStatus>? vitalsWithStatus;
+  final List<Vital>? vitals;
   final bool isEditable;
   const VitalDocument(
-      {super.key, required this.vitals, this.isEditable = true});
+      {super.key, this.vitalsWithStatus, this.vitals, this.isEditable = true})
+      : assert(
+          vitalsWithStatus != null || vitals != null,
+          'Either vitalsWithStatus or vital must be provided',
+        );
 
   @override
   Widget build(BuildContext context) {
+    final normalizedVitals = vitalsWithStatus ??
+        vitals!.map((vital) {
+          return VitalWithStatus(
+            id: vital.id,
+            name: vital.name,
+            unit: vital.unit,
+            remindDuration: vital.remindDuration,
+            startDateTime: vital.startDateTime,
+            measurements: vital.measurements,
+            entityStatus: EntityStatus.SAME,
+          );
+        }).toList();
+
     return Column(
       children: [
-        if (vitals.isNotEmpty)
+        if (normalizedVitals.isNotEmpty)
           DocumentSectionHeader(
             title: "Vitals",
             onIconPressed: () {
               print("Add vita; clicked");
             },
           ),
-        ...vitals.map((vital) {
+        ...normalizedVitals.map((vital) {
           return Padding(
             padding: const EdgeInsets.only(bottom: 12),
             child: InfoCard(
@@ -37,7 +56,7 @@ class VitalDocument extends StatelessWidget {
               isEditable: isEditable,
               mainText: vital.name,
               subText: null,
-              status: vital.entityStatus,
+              status: vitalsWithStatus != null ? vital.entityStatus : null,
               onTap: () {
                 CustomBottomSheet.show(
                     context: context,
@@ -57,7 +76,7 @@ class VitalDocument extends StatelessWidget {
                   MaterialPageRoute(
                     builder: (_) => VitalWithStatusEditScreen(
                       vital: vital,
-                      index: vitals.indexOf(vital),
+                      index: normalizedVitals.indexOf(vital),
                     ),
                   ),
                 );
@@ -70,7 +89,7 @@ class VitalDocument extends StatelessWidget {
                   onConfirm: () {
                     context
                         .read<AnalyzedDocumentBloc>()
-                        .deleteVitals(vitals.indexOf(vital));
+                        .deleteVitals(normalizedVitals.indexOf(vital));
                   },
                 );
               },

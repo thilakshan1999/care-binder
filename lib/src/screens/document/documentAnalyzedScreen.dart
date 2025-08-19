@@ -108,7 +108,7 @@ class _DocumentAnalyzedScreenState extends State<DocumentAnalyzedScreen> {
           );
         }
 
-        isProcessing = false;
+        isLoading = false;
       }
     } catch (e) {
       if (mounted) {
@@ -203,18 +203,22 @@ class _DocumentAnalyzedScreenState extends State<DocumentAnalyzedScreen> {
                                       ),
 
                                       //Doctor
-                                      DoctorDocument(doctors: document.doctors),
+                                      DoctorDocument(
+                                          doctorsWithStatus: document.doctors),
 
                                       //Med
                                       MedDocument(
-                                          medicines: document.medicines),
+                                          medicinesWithStatus:
+                                              document.medicines),
 
                                       //Appointment
                                       AppointmentDocument(
-                                          appointments: document.appointments),
+                                          appointmentsWithStatus:
+                                              document.appointments),
 
                                       //Vital
-                                      VitalDocument(vitals: document.vitals)
+                                      VitalDocument(
+                                          vitalsWithStatus: document.vitals)
                                     ],
                                   )),
                             ),

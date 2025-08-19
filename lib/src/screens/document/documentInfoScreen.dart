@@ -1,6 +1,8 @@
 import 'package:care_sync/src/component/text/bodyText.dart';
 import 'package:care_sync/src/component/text/sectionTittleText.dart';
 import 'package:care_sync/src/component/text/subText.dart';
+import 'package:care_sync/src/models/document.dart';
+import 'package:care_sync/src/screens/main/mainScreen.dart';
 import 'package:care_sync/src/utils/textFormatUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -10,6 +12,8 @@ import '../../component/btn/primaryBtn/priamaryLoadingBtn.dart';
 import '../../component/errorBox/ErrorBox.dart';
 import '../../component/snakbar/customSnakbar.dart';
 import '../../models/analyzedDocument.dart';
+import '../../service/api/httpService.dart';
+import '../../theme/customColors.dart';
 import 'component/analyzedScreen/appointmentDocument.dart';
 import 'component/analyzedScreen/doctorDocument.dart';
 import 'component/analyzedScreen/medDocument.dart';
@@ -30,22 +34,92 @@ class DocumentInfoScreen extends StatefulWidget {
 }
 
 class _DocumentInfoScreenState extends State<DocumentInfoScreen> {
-  bool isProcessing = false;
+  bool isProcessing = true;
   bool isLoading = false;
   bool hasError = false;
   String? errorMessage;
   String? errorTittle;
-  AnalyzedDocument? doc;
+  Document doc = sampleDocument;
+
+  final HttpService httpService = HttpService();
 
   @override
   void initState() {
     super.initState();
+    _fetchDocument();
+  }
 
-    doc = AnalyzedDocument.fromJson(sampleAnalyzedDocumentJson);
+  Future<void> _fetchDocument() async {
+    try {
+      final result =
+          await httpService.documentService.getDocumentById(widget.id);
+      if (!mounted) return;
+      setState(() {
+        if (result.success) {
+          doc = result.data!;
+          hasError = false;
+          errorMessage = null;
+          errorTittle = null;
+        } else {
+          hasError = true;
+          errorMessage = result.message;
+          errorTittle = result.errorTittle ?? "Request Failed";
+        }
+        isProcessing = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        hasError = true;
+        errorMessage = '$e';
+        errorTittle = 'Unexpected Error';
+        isProcessing = false;
+      });
+    }
+  }
 
-    setState(() {
-      isProcessing = false;
-    });
+  Future<void> _deleteDocument() async {
+    final navigator = Navigator.of(context);
+    final theme = Theme.of(context);
+
+    try {
+      final result = await httpService.documentService.deleteDocument(doc.id!);
+
+      if (mounted) {
+        // check if widget is still mounted
+        setState(() => isLoading = false);
+
+        if (result.success) {
+          navigator.push(
+            MaterialPageRoute(
+              builder: (_) => const MainScreen(initialSelected: 3),
+            ),
+          );
+          CustomSnackbar.showCustomSnackbar(
+            context: context,
+            message: result.message,
+            backgroundColor: theme.extension<CustomColors>()!.success,
+          );
+        } else {
+          CustomSnackbar.showCustomSnackbar(
+            context: context,
+            message: result.message,
+            backgroundColor: theme.colorScheme.error,
+          );
+        }
+
+        isLoading = false;
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => isLoading = false);
+        CustomSnackbar.showCustomSnackbar(
+          context: context,
+          message: '$e',
+          backgroundColor: theme.colorScheme.error,
+        );
+      }
+    }
   }
 
   @override
@@ -64,8 +138,9 @@ class _DocumentInfoScreenState extends State<DocumentInfoScreen> {
                         message: errorMessage ?? 'Something went wrong.',
                         title: errorTittle ?? 'Something went wrong.',
                         onRetry: () {
+                          _fetchDocument();
                           setState(() {
-                            isLoading = true;
+                            isProcessing = true;
                             hasError = false;
                             errorMessage = null;
                             errorTittle = null;
@@ -90,25 +165,25 @@ class _DocumentInfoScreenState extends State<DocumentInfoScreen> {
                                 height: 10,
                               ),
                               DoctorDocument(
-                                doctors: doc!.doctors,
+                                doctors: doc.doctors,
                                 isEditable: false,
                               ),
 
                               //Med
                               MedDocument(
-                                medicines: doc!.medicines,
+                                medicines: doc.medicines,
                                 isEditable: false,
                               ),
 
                               //Appointment
                               AppointmentDocument(
-                                appointments: doc!.appointments,
+                                appointments: doc.appointments,
                                 isEditable: false,
                               ),
 
                               //Vital
                               VitalDocument(
-                                vitals: doc!.vitals,
+                                vitals: doc.vitals,
                                 isEditable: false,
                               ),
                               PrimaryLoadingBtn(
@@ -117,11 +192,10 @@ class _DocumentInfoScreenState extends State<DocumentInfoScreen> {
                                 backgroundColor:
                                     Theme.of(context).colorScheme.error,
                                 onPressed: () {
-                                  CustomSnackbar.showCustomSnackbar(
-                                      context: context,
-                                      message: "Cannot delete at this moment",
-                                      backgroundColor:
-                                          Theme.of(context).colorScheme.error);
+                                  setState(() {
+                                    isLoading = true;
+                                  });
+                                  _deleteDocument();
                                 },
                               ),
                             ]),

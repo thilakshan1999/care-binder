@@ -33,25 +33,13 @@ class MedWithStatus {
   });
 
   factory MedWithStatus.fromJson(Map<String, dynamic> json) {
-    Duration? parseIso8601Duration(String? input) {
-      if (input == null) return null;
-      final regex = RegExp(r'PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?');
-      final match = regex.firstMatch(input);
-      if (match == null) return null;
-
-      final hours = int.tryParse(match.group(1) ?? '0') ?? 0;
-      final minutes = int.tryParse(match.group(2) ?? '0') ?? 0;
-      final seconds = int.tryParse(match.group(3) ?? '0') ?? 0;
-
-      return Duration(hours: hours, minutes: minutes, seconds: seconds);
-    }
-
     return MedWithStatus(
       id: json['id'],
       name: json['name'],
       medForm: MedForm.fromJson(json['medForm']),
       healthCondition: json['healthCondition'],
-      intakeInterval: parseIso8601Duration(json['intakeInterval']),
+      intakeInterval:
+          DurationFormatUtils.parseIso8601Duration(json['intakeInterval']),
       startDate: DateTime.parse(json['startDate']),
       endDate: json['endDate'] != null ? DateTime.parse(json['endDate']) : null,
       dosage: json['dosage'],

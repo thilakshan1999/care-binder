@@ -32,7 +32,7 @@ class _TextAnalysisScreenState extends State<TextAnalysisScreen> {
   void initState() {
     super.initState();
     if (widget.imageFile != null) {
-      //_analyzeImage(widget.imageFile!);
+      _analyzeImage(widget.imageFile!);
     } else if (widget.documentData != null) {
       _extractText();
       // setState(() {

@@ -40,6 +40,7 @@ class ApiHelper {
         data: null,
       );
     } catch (e) {
+      print(e);
       return ApiResponse<T>(
         success: false,
         message: 'Unexpected error occurred: $e',
