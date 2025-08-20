@@ -13,7 +13,10 @@ class TextFormatUtils {
 
   static List<String> enumListToStringList<T>(List<T> enumList) {
     return [
-      ...enumList.map((e) => formatEnumName(e.toString().split('.').last)).toList(),
+      "All",
+      ...enumList
+          .map((e) => formatEnumName(e.toString().split('.').last))
+          .toList(),
     ];
   }
 

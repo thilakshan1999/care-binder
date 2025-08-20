@@ -49,9 +49,12 @@ class DocumentService {
   }
 
   /// GET /api/documents
-  Future<ApiResponse<List<DocumentSummary>>> getAllDocumentsSummary() {
+  Future<ApiResponse<List<DocumentSummary>>> getAllDocumentsSummary(
+      {String? type}) {
     return ApiHelper.handleRequest<List<DocumentSummary>>(() async {
-      var uri = Uri.parse('$baseUrl/documents');
+      var uri = Uri.parse('$baseUrl/documents').replace(queryParameters: {
+        if (type != null && type.isNotEmpty) 'type': type,
+      });
       var response = await client.get(uri);
       return response;
     },

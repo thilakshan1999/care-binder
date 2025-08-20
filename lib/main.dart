@@ -3,12 +3,10 @@ import 'package:care_sync/src/theme/darkTheme.dart';
 import 'package:care_sync/src/theme/lightTheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'src/bloc/blockProvider.dart';
 
 void main() async {
-  //await dotenv.load(fileName: ".env");
   runApp(
     MultiBlocProvider(
       providers: BlocProviders.providers(),

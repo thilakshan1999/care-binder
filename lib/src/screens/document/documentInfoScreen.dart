@@ -154,12 +154,10 @@ class _DocumentInfoScreenState extends State<DocumentInfoScreen> {
                               const SizedBox(
                                 height: 10,
                               ),
-                              buildInfoRow("Document Name", doc!.documentName),
-                              buildInfoRow(
-                                  "Document Type",
-                                  TextFormatUtils.formatEnum(
-                                      doc?.documentType)),
-                              buildInfoRow("Document Summary", doc!.summary),
+                              buildInfoRow("Document Name", doc.documentName),
+                              buildInfoRow("Document Type",
+                                  TextFormatUtils.formatEnum(doc.documentType)),
+                              buildInfoRow("Document Summary", doc.summary),
                               const SizedBox(
                                 height: 10,
                               ),

@@ -24,12 +24,13 @@ class DocumentScreen extends StatefulWidget {
 }
 
 class _DocumentScreenState extends State<DocumentScreen> {
-  bool isLoading = false;
+  bool isLoading = true;
   bool hasError = false;
   String? errorMessage;
   String? errorTittle;
   List<DocumentSummary> documentList = mockDocumentSummaries;
-  List<String> categories = TextFormatUtils.enumListToStringList(DocumentType.values);
+  List<String> categories =
+      TextFormatUtils.enumListToStringList(DocumentType.values);
   int selectedIndex = 0;
 
   final HttpService httpService = HttpService();
@@ -37,12 +38,13 @@ class _DocumentScreenState extends State<DocumentScreen> {
   @override
   void initState() {
     super.initState();
-    //_fetchAllDocumentsSummary();
+    _fetchAllDocumentsSummary(null);
   }
 
-  Future<void> _fetchAllDocumentsSummary() async {
+  Future<void> _fetchAllDocumentsSummary(String? type) async {
     try {
-      final result = await httpService.documentService.getAllDocumentsSummary();
+      final result =
+          await httpService.documentService.getAllDocumentsSummary(type: type);
       if (!mounted) return;
       setState(() {
         if (result.success) {
@@ -96,38 +98,44 @@ class _DocumentScreenState extends State<DocumentScreen> {
                   });
                 },
               )
-            : (isLoading == false && documentList.isEmpty)
-                ? const Center(
-                    child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 30),
-                    child: BodyText(
-                      text: 'No documents found yet.',
-                      textAlign: TextAlign.center,
-                    ),
-                  ))
-                :Column(
-                  children: [
-                    DocumentFilterBar(
-                    categories:  categories,
+            : Column(
+                children: [
+                  DocumentFilterBar(
+                    categories: categories,
                     selectedIndex: selectedIndex,
                     onChanged: (value) {
+                      _fetchAllDocumentsSummary(categories[value]);
                       setState(() {
-                      selectedIndex = value;
+                        selectedIndex = value;
+                        isLoading = true;
+                        hasError = false;
+                        errorMessage = null;
+                        errorTittle = null;
                       });
                     },
                   ),
-                    Accordion(
-                    maxOpenSections: 1,
-                    headerBackgroundColor: Theme.of(context)
-                        .extension<CustomColors>()
-                        ?.primarySurface,
-                    headerBackgroundColorOpened: Colors.blue.shade50,
-                    headerBorderColor: Colors.blue.shade50,
-                    headerBorderWidth: 1,
-                    paddingListTop: 16,
-                    paddingListBottom: 16,
-                    paddingListHorizontal: 12,
-                    children:  documentList.map((doc) {
+                  (isLoading == false && documentList.isEmpty)
+                      ? const Expanded(
+                          child: Center(
+                              child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 30),
+                          child: BodyText(
+                            text: 'No documents found yet.',
+                            textAlign: TextAlign.center,
+                          ),
+                        )))
+                      : Accordion(
+                          maxOpenSections: 1,
+                          headerBackgroundColor: Theme.of(context)
+                              .extension<CustomColors>()
+                              ?.primarySurface,
+                          headerBackgroundColorOpened: Colors.blue.shade50,
+                          headerBorderColor: Colors.blue.shade50,
+                          headerBorderWidth: 1,
+                          paddingListTop: 16,
+                          paddingListBottom: 16,
+                          paddingListHorizontal: 12,
+                          children: documentList.map((doc) {
                             return documentCard(
                               context: context,
                               id: doc.id,
@@ -137,10 +145,9 @@ class _DocumentScreenState extends State<DocumentScreen> {
                               type: doc.documentType,
                             );
                           }).toList(),
-                  ),
-                  ],
-                ),
-                 
+                        ),
+                ],
+              ),
       ),
     );
   }
