@@ -1,14 +1,14 @@
-import 'package:care_sync/src/models/appointmentWithStatus.dart';
-import 'package:care_sync/src/models/doctor.dart';
-import 'package:care_sync/src/models/doctorWithStatus.dart';
+import 'package:care_sync/src/models/appointment/appointmentWithStatus.dart';
+import 'package:care_sync/src/models/doctor/doctor.dart';
+import 'package:care_sync/src/models/doctor/doctorWithStatus.dart';
 import 'package:care_sync/src/models/enums/appointmentType.dart';
 import 'package:care_sync/src/models/enums/entityStatus.dart';
 import 'package:care_sync/src/models/enums/intakeInstruction.dart';
 import 'package:care_sync/src/models/enums/medForm.dart';
-import 'package:care_sync/src/models/medWithStatus.dart';
-import 'package:care_sync/src/models/vitalMeasurement.dart';
-import 'package:care_sync/src/models/vitalWithStatus.dart';
-import 'enums/documentType.dart';
+import 'package:care_sync/src/models/medicine/medWithStatus.dart';
+import 'package:care_sync/src/models/vital/vitalMeasurement.dart';
+import 'package:care_sync/src/models/vital/vitalWithStatus.dart';
+import '../enums/documentType.dart';
 
 class AnalyzedDocument {
   String documentName;

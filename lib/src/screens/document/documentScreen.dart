@@ -11,7 +11,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 import '../../component/bottomSheet/bottomSheet.dart';
 import '../../component/errorBox/ErrorBox.dart';
 import '../../component/filterBar/filterBar.dart';
-import '../../models/documentSummary.dart';
+import '../../models/document/documentSummary.dart';
 import '../../service/api/httpService.dart';
 import '../../theme/customColors.dart';
 import 'component/documentCard.dart';

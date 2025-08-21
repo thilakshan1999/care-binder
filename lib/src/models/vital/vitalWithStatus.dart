@@ -1,5 +1,5 @@
-import '../utils/durationFormatUtils.dart';
-import 'enums/entityStatus.dart';
+import '../../utils/durationFormatUtils.dart';
+import '../enums/entityStatus.dart';
 import 'vitalMeasurement.dart';
 
 class VitalWithStatus {

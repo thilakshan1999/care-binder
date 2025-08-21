@@ -1,7 +1,7 @@
 import 'package:care_sync/src/models/enums/userRole.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../models/userRegistration.dart';
+import '../models/user/userRegistration.dart';
 
 class RegistrationBloc extends Cubit<UserRegistration> {
   RegistrationBloc() : super(UserRegistration());

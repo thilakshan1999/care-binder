@@ -1,11 +1,11 @@
-import 'doctor.dart';
-import 'appointment.dart';
-import 'enums/appointmentType.dart';
-import 'enums/documentType.dart';
-import 'enums/intakeInstruction.dart';
-import 'enums/medForm.dart';
-import 'med.dart';
-import 'vital.dart';
+import '../doctor/doctor.dart';
+import '../appointment/appointment.dart';
+import '../enums/appointmentType.dart';
+import '../enums/documentType.dart';
+import '../enums/intakeInstruction.dart';
+import '../enums/medForm.dart';
+import '../medicine/med.dart';
+import '../vital/vital.dart';
 
 class Document {
   final int? id;

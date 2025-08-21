@@ -1,4 +1,4 @@
-import 'package:care_sync/src/models/appointment.dart';
+import 'package:care_sync/src/models/appointment/appointment.dart';
 import 'package:care_sync/src/utils/textFormatUtils.dart';
 import 'package:flutter/material.dart';
 

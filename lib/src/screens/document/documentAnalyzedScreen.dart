@@ -2,7 +2,7 @@ import 'package:care_sync/src/bloc/analyzedDocumentBloc.dart';
 import 'package:care_sync/src/component/btn/primaryBtn/priamaryLoadingBtn.dart';
 import 'package:care_sync/src/component/dropdown/simpleEnumDropdown.dart';
 import 'package:care_sync/src/component/textField/simpleTextField/simpleTextField.dart';
-import 'package:care_sync/src/models/analyzedDocument.dart';
+import 'package:care_sync/src/models/document/analyzedDocument.dart';
 import 'package:care_sync/src/models/enums/documentType.dart';
 import 'package:care_sync/src/screens/document/component/analyzedScreen/appointmentDocument.dart';
 import 'package:care_sync/src/screens/document/component/analyzedScreen/doctorDocument.dart';

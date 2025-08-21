@@ -1,7 +1,7 @@
 import 'package:care_sync/src/component/text/bodyText.dart';
 import 'package:care_sync/src/component/text/sectionTittleText.dart';
 import 'package:care_sync/src/component/text/subText.dart';
-import 'package:care_sync/src/models/doctor.dart';
+import 'package:care_sync/src/models/doctor/doctor.dart';
 import 'package:flutter/material.dart';
 
 class DoctorProfileSheet extends StatelessWidget {

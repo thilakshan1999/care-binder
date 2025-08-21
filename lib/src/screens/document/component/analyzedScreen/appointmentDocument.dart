@@ -1,4 +1,4 @@
-import 'package:care_sync/src/models/appointmentWithStatus.dart';
+import 'package:care_sync/src/models/appointment/appointmentWithStatus.dart';
 import 'package:care_sync/src/models/enums/entityStatus.dart';
 import 'package:care_sync/src/screens/appointment/appointmentWithStatusEditScreen.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +9,7 @@ import '../../../../bloc/analyzedDocumentBloc.dart';
 import '../../../../component/bottomSheet/bottomSheet.dart';
 import '../../../../component/card/InfoCard.dart';
 import '../../../../component/dialog/confirmDeleteDialog.dart';
-import '../../../../models/appointment.dart';
+import '../../../../models/appointment/appointment.dart';
 import '../../../../utils/textFormatUtils.dart';
 import '../../../appointment/component/appointmentDetailsSheet.dart';
 import '../documentSectionHeader.dart';

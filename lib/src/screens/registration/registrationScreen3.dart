@@ -1,4 +1,5 @@
 import 'package:care_sync/src/bloc/registrationBloc.dart';
+import 'package:care_sync/src/screens/registration/registrationScreen4.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -28,6 +29,7 @@ class _RegistrationScreen3State extends State<RegistrationScreen3> {
           child: SimpleTextField(
             initialText: email,
             labelText: 'Email',
+            keyboardType: TextInputType.emailAddress,
             onChanged: (value) {
               email = value;
             },
@@ -55,14 +57,12 @@ class _RegistrationScreen3State extends State<RegistrationScreen3> {
         if (_formKey.currentState?.validate() ?? false) {
           context.read<RegistrationBloc>().setEmail(email);
 
-          // Navigator.push(
-          //   context,
-          //   MaterialPageRoute(
-          //     builder: (context) => RegistrationScreen3(
-          //       registration: updatedRegistration,
-          //     ),
-          //   ),
-          // );
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const RegistrationScreen4(),
+            ),
+          );
         }
       },
     );

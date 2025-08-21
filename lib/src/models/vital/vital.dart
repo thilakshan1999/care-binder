@@ -1,4 +1,4 @@
-import '../utils/durationFormatUtils.dart';
+import '../../utils/durationFormatUtils.dart';
 import 'vitalMeasurement.dart';
 
 class Vital {

@@ -1,4 +1,4 @@
-import 'enums/documentType.dart';
+import '../enums/documentType.dart';
 
 class DocumentSummary {
   final int id;

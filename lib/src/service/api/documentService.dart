@@ -1,9 +1,9 @@
 import 'dart:convert';
 
-import 'package:care_sync/src/models/analyzedDocument.dart';
+import 'package:care_sync/src/models/document/analyzedDocument.dart';
 import 'package:care_sync/src/models/apiResponse.dart';
-import 'package:care_sync/src/models/document.dart';
-import 'package:care_sync/src/models/documentSummary.dart';
+import 'package:care_sync/src/models/document/document.dart';
+import 'package:care_sync/src/models/document/documentSummary.dart';
 import 'package:http/http.dart';
 
 import 'apiHelper.dart';

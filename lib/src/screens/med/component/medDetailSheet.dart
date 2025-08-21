@@ -2,7 +2,7 @@ import 'package:care_sync/src/component/text/bodyText.dart';
 import 'package:care_sync/src/component/text/primaryText.dart';
 import 'package:care_sync/src/component/text/sectionTittleText.dart';
 import 'package:care_sync/src/component/text/subText.dart';
-import 'package:care_sync/src/models/med.dart';
+import 'package:care_sync/src/models/medicine/med.dart';
 import 'package:flutter/material.dart';
 
 import '../../../utils/textFormatUtils.dart';

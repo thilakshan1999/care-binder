@@ -1,4 +1,4 @@
-import 'package:care_sync/src/models/vital.dart';
+import 'package:care_sync/src/models/vital/vital.dart';
 import 'package:care_sync/src/utils/textFormatUtils.dart';
 import 'package:flutter/material.dart';
 import '../../../component/text/bodyText.dart';

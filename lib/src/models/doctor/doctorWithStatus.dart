@@ -1,4 +1,4 @@
-import 'enums/entityStatus.dart';
+import '../enums/entityStatus.dart';
 
 class DoctorWithStatus {
   final int? id;

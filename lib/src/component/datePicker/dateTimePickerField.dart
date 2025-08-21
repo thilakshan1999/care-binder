@@ -27,7 +27,7 @@ class DateTimePickerField extends StatelessWidget {
         DateTime? pickedDate = await showDatePicker(
           context: context,
           initialDate: selectDate,
-          firstDate: DateTime(2000),
+          firstDate: DateTime(1900),
           lastDate: DateTime(2100),
         );
 

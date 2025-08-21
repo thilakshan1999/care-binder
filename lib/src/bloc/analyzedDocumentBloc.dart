@@ -1,10 +1,10 @@
-import 'package:care_sync/src/models/analyzedDocument.dart';
-import 'package:care_sync/src/models/appointmentWithStatus.dart';
-import 'package:care_sync/src/models/medWithStatus.dart';
-import 'package:care_sync/src/models/vitalWithStatus.dart';
+import 'package:care_sync/src/models/document/analyzedDocument.dart';
+import 'package:care_sync/src/models/appointment/appointmentWithStatus.dart';
+import 'package:care_sync/src/models/medicine/medWithStatus.dart';
+import 'package:care_sync/src/models/vital/vitalWithStatus.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../models/doctorWithStatus.dart';
+import '../models/doctor/doctorWithStatus.dart';
 
 class AnalyzedDocumentBloc extends Cubit<AnalyzedDocument?> {
   AnalyzedDocumentBloc() : super(null);

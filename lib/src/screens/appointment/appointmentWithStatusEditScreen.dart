@@ -1,9 +1,9 @@
 import 'package:care_sync/src/bloc/analyzedDocumentBloc.dart';
 import 'package:care_sync/src/component/dropdown/simpleEnumDropdown.dart';
 import 'package:care_sync/src/component/dropdown/simpleObjeckDropdown.dart';
-import 'package:care_sync/src/models/analyzedDocument.dart';
-import 'package:care_sync/src/models/appointmentWithStatus.dart';
-import 'package:care_sync/src/models/doctor.dart';
+import 'package:care_sync/src/models/document/analyzedDocument.dart';
+import 'package:care_sync/src/models/appointment/appointmentWithStatus.dart';
+import 'package:care_sync/src/models/doctor/doctor.dart';
 import 'package:care_sync/src/models/enums/appointmentType.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

@@ -7,7 +7,7 @@ import '../../component/appBar/appBar.dart';
 import '../../component/btn/primaryBtn/primaryBtn.dart';
 import '../../component/textField/multiLine/multiLineTextField.dart';
 import '../../component/textField/simpleTextField/simpleTextField.dart';
-import '../../models/doctorWithStatus.dart';
+import '../../models/doctor/doctorWithStatus.dart';
 
 class DoctorWithStatusEditScreen extends StatefulWidget {
   final DoctorWithStatus doctor;

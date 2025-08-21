@@ -1,5 +1,5 @@
 import 'package:care_sync/src/bloc/analyzedDocumentBloc.dart';
-import 'package:care_sync/src/models/doctorWithStatus.dart';
+import 'package:care_sync/src/models/doctor/doctorWithStatus.dart';
 import 'package:care_sync/src/screens/doctor/doctorWithStatusEditScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,7 +7,7 @@ import 'package:iconify_flutter/icons/map.dart';
 import '../../../../component/bottomSheet/bottomSheet.dart';
 import '../../../../component/card/InfoCard.dart';
 import '../../../../component/dialog/confirmDeleteDialog.dart';
-import '../../../../models/doctor.dart';
+import '../../../../models/doctor/doctor.dart';
 import '../../../../models/enums/entityStatus.dart';
 import '../../../doctor/component/doctorProfileSheet.dart';
 import '../documentSectionHeader.dart';

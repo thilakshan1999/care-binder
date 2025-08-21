@@ -1,7 +1,7 @@
-import '../utils/durationFormatUtils.dart';
-import 'enums/entityStatus.dart';
-import 'enums/intakeInstruction.dart';
-import 'enums/medForm.dart';
+import '../../utils/durationFormatUtils.dart';
+import '../enums/entityStatus.dart';
+import '../enums/intakeInstruction.dart';
+import '../enums/medForm.dart';
 
 class MedWithStatus {
   final int? id;

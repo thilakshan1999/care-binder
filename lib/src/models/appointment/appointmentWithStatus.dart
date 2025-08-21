@@ -1,6 +1,6 @@
-import 'doctor.dart';
-import 'enums/appointmentType.dart';
-import 'enums/entityStatus.dart';
+import '../doctor/doctor.dart';
+import '../enums/appointmentType.dart';
+import '../enums/entityStatus.dart';
 
 class AppointmentWithStatus {
   final int? id;

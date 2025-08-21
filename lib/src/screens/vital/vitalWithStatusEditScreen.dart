@@ -1,4 +1,4 @@
-import 'package:care_sync/src/models/vitalWithStatus.dart';
+import 'package:care_sync/src/models/vital/vitalWithStatus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

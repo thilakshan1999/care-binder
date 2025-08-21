@@ -1,5 +1,5 @@
-import 'doctor.dart';
-import 'enums/appointmentType.dart';
+import '../doctor/doctor.dart';
+import '../enums/appointmentType.dart';
 
 class Appointment {
   final int id;

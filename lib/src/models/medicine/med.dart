@@ -1,7 +1,7 @@
 import 'package:care_sync/src/utils/durationFormatUtils.dart';
 
-import 'enums/intakeInstruction.dart';
-import 'enums/medForm.dart';
+import '../enums/intakeInstruction.dart';
+import '../enums/medForm.dart';
 
 class Med {
   final int id;

@@ -1,6 +1,6 @@
 import 'package:care_sync/src/models/enums/intakeInstruction.dart';
 import 'package:care_sync/src/models/enums/medForm.dart';
-import 'package:care_sync/src/models/medWithStatus.dart';
+import 'package:care_sync/src/models/medicine/medWithStatus.dart';
 import 'package:care_sync/src/utils/textFormatUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

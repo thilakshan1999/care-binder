@@ -1,4 +1,4 @@
-import 'package:care_sync/src/models/vitalWithStatus.dart';
+import 'package:care_sync/src/models/vital/vitalWithStatus.dart';
 import 'package:care_sync/src/screens/vital/vitalWithStatusEditScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,7 +9,7 @@ import '../../../../component/bottomSheet/bottomSheet.dart';
 import '../../../../component/card/InfoCard.dart';
 import '../../../../component/dialog/confirmDeleteDialog.dart';
 import '../../../../models/enums/entityStatus.dart';
-import '../../../../models/vital.dart';
+import '../../../../models/vital/vital.dart';
 import '../../../vital/component/vitalDetailSheet.dart';
 import '../documentSectionHeader.dart';
 
