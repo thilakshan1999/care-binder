@@ -1,3 +1,4 @@
+import 'package:care_sync/src/screens/login/loginScreen.dart';
 import 'package:care_sync/src/screens/main/mainScreen.dart';
 import 'package:care_sync/src/theme/darkTheme.dart';
 import 'package:care_sync/src/theme/lightTheme.dart';
@@ -26,7 +27,7 @@ class MyApp extends StatelessWidget {
       theme: lightTheme,
       darkTheme: darkTheme,
       themeMode: ThemeMode.light,
-      home: const MainScreen(),
+      home: const LoginScreen(),
     );
   }
 }
