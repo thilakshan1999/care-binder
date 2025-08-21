@@ -20,7 +20,7 @@ class ApiHelper {
         final jsonMap = jsonDecode(response.body);
         return ApiResponse<T>(
           success: false,
-          message: 'Server error: ${jsonMap["message"]}',
+          message: '${jsonMap["message"]}',
           errorTittle: "Server Error",
           data: null,
         );

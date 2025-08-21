@@ -1,5 +1,6 @@
 import 'package:care_sync/src/bloc/analyzedDocumentBloc.dart';
 import 'package:care_sync/src/bloc/registrationBloc.dart';
+import 'package:care_sync/src/bloc/userBloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class BlocProviders {
@@ -10,6 +11,10 @@ class BlocProviders {
       ),
       BlocProvider<RegistrationBloc>(
         create: (context) => RegistrationBloc(),
+      ),
+      BlocProvider<UserBloc>(
+        create: (context) => UserBloc(),
+        lazy: false,
       ),
     ];
   }

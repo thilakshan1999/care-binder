@@ -53,6 +53,7 @@ dependencies:
   accordion: ^2.6.0
   skeletonizer: ^1.4.3
   chips_choice: ^3.0.1
+  shared_preferences: ^2.5.3
 
 dev_dependencies:
   flutter_test:

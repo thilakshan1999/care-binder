@@ -1,11 +1,16 @@
+import 'package:care_sync/src/bloc/userBloc.dart';
 import 'package:care_sync/src/component/btn/primaryBtn/priamaryLoadingBtn.dart';
 import 'package:care_sync/src/component/text/btnText.dart';
+import 'package:care_sync/src/models/user/loginRequest.dart';
 import 'package:care_sync/src/screens/main/mainScreen.dart';
 import 'package:care_sync/src/screens/registration/registrationScreen1.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../component/snakbar/customSnakbar.dart';
 import '../../component/textField/password/passwordTextField.dart';
 import '../../component/textField/simpleTextField/simpleTextField.dart';
+import '../../service/api/httpService.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -19,15 +24,49 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   String password = "";
   String email = "";
+  final HttpService httpService = HttpService();
 
-  void login() {
-    if (_formKey.currentState?.validate() ?? false) {
-      print(email);
-      print(password);
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const MainScreen()),
-      );
+  Future<void> login() async {
+    final theme = Theme.of(context);
+
+    try {
+      final loginRequest = LoginRequest(email: email, password: password);
+      final result = await httpService.userService.login(loginRequest);
+
+      if (mounted) {
+        if (result.success && result.data != null) {
+          final auth = result.data!;
+
+          context.read<UserBloc>().setUserFromToken(
+                auth.accessToken,
+                auth.refreshToken,
+              );
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const MainScreen()),
+          );
+        } else {
+          CustomSnackbar.showCustomSnackbar(
+            context: context,
+            message: result.message,
+            backgroundColor: theme.colorScheme.error,
+          );
+        }
+        setState(() {
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+        CustomSnackbar.showCustomSnackbar(
+          context: context,
+          message: e.toString(),
+          backgroundColor: theme.colorScheme.error,
+        );
+      }
     }
   }
 
@@ -46,6 +85,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   children: [
                     SimpleTextField(
                       initialText: "",
+                      keyboardType: TextInputType.emailAddress,
                       labelText: 'Email',
                       onChanged: (value) {
                         email = value;
@@ -74,6 +114,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         if (value == null || value.isEmpty) {
                           return 'Password cannot be empty';
                         }
+                        if (value.trim().length < 8) {
+                          return 'Password must be at least 8 characters';
+                        }
                         return null;
                       },
                     ),
@@ -82,7 +125,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       loading: isLoading,
                       label: "Login",
                       onPressed: () {
-                        login();
+                        if (_formKey.currentState?.validate() ?? false) {
+                          setState(() {
+                            isLoading = true;
+                          });
+                          login();
+                        }
                       },
                     ),
                   ],

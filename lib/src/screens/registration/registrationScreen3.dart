@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../component/questionLayout/QuestionLayout.dart';
+import '../../component/snakbar/customSnakbar.dart';
 import '../../component/textField/simpleTextField/simpleTextField.dart';
+import '../../service/api/httpService.dart';
 
 class RegistrationScreen3 extends StatefulWidget {
   const RegistrationScreen3({
@@ -17,6 +19,57 @@ class RegistrationScreen3 extends StatefulWidget {
 
 class _RegistrationScreen3State extends State<RegistrationScreen3> {
   final _formKey = GlobalKey<FormState>();
+  bool isLoading = false;
+
+  final HttpService httpService = HttpService();
+  Future<void> _checkMail(String email) async {
+    final theme = Theme.of(context);
+    try {
+      final result = await httpService.userService.checkEmail(email);
+
+      if (mounted) {
+        if (result.success) {
+          if (result.data != null && result.data == false) {
+            context.read<RegistrationBloc>().setEmail(email);
+
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const RegistrationScreen4(),
+              ),
+            );
+          } else {
+            CustomSnackbar.showCustomSnackbar(
+              context: context,
+              message: "Email already exist",
+              backgroundColor: theme.colorScheme.error,
+            );
+          }
+        } else {
+          CustomSnackbar.showCustomSnackbar(
+            context: context,
+            message: result.message,
+            backgroundColor: theme.colorScheme.error,
+          );
+        }
+        setState(() {
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+        CustomSnackbar.showCustomSnackbar(
+          context: context,
+          message: e.toString(),
+          backgroundColor: theme.colorScheme.error,
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     String email = context.read<RegistrationBloc>().state.email ?? "";
@@ -51,18 +104,14 @@ class _RegistrationScreen3State extends State<RegistrationScreen3> {
           ),
         ),
       ),
-      isLoading: false,
+      isLoading: isLoading,
       btnLabel: 'Next',
       onClickBtn: () {
         if (_formKey.currentState?.validate() ?? false) {
-          context.read<RegistrationBloc>().setEmail(email);
-
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const RegistrationScreen4(),
-            ),
-          );
+          setState(() {
+            isLoading = true;
+          });
+          _checkMail(email);
         }
       },
     );

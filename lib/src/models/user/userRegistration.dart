@@ -30,4 +30,12 @@ class UserRegistration {
       dateOfBirth: dateOfBirth ?? this.dateOfBirth,
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        'name': name,
+        'email': email,
+        'password': password,
+        'role': role?.name,
+        'dateOfBirth': dateOfBirth?.toIso8601String(),
+      };
 }

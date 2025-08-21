@@ -90,6 +90,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
                 message: errorMessage ?? 'Something went wrong.',
                 title: errorTittle ?? 'Something went wrong.',
                 onRetry: () {
+                  _fetchAllDocumentsSummary(categories[selectedIndex]);
                   setState(() {
                     isLoading = true;
                     hasError = false;

@@ -4,8 +4,11 @@ import 'package:care_sync/src/screens/main/mainScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../bloc/userBloc.dart';
 import '../../component/questionLayout/QuestionLayout.dart';
+import '../../component/snakbar/customSnakbar.dart';
 import '../../component/text/errorText.dart';
+import '../../service/api/httpService.dart';
 
 class RegistrationScreen5 extends StatefulWidget {
   const RegistrationScreen5({super.key});
@@ -15,8 +18,54 @@ class RegistrationScreen5 extends StatefulWidget {
 }
 
 class _RegistrationScreen5State extends State<RegistrationScreen5> {
+  bool isLoading = false;
   DateTime? dateOfBirth;
   String? errorMessage;
+
+  final HttpService httpService = HttpService();
+  Future<void> _register() async {
+    final theme = Theme.of(context);
+
+    try {
+      final result = await httpService.userService
+          .register(context.read<RegistrationBloc>().state);
+
+      if (mounted) {
+        if (result.success && result.data != null) {
+          final auth = result.data!;
+
+          context.read<UserBloc>().setUserFromToken(
+                auth.accessToken,
+                auth.refreshToken,
+              );
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const MainScreen()),
+          );
+        } else {
+          CustomSnackbar.showCustomSnackbar(
+            context: context,
+            message: result.message,
+            backgroundColor: theme.colorScheme.error,
+          );
+        }
+        setState(() {
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+        CustomSnackbar.showCustomSnackbar(
+          context: context,
+          message: e.toString(),
+          backgroundColor: theme.colorScheme.error,
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,14 +98,11 @@ class _RegistrationScreen5State extends State<RegistrationScreen5> {
             errorMessage = "Please select a date before continuing.";
           });
         } else {
-          debugPrint("Selected role: $dateOfBirth");
           context.read<RegistrationBloc>().setDateOfBirth(dateOfBirth!);
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const MainScreen(),
-            ),
-          );
+          setState(() {
+            isLoading = false;
+          });
+          _register();
         }
       },
     );

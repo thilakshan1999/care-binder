@@ -20,10 +20,6 @@ class _RegistrationScreen4State extends State<RegistrationScreen4> {
   @override
   Widget build(BuildContext context) {
     String password = context.read<RegistrationBloc>().state.password ?? "";
-    print("password");
-    print(password);
-    print("password retrive");
-    print(context.read<RegistrationBloc>().state.password);
     return QuestionLayout(
       question: "Create a password",
       body: Padding(
@@ -77,10 +73,6 @@ class _RegistrationScreen4State extends State<RegistrationScreen4> {
       onClickBtn: () {
         if (_formKey.currentState?.validate() ?? false) {
           context.read<RegistrationBloc>().setPassword(password);
-          print("password");
-          print(password);
-          print("password saved");
-          print(context.read<RegistrationBloc>().state.password);
 
           Navigator.push(
             context,

@@ -1,5 +1,8 @@
 import 'dart:convert';
 
+import 'package:care_sync/src/models/user/authResponse.dart';
+import 'package:care_sync/src/models/user/loginRequest.dart';
+import 'package:care_sync/src/models/user/userRegistration.dart';
 import 'package:http/http.dart';
 
 import '../../models/apiResponse.dart';
@@ -25,42 +28,42 @@ class UserService {
     }, (data) => data as bool);
   }
 
-  /// POST /api/users/register
-  // Future<ApiResponse<AuthResponseDto>> register(UserRegistrationDto dto) {
-  //   return ApiHelper.handleRequest<AuthResponseDto>(() async {
-  //     var uri = Uri.parse('$baseUrl/users/register');
-  //     var response = await client.post(
-  //       uri,
-  //       headers: {'Content-Type': 'application/json'},
-  //       body: jsonEncode(dto.toJson()),
-  //     );
-  //     return response;
-  //   }, (data) => AuthResponseDto.fromJson(data));
-  // }
+  // / POST /api/users/register
+  Future<ApiResponse<AuthResponse>> register(UserRegistration user) {
+    return ApiHelper.handleRequest<AuthResponse>(() async {
+      var uri = Uri.parse('$baseUrl/users/register');
+      var response = await client.post(
+        uri,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(user.toJson()),
+      );
+      return response;
+    }, (data) => AuthResponse.fromJson(data));
+  }
 
-  // /// POST /api/users/login
-  // Future<ApiResponse<AuthResponseDto>> login(LoginRequestDto dto) {
-  //   return ApiHelper.handleRequest<AuthResponseDto>(() async {
-  //     var uri = Uri.parse('$baseUrl/users/login');
-  //     var response = await client.post(
-  //       uri,
-  //       headers: {'Content-Type': 'application/json'},
-  //       body: jsonEncode(dto.toJson()),
-  //     );
-  //     return response;
-  //   }, (data) => AuthResponseDto.fromJson(data));
-  // }
+  /// POST /api/users/login
+  Future<ApiResponse<AuthResponse>> login(LoginRequest request) {
+    return ApiHelper.handleRequest<AuthResponse>(() async {
+      var uri = Uri.parse('$baseUrl/users/login');
+      var response = await client.post(
+        uri,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(request.toJson()),
+      );
+      return response;
+    }, (data) => AuthResponse.fromJson(data));
+  }
 
-  // /// POST /api/users/refresh-token
-  // Future<ApiResponse<AuthResponseDto>> refreshToken(String refreshToken) {
-  //   return ApiHelper.handleRequest<AuthResponseDto>(() async {
-  //     var uri = Uri.parse('$baseUrl/users/refresh-token');
-  //     var response = await client.post(
-  //       uri,
-  //       headers: {'Content-Type': 'application/json'},
-  //       body: jsonEncode({'refreshToken': refreshToken}),
-  //     );
-  //     return response;
-  //   }, (data) => AuthResponseDto.fromJson(data));
-  // }
+  /// POST /api/users/refresh-token
+  Future<ApiResponse<AuthResponse>> refreshToken(String refreshToken) {
+    return ApiHelper.handleRequest<AuthResponse>(() async {
+      var uri = Uri.parse('$baseUrl/users/refresh-token');
+      var response = await client.post(
+        uri,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'refreshToken': refreshToken}),
+      );
+      return response;
+    }, (data) => AuthResponse.fromJson(data));
+  }
 }
