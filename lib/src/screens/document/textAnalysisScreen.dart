@@ -1,10 +1,12 @@
 import 'dart:io';
+import 'package:care_sync/src/bloc/userBloc.dart';
 import 'package:care_sync/src/component/appBar/appBar.dart';
 import 'package:care_sync/src/component/errorBox/ErrorBox.dart';
 import 'package:care_sync/src/screens/document/component/documentLoadingIndicator.dart';
 import 'package:care_sync/src/screens/document/documentAnalyzedScreen.dart';
 import 'package:care_sync/src/service/api/httpService.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../component/btn/primaryBtn/primaryBtn.dart';
 import '../../component/textField/multiLine/multiLineTextField.dart';
 import '../../service/documentPickerService.dart';
@@ -26,11 +28,12 @@ class _TextAnalysisScreenState extends State<TextAnalysisScreen> {
   String? errorMessage;
   String? errorTittle;
 
-  final HttpService httpService = HttpService();
+  late final HttpService httpService ;
 
   @override
   void initState() {
     super.initState();
+    httpService = HttpService(context.read<UserBloc>());
     if (widget.imageFile != null) {
       _analyzeImage(widget.imageFile!);
     } else if (widget.documentData != null) {

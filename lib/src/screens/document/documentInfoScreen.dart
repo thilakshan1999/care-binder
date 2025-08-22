@@ -5,8 +5,10 @@ import 'package:care_sync/src/models/document/document.dart';
 import 'package:care_sync/src/screens/main/mainScreen.dart';
 import 'package:care_sync/src/utils/textFormatUtils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
+import '../../bloc/userBloc.dart';
 import '../../component/appBar/appBar.dart';
 import '../../component/btn/primaryBtn/priamaryLoadingBtn.dart';
 import '../../component/errorBox/ErrorBox.dart';
@@ -40,11 +42,12 @@ class _DocumentInfoScreenState extends State<DocumentInfoScreen> {
   String? errorTittle;
   Document doc = sampleDocument;
 
-  final HttpService httpService = HttpService();
+  late final HttpService httpService;
 
   @override
   void initState() {
     super.initState();
+    httpService = HttpService(context.read<UserBloc>());
     _fetchDocument();
   }
 

@@ -24,13 +24,24 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'CareSync',
-      theme: lightTheme,
-      darkTheme: darkTheme,
-      themeMode: ThemeMode.light,
-      home: const AppEntry(),
+    return BlocListener<UserBloc, UserState>(
+      listenWhen: (previous, current) =>
+          previous.isLoggedIn && !current.isLoggedIn, // only when logging out
+      listener: (context, state) {
+        // Force navigation to login screen on logout
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => const LoginScreen()),
+          (route) => false,
+        );
+      },
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'CareSync',
+        theme: lightTheme,
+        darkTheme: darkTheme,
+        themeMode: ThemeMode.light,
+        home: const AppEntry(),
+      ),
     );
   }
 }
@@ -40,16 +51,8 @@ class AppEntry extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<UserBloc, UserState>(
-      builder: (context, state) {
-        //context.read<UserBloc>().clear();
-
-        if (state.isLoggedIn) {
-          return const MainScreen();
-        } else {
-          return const LoginScreen();
-        }
-      },
-    );
+    return context.read<UserBloc>().state.isLoggedIn? 
+           const MainScreen()
+           :const LoginScreen();
   }
 }

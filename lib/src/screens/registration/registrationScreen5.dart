@@ -22,7 +22,14 @@ class _RegistrationScreen5State extends State<RegistrationScreen5> {
   DateTime? dateOfBirth;
   String? errorMessage;
 
-  final HttpService httpService = HttpService();
+  late final HttpService httpService;
+
+@override
+  void initState() {
+    super.initState();
+    httpService = HttpService(context.read<UserBloc>());
+  }
+  
   Future<void> _register() async {
     final theme = Theme.of(context);
 

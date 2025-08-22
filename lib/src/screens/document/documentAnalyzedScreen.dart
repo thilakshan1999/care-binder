@@ -12,6 +12,7 @@ import 'package:care_sync/src/screens/main/mainScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../bloc/userBloc.dart';
 import '../../component/appBar/appBar.dart';
 import '../../component/errorBox/ErrorBox.dart';
 import '../../component/snakbar/customSnakbar.dart';
@@ -35,11 +36,13 @@ class _DocumentAnalyzedScreenState extends State<DocumentAnalyzedScreen> {
   String? errorMessage;
   String? errorTittle;
 
-  final HttpService httpService = HttpService();
+  late final HttpService httpService;
+
 
   @override
   void initState() {
     super.initState();
+    httpService = HttpService(context.read<UserBloc>());
     _extractDocument(widget.extractedText);
 
     // final initialDoc = AnalyzedDocument.fromJson(sampleAnalyzedDocumentJson);

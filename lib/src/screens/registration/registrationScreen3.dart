@@ -3,6 +3,7 @@ import 'package:care_sync/src/screens/registration/registrationScreen4.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../bloc/userBloc.dart';
 import '../../component/questionLayout/QuestionLayout.dart';
 import '../../component/snakbar/customSnakbar.dart';
 import '../../component/textField/simpleTextField/simpleTextField.dart';
@@ -21,7 +22,14 @@ class _RegistrationScreen3State extends State<RegistrationScreen3> {
   final _formKey = GlobalKey<FormState>();
   bool isLoading = false;
 
-  final HttpService httpService = HttpService();
+  late final HttpService httpService;
+
+@override
+  void initState() {
+    super.initState();
+    httpService = HttpService(context.read<UserBloc>());
+  }
+  
   Future<void> _checkMail(String email) async {
     final theme = Theme.of(context);
     try {

@@ -24,7 +24,13 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   String password = "";
   String email = "";
-  final HttpService httpService = HttpService();
+  late final HttpService httpService;
+
+@override
+  void initState() {
+    super.initState();
+    httpService = HttpService(context.read<UserBloc>());
+  }
 
   Future<void> login() async {
     final theme = Theme.of(context);

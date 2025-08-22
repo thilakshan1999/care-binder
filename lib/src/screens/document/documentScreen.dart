@@ -1,4 +1,5 @@
 import 'package:accordion/accordion.dart';
+import 'package:care_sync/src/bloc/userBloc.dart';
 import 'package:care_sync/src/component/appBar/appBar.dart';
 import 'package:care_sync/src/component/btn/floatingBtn/floatingBtn.dart';
 import 'package:care_sync/src/component/text/bodyText.dart';
@@ -6,6 +7,7 @@ import 'package:care_sync/src/models/enums/documentType.dart';
 import 'package:care_sync/src/screens/document/component/uploadOptionSheet.dart';
 import 'package:care_sync/src/utils/textFormatUtils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../component/bottomSheet/bottomSheet.dart';
@@ -33,11 +35,12 @@ class _DocumentScreenState extends State<DocumentScreen> {
       TextFormatUtils.enumListToStringList(DocumentType.values);
   int selectedIndex = 0;
 
-  final HttpService httpService = HttpService();
+  late final HttpService httpService;
 
   @override
   void initState() {
     super.initState();
+    httpService = HttpService(context.read<UserBloc>());
     _fetchAllDocumentsSummary(null);
   }
 
