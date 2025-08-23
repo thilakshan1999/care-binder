@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../bloc/userBloc.dart';
+import '../../component/apiHandler/apiHandler.dart';
 import '../../component/appBar/appBar.dart';
 import '../../component/errorBox/ErrorBox.dart';
 import '../../component/snakbar/customSnakbar.dart';
@@ -38,7 +39,6 @@ class _DocumentAnalyzedScreenState extends State<DocumentAnalyzedScreen> {
 
   late final HttpService httpService;
 
-
   @override
   void initState() {
     super.initState();
@@ -54,75 +54,54 @@ class _DocumentAnalyzedScreenState extends State<DocumentAnalyzedScreen> {
   }
 
   Future<void> _extractDocument(String extractedText) async {
-    try {
-      final result =
-          await httpService.documentService.analyzeDocument(extractedText);
+    setState(() {
+      isProcessing = true;
+      hasError = false;
+      errorMessage = null;
+      errorTittle = null;
+    });
 
-      setState(() {
-        if (result.success) {
-          context.read<AnalyzedDocumentBloc>().setDocument(result.data!);
+    await ApiHandler.handleApiCall<AnalyzedDocument>(
+      context: context,
+      request: () => httpService.documentService.analyzeDocument(extractedText),
+      onSuccess: (data, msg) {
+        setState(() {
+          context.read<AnalyzedDocumentBloc>().setDocument(data);
           hasError = false;
           errorMessage = null;
           errorTittle = null;
-        } else {
+        });
+      },
+      onError: (msg, title) {
+        setState(() {
           hasError = true;
-          errorMessage = result.message;
-          errorTittle = result.errorTittle ?? "Request Failed";
-        }
-        isProcessing = false;
-      });
-    } catch (e) {
-      setState(() {
-        hasError = true;
-        errorMessage = '$e';
-        errorTittle = 'Unexpected Error';
-        isProcessing = false;
-      });
-    }
+          errorMessage = msg;
+          errorTittle = title ?? "Request Failed";
+        });
+      },
+      onFinally: () => setState(() => isProcessing = false),
+    );
   }
 
   Future<void> _saveDocument(AnalyzedDocument dto) async {
-    final navigator = Navigator.of(context);
-    final theme = Theme.of(context);
+    setState(() => isLoading = true);
 
-    try {
-      final result = await httpService.documentService.saveDocument(dto);
-
-      if (mounted) {
-        // check if widget is still mounted
-        setState(() => isLoading = false);
-
-        if (result.success) {
-          navigator.push(
-            MaterialPageRoute(
-              builder: (_) => const MainScreen(initialSelected: 3),
-            ),
-          );
-          CustomSnackbar.showCustomSnackbar(
-            context: context,
-            message: result.message,
-            backgroundColor: theme.extension<CustomColors>()!.success,
-          );
-        } else {
-          CustomSnackbar.showCustomSnackbar(
-            context: context,
-            message: result.message,
-            backgroundColor: theme.colorScheme.error,
-          );
-        }
-
-        isLoading = false;
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() => isLoading = false);
+    await ApiHandler.handleApiCall<void>(
+      context: context,
+      request: () => httpService.documentService.saveDocument(dto),
+      onSuccess: (_, msg) {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+              builder: (_) => const MainScreen(initialSelected: 3)),
+        );
         CustomSnackbar.showCustomSnackbar(
           context: context,
-          message: '$e',
-          backgroundColor: theme.colorScheme.error,
+          message: msg,
+          backgroundColor: Theme.of(context).extension<CustomColors>()!.success,
         );
-      }
-    }
+      },
+      onFinally: () => setState(() => isLoading = false),
+    );
   }
 
   @override
@@ -144,12 +123,6 @@ class _DocumentAnalyzedScreenState extends State<DocumentAnalyzedScreen> {
                         title: errorTittle ?? 'Something went wrong.',
                         onRetry: () {
                           _extractDocument(widget.extractedText);
-                          setState(() {
-                            isProcessing = true;
-                            hasError = false;
-                            errorMessage = null;
-                            errorTittle = null;
-                          });
                         },
                       )
                     : BlocBuilder<AnalyzedDocumentBloc, AnalyzedDocument?>(
@@ -229,7 +202,6 @@ class _DocumentAnalyzedScreenState extends State<DocumentAnalyzedScreen> {
                               label: 'Save',
                               loading: isLoading,
                               onPressed: () {
-                                print(document.toJson());
                                 setState(() {
                                   isLoading = true;
                                 });

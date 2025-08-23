@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
+import '../../component/apiHandler/apiHandler.dart';
 import '../../component/bottomSheet/bottomSheet.dart';
 import '../../component/errorBox/ErrorBox.dart';
 import '../../component/filterBar/filterBar.dart';
@@ -45,32 +46,37 @@ class _DocumentScreenState extends State<DocumentScreen> {
   }
 
   Future<void> _fetchAllDocumentsSummary(String? type) async {
-    try {
-      final result =
-          await httpService.documentService.getAllDocumentsSummary(type: type);
-      if (!mounted) return;
-      setState(() {
-        if (result.success) {
-          documentList = result.data!;
+    setState(() {
+      isLoading = true;
+      hasError = false;
+      errorMessage = null;
+      errorTittle = null;
+    });
+    await ApiHandler.handleApiCall<List<DocumentSummary>>(
+      context: context,
+      request: () =>
+          httpService.documentService.getAllDocumentsSummary(type: type),
+      onSuccess: (data, _) {
+        setState(() {
+          documentList = data;
           hasError = false;
           errorMessage = null;
           errorTittle = null;
-        } else {
+        });
+      },
+      onError: (title, message) {
+        setState(() {
           hasError = true;
-          errorMessage = result.message;
-          errorTittle = result.errorTittle ?? "Request Failed";
+          errorMessage = message;
+          errorTittle = title;
+        });
+      },
+      onFinally: () {
+        if (mounted) {
+          setState(() => isLoading = false);
         }
-        isLoading = false;
-      });
-    } catch (e) {
-      if (!mounted) return;
-      setState(() {
-        hasError = true;
-        errorMessage = '$e';
-        errorTittle = 'Unexpected Error';
-        isLoading = false;
-      });
-    }
+      },
+    );
   }
 
   @override
@@ -95,7 +101,6 @@ class _DocumentScreenState extends State<DocumentScreen> {
                 onRetry: () {
                   _fetchAllDocumentsSummary(categories[selectedIndex]);
                   setState(() {
-                    isLoading = true;
                     hasError = false;
                     errorMessage = null;
                     errorTittle = null;

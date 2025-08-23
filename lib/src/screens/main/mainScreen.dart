@@ -1,9 +1,6 @@
-import 'package:care_sync/src/bloc/userBloc.dart';
-import 'package:care_sync/src/component/btn/primaryBtn/primaryBtn.dart';
 import 'package:care_sync/src/screens/document/documentScreen.dart';
 import 'package:care_sync/src/theme/customColors.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:stylish_bottom_bar/stylish_bottom_bar.dart';
 import 'package:iconify_flutter/icons/ant_design.dart';
@@ -96,23 +93,13 @@ class _MainScreenState extends State<MainScreen> {
         top: false,
         child: PageView(
           controller: controller,
-          children: [
-            const Center(child: Text('Home')),
-            const Center(child: Text('Medication')),
-            const Center(child: Text('Appointment')),
-            const DocumentScreen(),
-            const Center(child: Text('Vitals')),
-            Center(
-                child: Column(
-              children: [
-                const Text('Profile'),
-                PrimaryBtn(
-                    label: "Logout",
-                    onPressed: () {
-                      context.read<UserBloc>().clear();
-                    })
-              ],
-            )),
+          children: const [
+            Center(child: Text('Home')),
+            Center(child: Text('Medication')),
+            Center(child: Text('Appointment')),
+            DocumentScreen(),
+            Center(child: Text('Vitals')),
+            Text('Profile'),
           ],
         ),
       ),

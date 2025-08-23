@@ -9,6 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../bloc/userBloc.dart';
+import '../../component/apiHandler/apiHandler.dart';
 import '../../component/appBar/appBar.dart';
 import '../../component/btn/primaryBtn/priamaryLoadingBtn.dart';
 import '../../component/errorBox/ErrorBox.dart';
@@ -52,76 +53,54 @@ class _DocumentInfoScreenState extends State<DocumentInfoScreen> {
   }
 
   Future<void> _fetchDocument() async {
-    try {
-      final result =
-          await httpService.documentService.getDocumentById(widget.id);
-      if (!mounted) return;
-      setState(() {
-        if (result.success) {
-          doc = result.data!;
+    setState(() {
+      isProcessing = true;
+      hasError = false;
+      errorMessage = null;
+      errorTittle = null;
+    });
+
+    await ApiHandler.handleApiCall<Document>(
+      context: context,
+      request: () => httpService.documentService.getDocumentById(widget.id),
+      onSuccess: (data, _) {
+        setState(() {
+          doc = data;
           hasError = false;
           errorMessage = null;
           errorTittle = null;
-        } else {
+        });
+      },
+      onError: (msg, title) {
+        setState(() {
           hasError = true;
-          errorMessage = result.message;
-          errorTittle = result.errorTittle ?? "Request Failed";
-        }
-        isProcessing = false;
-      });
-    } catch (e) {
-      if (!mounted) return;
-      setState(() {
-        hasError = true;
-        errorMessage = '$e';
-        errorTittle = 'Unexpected Error';
-        isProcessing = false;
-      });
-    }
+          errorMessage = msg;
+          errorTittle = title ?? "Request Failed";
+        });
+      },
+      onFinally: () => setState(() => isProcessing = false),
+    );
   }
 
   Future<void> _deleteDocument() async {
-    final navigator = Navigator.of(context);
-    final theme = Theme.of(context);
+    setState(() => isLoading = true);
 
-    try {
-      final result = await httpService.documentService.deleteDocument(doc.id!);
-
-      if (mounted) {
-        // check if widget is still mounted
-        setState(() => isLoading = false);
-
-        if (result.success) {
-          navigator.push(
-            MaterialPageRoute(
-              builder: (_) => const MainScreen(initialSelected: 3),
-            ),
-          );
-          CustomSnackbar.showCustomSnackbar(
-            context: context,
-            message: result.message,
-            backgroundColor: theme.extension<CustomColors>()!.success,
-          );
-        } else {
-          CustomSnackbar.showCustomSnackbar(
-            context: context,
-            message: result.message,
-            backgroundColor: theme.colorScheme.error,
-          );
-        }
-
-        isLoading = false;
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() => isLoading = false);
+    await ApiHandler.handleApiCall<void>(
+      context: context,
+      request: () => httpService.documentService.deleteDocument(doc.id!),
+      onSuccess: (_, msg) {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+              builder: (_) => const MainScreen(initialSelected: 3)),
+        );
         CustomSnackbar.showCustomSnackbar(
           context: context,
-          message: '$e',
-          backgroundColor: theme.colorScheme.error,
+          message: msg,
+          backgroundColor: Theme.of(context).extension<CustomColors>()!.success,
         );
-      }
-    }
+      },
+      onFinally: () => setState(() => isLoading = false),
+    );
   }
 
   @override
@@ -142,7 +121,6 @@ class _DocumentInfoScreenState extends State<DocumentInfoScreen> {
                         onRetry: () {
                           _fetchDocument();
                           setState(() {
-                            isProcessing = true;
                             hasError = false;
                             errorMessage = null;
                             errorTittle = null;

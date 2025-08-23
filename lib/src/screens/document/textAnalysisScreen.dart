@@ -4,9 +4,11 @@ import 'package:care_sync/src/component/appBar/appBar.dart';
 import 'package:care_sync/src/component/errorBox/ErrorBox.dart';
 import 'package:care_sync/src/screens/document/component/documentLoadingIndicator.dart';
 import 'package:care_sync/src/screens/document/documentAnalyzedScreen.dart';
+import 'package:care_sync/src/screens/login/loginScreen.dart';
 import 'package:care_sync/src/service/api/httpService.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../component/apiHandler/apiHandler.dart';
 import '../../component/btn/primaryBtn/primaryBtn.dart';
 import '../../component/textField/multiLine/multiLineTextField.dart';
 import '../../service/documentPickerService.dart';
@@ -28,7 +30,7 @@ class _TextAnalysisScreenState extends State<TextAnalysisScreen> {
   String? errorMessage;
   String? errorTittle;
 
-  late final HttpService httpService ;
+  late final HttpService httpService;
 
   @override
   void initState() {
@@ -54,59 +56,64 @@ class _TextAnalysisScreenState extends State<TextAnalysisScreen> {
   }
 
   Future<void> _analyzeImage(File imageFile) async {
-    try {
-      final result =
-          await httpService.visionService.extractTextFromImage(imageFile);
+    setState(() {
+      isProcessing = true;
+      hasError = false;
+      errorMessage = null;
+      errorTittle = null;
+    });
 
-      setState(() {
-        if (result.success) {
-          extractedText = result.data ?? 'No text found.';
+    await ApiHandler.handleApiCall<String?>(
+      context: context,
+      request: () => httpService.visionService.extractTextFromImage(imageFile),
+      onSuccess: (data, _) {
+        setState(() {
+          extractedText = data ?? 'No text found.';
           hasError = false;
           errorMessage = null;
           errorTittle = null;
-        } else {
+        });
+      },
+      onError: (msg, title) {
+        setState(() {
           hasError = true;
-          errorMessage = result.message;
-          errorTittle = result.errorTittle ?? "Request Failed";
-        }
-        isProcessing = false;
-      });
-    } catch (e) {
-      setState(() {
-        hasError = true;
-        errorMessage = '$e';
-        errorTittle = 'Unexpected Error';
-        isProcessing = false;
-      });
-    }
+          errorMessage = msg;
+          errorTittle = title ?? "Request Failed";
+        });
+      },
+      onFinally: () => setState(() => isProcessing = false),
+    );
   }
 
   Future<void> _extractText() async {
-    try {
-      final result = await httpService.documentAiService
-          .extractTextFromDocument(
-              widget.documentData!.file, widget.documentData!.mimeType);
-      setState(() {
-        if (result.success) {
-          extractedText = result.data ?? 'No text found.';
+    setState(() {
+      isProcessing = true;
+      hasError = false;
+      errorMessage = null;
+      errorTittle = null;
+    });
+
+    await ApiHandler.handleApiCall<String?>(
+      context: context,
+      request: () => httpService.documentAiService.extractTextFromDocument(
+          widget.documentData!.file, widget.documentData!.mimeType),
+      onSuccess: (data, _) {
+        setState(() {
+          extractedText = data ?? 'No text found.';
           hasError = false;
           errorMessage = null;
           errorTittle = null;
-        } else {
+        });
+      },
+      onError: (msg, title) {
+        setState(() {
           hasError = true;
-          errorMessage = result.message;
-          errorTittle = result.errorTittle ?? "Request Failed";
-        }
-        isProcessing = false;
-      });
-    } catch (e) {
-      setState(() {
-        hasError = true;
-        errorMessage = '$e';
-        errorTittle = 'Failed to extract text';
-        isProcessing = false;
-      });
-    }
+          errorMessage = msg;
+          errorTittle = title ?? "Request Failed";
+        });
+      },
+      onFinally: () => setState(() => isProcessing = false),
+    );
   }
 
   Future<void> _confirmText(String extractedText, BuildContext context) async {
@@ -136,13 +143,11 @@ class _TextAnalysisScreenState extends State<TextAnalysisScreen> {
                     message: errorMessage ?? 'Something went wrong.',
                     title: errorTittle ?? 'Something went wrong.',
                     onRetry: () {
-                      setState(() {
-                        isProcessing = true;
-                        hasError = false;
-                        errorMessage = null;
-                        errorTittle = null;
-                      });
-                      _analyzeImage(widget.imageFile!);
+                      if (widget.imageFile != null) {
+                        _analyzeImage(widget.imageFile!);
+                      } else if (widget.documentData != null) {
+                        _extractText();
+                      }
                     },
                   )
                 : Column(

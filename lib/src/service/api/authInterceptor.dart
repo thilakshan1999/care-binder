@@ -1,7 +1,7 @@
-
-
 import 'dart:async';
 
+import 'package:care_sync/src/service/api/apiHelper.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:http_interceptor/models/interceptor_contract.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
@@ -22,8 +22,10 @@ class AuthInterceptor implements InterceptorContract {
 
     if (accessToken != null && refreshToken != null) {
       if (JwtDecoder.isExpired(accessToken)) {
+        debugPrint('Access token expired');
         try {
-          final refreshResponse = await httpService.userService.refreshToken(refreshToken);
+          final refreshResponse =
+              await httpService.userService.refreshToken(refreshToken);
 
           if (refreshResponse.success) {
             final newAccessToken = refreshResponse.data?.accessToken;
@@ -32,27 +34,26 @@ class AuthInterceptor implements InterceptorContract {
             userBloc.setUserFromToken(newAccessToken!, newRefreshToken!);
             accessToken = newAccessToken;
           } else {
-            userBloc.clear();
+            throw AuthException("Refresh token failed");
           }
         } catch (e) {
-          userBloc.clear();
+          throw AuthException("Token refresh error: $e");
         }
       }
 
       // Always attach Authorization
-      if (accessToken != null) {
-        request.headers["Authorization"] = "Bearer $accessToken";
-      }
+      request.headers["Authorization"] = "Bearer $accessToken";
+      debugPrint('Bearer $accessToken');
     }
 
     return request;
   }
 
   @override
-  FutureOr<BaseResponse> interceptResponse({required BaseResponse response}) async {
-    // Optional: Handle 401 → force logout if server rejects even after refresh
+  FutureOr<BaseResponse> interceptResponse(
+      {required BaseResponse response}) async {
     if (response.statusCode == 401) {
-      userBloc.clear();
+      throw AuthException("Unauthorized (401)");
     }
     return response;
   }

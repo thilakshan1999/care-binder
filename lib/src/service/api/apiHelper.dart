@@ -39,6 +39,13 @@ class ApiHelper {
         errorTittle: "Timeout",
         data: null,
       );
+    } on AuthException catch (e) {
+      return ApiResponse<T>(
+        success: false,
+        message: e.message,
+        errorTittle: "Unauthorized",
+        data: null,
+      );
     } catch (e) {
       print(e);
       return ApiResponse<T>(
@@ -49,4 +56,12 @@ class ApiHelper {
       );
     }
   }
+}
+
+class AuthException implements Exception {
+  final String message;
+  AuthException([this.message = "Authentication error"]);
+
+  @override
+  String toString() => "AuthException: $message";
 }
