@@ -1,3 +1,4 @@
+import 'package:care_sync/src/component/badge/simpleBadge.dart';
 import 'package:care_sync/src/component/text/bodyText.dart';
 import 'package:care_sync/src/component/text/primaryText.dart';
 import 'package:care_sync/src/component/text/subText.dart';
@@ -77,12 +78,8 @@ AccordionSection documentCard({
             text: "Upload At ${TextFormatUtils.formatDateTime(updatedTime)}",
           ),
           const SizedBox(height: 6),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-            decoration: BoxDecoration(
-              color: getDocumentTypeColor(type).withOpacity(0.15),
-              borderRadius: BorderRadius.circular(4),
-            ),
+          SimpleBadge(
+            color: getDocumentTypeColor(type),
             child: Text(
               TextFormatUtils.formatEnumName(type.name),
               style: TextStyle(

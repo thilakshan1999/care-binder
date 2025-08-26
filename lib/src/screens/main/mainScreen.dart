@@ -1,4 +1,5 @@
 import 'package:care_sync/src/screens/document/documentScreen.dart';
+import 'package:care_sync/src/screens/profile/profileScreen.dart';
 import 'package:care_sync/src/theme/customColors.dart';
 import 'package:flutter/material.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
@@ -99,7 +100,7 @@ class _MainScreenState extends State<MainScreen> {
             Center(child: Text('Appointment')),
             DocumentScreen(),
             Center(child: Text('Vitals')),
-            Text('Profile'),
+            ProfileScreen(),
           ],
         ),
       ),

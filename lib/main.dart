@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'src/bloc/blockProvider.dart';
 import 'src/bloc/userBloc.dart';
+import 'src/screens/splashScreen/splashScreen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,11 +35,35 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class AppEntry extends StatelessWidget {
+class AppEntry extends StatefulWidget {
   const AppEntry({super.key});
 
   @override
+  State<AppEntry> createState() => _AppEntryState();
+}
+
+class _AppEntryState extends State<AppEntry> {
+  bool _showSplash = true;
+
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(const Duration(seconds: 2), () {
+      if (mounted) {
+        setState(() {
+          _showSplash = false;
+        });
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    //context.read<UserBloc>().clear();
+    if (_showSplash) {
+      return const SplashScreen();
+    }
+
     return context.read<UserBloc>().state.isLoggedIn
         ? const MainScreen()
         : const LoginScreen();

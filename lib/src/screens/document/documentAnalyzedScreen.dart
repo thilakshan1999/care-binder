@@ -38,19 +38,23 @@ class _DocumentAnalyzedScreenState extends State<DocumentAnalyzedScreen> {
   String? errorTittle;
 
   late final HttpService httpService;
+  bool _isInitialized = false;
 
   @override
-  void initState() {
-    super.initState();
-    httpService = HttpService(context.read<UserBloc>());
-    _extractDocument(widget.extractedText);
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_isInitialized) {
+      httpService = HttpService(context.read<UserBloc>());
+      _extractDocument(widget.extractedText);
 
-    // final initialDoc = AnalyzedDocument.fromJson(sampleAnalyzedDocumentJson);
-    // context.read<AnalyzedDocumentBloc>().setDocument(initialDoc);
+      // final initialDoc = AnalyzedDocument.fromJson(sampleAnalyzedDocumentJson);
+      // context.read<AnalyzedDocumentBloc>().setDocument(initialDoc);
 
-    // setState(() {
-    //   isProcessing = false;
-    // });
+      // setState(() {
+      //   isProcessing = false;
+      // });
+      _isInitialized = true;
+    }
   }
 
   Future<void> _extractDocument(String extractedText) async {

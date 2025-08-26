@@ -12,6 +12,7 @@ import '../../bloc/userBloc.dart';
 import '../../component/apiHandler/apiHandler.dart';
 import '../../component/appBar/appBar.dart';
 import '../../component/btn/primaryBtn/priamaryLoadingBtn.dart';
+import '../../component/dialog/confirmDeleteDialog.dart';
 import '../../component/errorBox/ErrorBox.dart';
 import '../../component/snakbar/customSnakbar.dart';
 import '../../service/api/httpService.dart';
@@ -44,12 +45,16 @@ class _DocumentInfoScreenState extends State<DocumentInfoScreen> {
   Document doc = sampleDocument;
 
   late final HttpService httpService;
+  bool _isInitialized = false;
 
   @override
-  void initState() {
-    super.initState();
-    httpService = HttpService(context.read<UserBloc>());
-    _fetchDocument();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_isInitialized) {
+      httpService = HttpService(context.read<UserBloc>());
+      _fetchDocument();
+      _isInitialized = true;
+    }
   }
 
   Future<void> _fetchDocument() async {
@@ -170,10 +175,18 @@ class _DocumentInfoScreenState extends State<DocumentInfoScreen> {
                                 backgroundColor:
                                     Theme.of(context).colorScheme.error,
                                 onPressed: () {
-                                  setState(() {
-                                    isLoading = true;
-                                  });
-                                  _deleteDocument();
+                                  showConfirmDialog(
+                                    context: context,
+                                    title: "Delete Document",
+                                    message:
+                                        "Are you sure you want to delete this document?",
+                                    onConfirm: () {
+                                      setState(() {
+                                        isLoading = true;
+                                      });
+                                      _deleteDocument();
+                                    },
+                                  );
                                 },
                               ),
                             ]),

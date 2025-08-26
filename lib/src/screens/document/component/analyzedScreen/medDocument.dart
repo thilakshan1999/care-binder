@@ -96,7 +96,7 @@ class MedDocument extends StatelessWidget {
                 );
               },
               onDelete: () {
-                showConfirmDeleteDialog(
+                showConfirmDialog(
                   context: context,
                   title: "Delete Medicine",
                   message: "Are you sure you want to delete this medicine?",

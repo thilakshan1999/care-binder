@@ -86,7 +86,7 @@ class DoctorDocument extends StatelessWidget {
                 );
               },
               onDelete: () {
-                showConfirmDeleteDialog(
+                showConfirmDialog(
                   context: context,
                   title: "Delete Doctor",
                   message: "Are you sure you want to delete this doctor?",

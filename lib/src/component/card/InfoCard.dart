@@ -1,3 +1,4 @@
+import 'package:care_sync/src/component/badge/simpleBadge.dart';
 import 'package:care_sync/src/component/text/btnText.dart';
 import 'package:care_sync/src/component/text/primaryText.dart';
 import 'package:care_sync/src/component/text/subText.dart';
@@ -69,14 +70,8 @@ class InfoCard extends StatelessWidget {
                     ],
                     if (status != null) ...[
                       const SizedBox(height: 6),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: _getStatusColor(status!, context)
-                              .withOpacity(0.15),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
+                      SimpleBadge(
+                        color: _getStatusColor(status!, context),
                         child: Text(
                           TextFormatUtils.formatEnum(status),
                           style: TextStyle(

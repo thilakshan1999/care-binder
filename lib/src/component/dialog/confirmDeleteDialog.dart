@@ -5,16 +5,18 @@ import 'package:flutter/material.dart';
 
 import '../../theme/customColors.dart';
 
-class ConfirmDeleteDialog extends StatelessWidget {
+class ConfirmDialog extends StatelessWidget {
   final String title;
   final String message;
   final VoidCallback onConfirm;
+  final String btnLabel;
 
-  const ConfirmDeleteDialog({
+  const ConfirmDialog({
     super.key,
     required this.title,
     required this.message,
     required this.onConfirm,
+    required this.btnLabel,
   });
 
   @override
@@ -46,29 +48,31 @@ class ConfirmDeleteDialog extends StatelessWidget {
             ),
           ),
           onPressed: () {
-            onConfirm();
             Navigator.of(context).pop();
+            onConfirm();
           },
           child: BtnText(
-              text: "Delete", color: Theme.of(context).colorScheme.onPrimary),
+              text: btnLabel, color: Theme.of(context).colorScheme.onPrimary),
         ),
       ],
     );
   }
 }
 
-Future<void> showConfirmDeleteDialog({
+Future<void> showConfirmDialog({
   required BuildContext context,
   required String title,
   required String message,
   required VoidCallback onConfirm,
+  String btnLabel = "Delete",
 }) {
   return showDialog(
     context: context,
-    builder: (_) => ConfirmDeleteDialog(
+    builder: (_) => ConfirmDialog(
       title: title,
       message: message,
       onConfirm: onConfirm,
+      btnLabel: btnLabel,
     ),
   );
 }

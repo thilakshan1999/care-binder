@@ -88,7 +88,7 @@ class AppointmentDocument extends StatelessWidget {
                 );
               },
               onDelete: () {
-                showConfirmDeleteDialog(
+                showConfirmDialog(
                   context: context,
                   title: "Delete Appointment",
                   message: "Are you sure you want to delete this appointment?",

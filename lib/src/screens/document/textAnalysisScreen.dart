@@ -32,26 +32,31 @@ class _TextAnalysisScreenState extends State<TextAnalysisScreen> {
 
   late final HttpService httpService;
 
+  bool _isInitialized = false;
+
   @override
-  void initState() {
-    super.initState();
-    httpService = HttpService(context.read<UserBloc>());
-    if (widget.imageFile != null) {
-      _analyzeImage(widget.imageFile!);
-    } else if (widget.documentData != null) {
-      _extractText();
-      // setState(() {
-      //   extractedText = 'Document';
-      //   isProcessing = false;
-      // });
-    } else {
-      setState(() {
-        extractedText = '';
-        isProcessing = false;
-        hasError = true;
-        errorTittle = 'No Document Provided';
-        errorMessage = 'Please select or capture a document to proceed.';
-      });
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_isInitialized) {
+      httpService = HttpService(context.read<UserBloc>());
+      if (widget.imageFile != null) {
+        _analyzeImage(widget.imageFile!);
+      } else if (widget.documentData != null) {
+        _extractText();
+        // setState(() {
+        //   extractedText = 'Document';
+        //   isProcessing = false;
+        // });
+      } else {
+        setState(() {
+          extractedText = '';
+          isProcessing = false;
+          hasError = true;
+          errorTittle = 'No Document Provided';
+          errorMessage = 'Please select or capture a document to proceed.';
+        });
+      }
+      _isInitialized = true;
     }
   }
 

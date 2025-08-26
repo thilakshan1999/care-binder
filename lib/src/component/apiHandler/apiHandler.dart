@@ -23,6 +23,11 @@ class ApiHandler {
       if (result.success) {
         onSuccess(result.data as T, result.message);
       } else if (result.errorTittle == "Unauthorized") {
+        CustomSnackbar.showCustomSnackbar(
+          context: context,
+          message: result.message,
+          backgroundColor: theme.colorScheme.error,
+        );
         context.read<UserBloc>().clear();
         navigator.pushAndRemoveUntil(
           MaterialPageRoute(builder: (_) => const LoginScreen()),

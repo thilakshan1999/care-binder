@@ -38,11 +38,16 @@ class _DocumentScreenState extends State<DocumentScreen> {
 
   late final HttpService httpService;
 
+  bool _isInitialized = false;
+
   @override
-  void initState() {
-    super.initState();
-    httpService = HttpService(context.read<UserBloc>());
-    _fetchAllDocumentsSummary(null);
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_isInitialized) {
+      httpService = HttpService(context.read<UserBloc>());
+      _fetchAllDocumentsSummary(null);
+      _isInitialized = true;
+    }
   }
 
   Future<void> _fetchAllDocumentsSummary(String? type) async {

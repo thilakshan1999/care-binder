@@ -82,7 +82,7 @@ class VitalDocument extends StatelessWidget {
                 );
               },
               onDelete: () {
-                showConfirmDeleteDialog(
+                showConfirmDialog(
                   context: context,
                   title: "Delete Vital",
                   message: "Are you sure you want to delete this vital?",
