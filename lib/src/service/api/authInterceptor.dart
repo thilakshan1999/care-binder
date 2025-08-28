@@ -17,6 +17,9 @@ class AuthInterceptor implements InterceptorContract {
 
   @override
   FutureOr<BaseRequest> interceptRequest({required BaseRequest request}) async {
+    if (request.url.path.endsWith("/users/refresh-token")) {
+      return request;
+    }
     var accessToken = userBloc.state.accessToken;
     var refreshToken = userBloc.state.refreshToken;
 

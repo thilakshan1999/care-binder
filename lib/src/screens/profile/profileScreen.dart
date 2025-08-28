@@ -10,6 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../component/dialog/confirmDeleteDialog.dart';
+import '../../component/snakbar/customSnakbar.dart';
+import '../careManagement/careManagementScreen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -21,6 +23,24 @@ class ProfileScreen extends StatelessWidget {
       MaterialPageRoute(builder: (_) => const LoginScreen()),
       (route) => false,
     );
+  }
+
+  void _navigateToCareManagementScreen(BuildContext context) {
+    final userRole = context.read<UserBloc>().state.role;
+
+    if (userRole != null) {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => const CareManagementScreen(),
+        ),
+      );
+    } else {
+      CustomSnackbar.showCustomSnackbar(
+        context: context,
+        message: "Your role is not defined.",
+        backgroundColor: Theme.of(context).colorScheme.error,
+      );
+    }
   }
 
   @override
@@ -66,7 +86,9 @@ class ProfileScreen extends StatelessWidget {
                   ProfileCard(
                     icon: Icons.people,
                     title: "Patient Info",
-                    onTap: () {},
+                    onTap: () {
+                      _navigateToCareManagementScreen(context);
+                    },
                   ),
                   const SizedBox(height: 12),
                 ] else ...[
@@ -79,7 +101,9 @@ class ProfileScreen extends StatelessWidget {
                   ProfileCard(
                     icon: Icons.volunteer_activism,
                     title: "Caregiver Info",
-                    onTap: () {},
+                    onTap: () {
+                      _navigateToCareManagementScreen(context);
+                    },
                   ),
                   const SizedBox(height: 12),
                 ],

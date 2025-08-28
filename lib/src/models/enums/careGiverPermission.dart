@@ -1,15 +1,16 @@
 // ignore_for_file: constant_identifier_names
 
-enum UserRole {
-  PATIENT,
-  CAREGIVER;
+enum CareGiverPermission {
+  VIEW_ONLY,
+  FULL_ACCESS;
 
   /// Convert enum to string for API requests
   String toJson() => name;
 
   /// Parse string from API response to enum
-  static UserRole fromJson(String value) => UserRole.values.firstWhere(
+  static CareGiverPermission fromJson(String value) =>
+      CareGiverPermission.values.firstWhere(
         (e) => e.name == value,
-        orElse: () => UserRole.PATIENT,
+        orElse: () => CareGiverPermission.VIEW_ONLY,
       );
 }
