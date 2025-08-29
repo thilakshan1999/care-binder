@@ -1,8 +1,8 @@
 import 'package:care_sync/src/models/enums/careGiverPermission.dart';
 
 class CareGiverRequestSend {
-  final String patientUserEmail;
-  final CareGiverPermission requestedPermission;
+  String patientUserEmail;
+  CareGiverPermission requestedPermission;
 
   CareGiverRequestSend({
     required this.patientUserEmail,

@@ -55,6 +55,7 @@ dependencies:
   chips_choice: ^3.0.1
   shared_preferences: ^2.5.3
   jwt_decoder: ^2.0.1
+  animated_toggle_switch: ^0.8.5
 
 dev_dependencies:
   flutter_test:
