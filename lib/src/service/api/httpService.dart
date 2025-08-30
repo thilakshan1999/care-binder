@@ -1,4 +1,4 @@
-import 'package:care_sync/src/models/user/careGiverRequestSent.dart';
+import 'package:care_sync/src/service/api/careGiverAssignmentService.dart';
 import 'package:care_sync/src/service/api/careGiverRequestService.dart';
 import 'package:care_sync/src/service/api/documentService.dart';
 import 'package:care_sync/src/service/api/documetAIService.dart';
@@ -18,6 +18,7 @@ class HttpService {
   late final DocumentService documentService;
   late final UserService userService;
   late final CareGiverRequestService careGiverRequestService;
+  late final CareGiverAssignmentService careGiverAssignmentService;
 
   HttpService(UserBloc userBloc) : baseUrl = "http://10.0.2.2:8080/api" {
     httpClient = InterceptedClient.build(
@@ -33,5 +34,7 @@ class HttpService {
     userService = UserService(baseUrl: baseUrl, client: httpClient);
     careGiverRequestService =
         CareGiverRequestService(baseUrl: baseUrl, client: httpClient);
+    careGiverAssignmentService =
+        CareGiverAssignmentService(baseUrl: baseUrl, client: httpClient);
   }
 }

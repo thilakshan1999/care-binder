@@ -2,6 +2,7 @@ import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:care_sync/src/bloc/userBloc.dart';
 import 'package:care_sync/src/component/appBar/appBar.dart';
 import 'package:care_sync/src/models/enums/userRole.dart';
+import 'package:care_sync/src/screens/careManagement/component/careRelationshipList.dart';
 import 'package:care_sync/src/screens/careManagement/component/requestList.dart';
 import 'package:care_sync/src/screens/careManagement/component/requestSendSheet.dart';
 import 'package:care_sync/src/theme/customColors.dart';
@@ -34,7 +35,7 @@ class _CareManagementScreenState extends State<CareManagementScreen> {
       appBar: CustomAppBar(
           showBackButton: true,
           tittle:
-              userRole == UserRole.PATIENT ? "Patient Info" : "Caregiver Info"),
+              userRole == UserRole.PATIENT ? "Caregiver Info" : "Patient Info"),
       floatingActionButton: userRole == UserRole.CAREGIVER
           ? CustomFloatingBtn(
               onPressed: () {
@@ -95,22 +96,12 @@ class _CareManagementScreenState extends State<CareManagementScreen> {
           const SizedBox(height: 16),
           Expanded(
               child: selectedIndex == 0
-                  ? _buildFirstTab(userRole!)
+                  ? CareRelationshipList(role: userRole!)
                   : RequestList(
                       role: userRole!,
                     )),
         ],
       ),
     );
-  }
-
-  Widget _buildFirstTab(UserRole role) {
-    if (role == UserRole.PATIENT) {
-      // Patient → Caregivers list
-      return const Center(child: Text("Caregivers list here"));
-    } else {
-      // Caregiver → Patients list
-      return const Center(child: Text("Patients list here"));
-    }
   }
 }

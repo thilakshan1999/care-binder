@@ -1,7 +1,7 @@
 import 'package:care_sync/src/bloc/userBloc.dart';
 import 'package:care_sync/src/models/enums/userRole.dart';
 import 'package:care_sync/src/models/user/careGiverRequest.dart';
-import 'package:care_sync/src/screens/careManagement/component/requestListCard.dart';
+import 'package:care_sync/src/screens/careManagement/component/requestCard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -128,7 +128,7 @@ class _RequestListState extends State<RequestList> {
                       itemCount: requests.length,
                       itemBuilder: (context, index) {
                         final request = requests[index];
-                        return RequestListCard(
+                        return RequestCard(
                           request: request,
                           role: widget.role,
                           responseRequest: (accept) {

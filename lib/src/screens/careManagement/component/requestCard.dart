@@ -4,6 +4,7 @@ import 'package:care_sync/src/models/enums/userRole.dart';
 import 'package:care_sync/src/models/user/careGiverRequest.dart';
 import 'package:care_sync/src/models/user/userSummary.dart';
 import 'package:care_sync/src/theme/customColors.dart';
+import 'package:care_sync/src/utils/iconAndColorUtils.dart';
 import 'package:care_sync/src/utils/textFormatUtils.dart';
 import 'package:flutter/material.dart';
 
@@ -12,12 +13,12 @@ import '../../../component/text/btnText.dart';
 import '../../../component/text/subText.dart';
 import '../../../models/enums/careGiverPermission.dart';
 
-class RequestListCard extends StatelessWidget {
+class RequestCard extends StatelessWidget {
   final CareGiverRequest request;
   final UserRole role;
   final void Function(bool) responseRequest;
 
-  const RequestListCard(
+  const RequestCard(
       {super.key,
       required this.request,
       required this.role,
@@ -52,12 +53,13 @@ class RequestListCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 SimpleBadge(
-                  color: _getStatusColor(request.requestedPermission, context),
+                  color: IconAndColorUtils.getPermissionColor(
+                      request.requestedPermission),
                   child: Text(
                     TextFormatUtils.formatEnum(request.requestedPermission),
                     style: TextStyle(
-                      color:
-                          _getStatusColor(request.requestedPermission, context),
+                      color: IconAndColorUtils.getPermissionColor(
+                          request.requestedPermission),
                       fontWeight: FontWeight.w600,
                       fontSize: 12,
                     ),
@@ -103,16 +105,5 @@ class RequestListCard extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  Color _getStatusColor(CareGiverPermission permission, BuildContext context) {
-    switch (permission) {
-      case CareGiverPermission.FULL_ACCESS:
-        return Colors.green;
-      case CareGiverPermission.VIEW_ONLY:
-        return Colors.orange;
-      default:
-        return Colors.grey;
-    }
   }
 }

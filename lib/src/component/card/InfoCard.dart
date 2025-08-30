@@ -3,6 +3,7 @@ import 'package:care_sync/src/component/text/btnText.dart';
 import 'package:care_sync/src/component/text/primaryText.dart';
 import 'package:care_sync/src/component/text/subText.dart';
 import 'package:care_sync/src/models/enums/entityStatus.dart';
+import 'package:care_sync/src/utils/iconAndColorUtils.dart';
 import 'package:care_sync/src/utils/textFormatUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
@@ -28,18 +29,6 @@ class InfoCard extends StatelessWidget {
     this.onDelete,
     this.isEditable = false,
   });
-
-  Color _getStatusColor(EntityStatus status, BuildContext context) {
-    switch (status) {
-      case EntityStatus.NEW:
-        return Colors.green;
-      case EntityStatus.UPDATED:
-        return Colors.orange;
-      case EntityStatus.SAME:
-      default:
-        return Colors.grey;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,11 +60,11 @@ class InfoCard extends StatelessWidget {
                     if (status != null) ...[
                       const SizedBox(height: 6),
                       SimpleBadge(
-                        color: _getStatusColor(status!, context),
+                        color: IconAndColorUtils.getStatusColor(status!),
                         child: Text(
                           TextFormatUtils.formatEnum(status),
                           style: TextStyle(
-                            color: _getStatusColor(status!, context),
+                            color: IconAndColorUtils.getStatusColor(status!),
                             fontWeight: FontWeight.w600,
                             fontSize: 12,
                           ),

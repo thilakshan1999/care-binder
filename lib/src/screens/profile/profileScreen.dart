@@ -84,7 +84,7 @@ class ProfileScreen extends StatelessWidget {
                 if (context.read<UserBloc>().state.role ==
                     UserRole.CAREGIVER) ...[
                   ProfileCard(
-                    icon: Icons.people,
+                    icon: Icons.elderly,
                     title: "Patient Info",
                     onTap: () {
                       _navigateToCareManagementScreen(context);
