@@ -18,9 +18,17 @@ class DocumentService {
   });
 
   /// POST /api/documents/analyze
-  Future<ApiResponse<AnalyzedDocument>> analyzeDocument(String prompt) {
+  Future<ApiResponse<AnalyzedDocument>> analyzeDocument(
+      String prompt, int? patientId) {
     return ApiHelper.handleRequest<AnalyzedDocument>(() async {
-      var uri = Uri.parse('$baseUrl/documents/analyze');
+      var queryParams = <String, String>{};
+
+      if (patientId != null) {
+        queryParams['patientId'] = patientId.toString();
+      }
+
+      var uri = Uri.parse('$baseUrl/documents/analyze')
+          .replace(queryParameters: queryParams);
       var response = await client.post(
         uri,
         headers: {'Content-Type': 'application/json'},
@@ -49,12 +57,23 @@ class DocumentService {
   }
 
   /// GET /api/documents
-  Future<ApiResponse<List<DocumentSummary>>> getAllDocumentsSummary(
-      {String? type}) {
+  Future<ApiResponse<List<DocumentSummary>>> getAllDocumentsSummary({
+    String? type,
+    int? patientId,
+  }) {
     return ApiHelper.handleRequest<List<DocumentSummary>>(() async {
-      var uri = Uri.parse('$baseUrl/documents').replace(queryParameters: {
-        if (type != null && type.isNotEmpty) 'type': type,
-      });
+      var queryParams = <String, String>{};
+
+      if (type != null && type.isNotEmpty) {
+        queryParams['type'] = type;
+      }
+      if (patientId != null) {
+        queryParams['patientId'] = patientId.toString();
+      }
+
+      var uri =
+          Uri.parse('$baseUrl/documents').replace(queryParameters: queryParams);
+
       var response = await client.get(uri);
       return response;
     },
@@ -63,9 +82,15 @@ class DocumentService {
   }
 
   /// POST /api/documents
-  Future<ApiResponse<void>> saveDocument(AnalyzedDocument dto) {
+  Future<ApiResponse<void>> saveDocument(AnalyzedDocument dto, int? patientId) {
     return ApiHelper.handleRequest<void>(() async {
-      var uri = Uri.parse('$baseUrl/documents');
+      var queryParams = <String, String>{};
+
+      if (patientId != null) {
+        queryParams['patientId'] = patientId.toString();
+      }
+      var uri =
+          Uri.parse('$baseUrl/documents').replace(queryParameters: queryParams);
       var response = await client.post(
         uri,
         headers: {'Content-Type': 'application/json'},

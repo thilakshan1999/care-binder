@@ -1,7 +1,7 @@
 class TextFormatUtils {
   TextFormatUtils._(); // private constructor to prevent instantiation
 
-  static String formatEnumName(String name) {
+  static String formatName(String name) {
     return name
         .toLowerCase()
         .replaceAll('_', ' ')
@@ -14,15 +14,13 @@ class TextFormatUtils {
   static List<String> enumListToStringList<T>(List<T> enumList) {
     return [
       "All",
-      ...enumList
-          .map((e) => formatEnumName(e.toString().split('.').last))
-          .toList(),
+      ...enumList.map((e) => formatName(e.toString().split('.').last)).toList(),
     ];
   }
 
   static String formatEnum(Enum? e) {
     if (e == null) return '-';
-    return formatEnumName(e.name);
+    return formatName(e.name);
   }
 
   static String formatDate(

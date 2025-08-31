@@ -60,7 +60,7 @@ class AppointmentDocument extends StatelessWidget {
               icon: Uim.calender,
               isEditable: isEditable,
               mainText: appointment.name,
-              subText: TextFormatUtils.formatEnumName(appointment.type.name),
+              subText: TextFormatUtils.formatName(appointment.type.name),
               status: appointmentsWithStatus != null
                   ? appointment.entityStatus
                   : null,

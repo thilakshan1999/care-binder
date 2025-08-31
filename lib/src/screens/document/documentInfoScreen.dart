@@ -25,11 +25,13 @@ import 'component/analyzedScreen/vitalDocument.dart';
 class DocumentInfoScreen extends StatefulWidget {
   final int id;
   final String name;
+  final bool fullAccess;
 
   const DocumentInfoScreen({
     super.key,
     required this.id,
     required this.name,
+    required this.fullAccess,
   });
 
   @override
@@ -169,26 +171,27 @@ class _DocumentInfoScreenState extends State<DocumentInfoScreen> {
                                 vitals: doc.vitals,
                                 isEditable: false,
                               ),
-                              PrimaryLoadingBtn(
-                                label: 'Delete',
-                                loading: isLoading,
-                                backgroundColor:
-                                    Theme.of(context).colorScheme.error,
-                                onPressed: () {
-                                  showConfirmDialog(
-                                    context: context,
-                                    title: "Delete Document",
-                                    message:
-                                        "Are you sure you want to delete this document?",
-                                    onConfirm: () {
-                                      setState(() {
-                                        isLoading = true;
-                                      });
-                                      _deleteDocument();
-                                    },
-                                  );
-                                },
-                              ),
+                              if (widget.fullAccess)
+                                PrimaryLoadingBtn(
+                                  label: 'Delete',
+                                  loading: isLoading,
+                                  backgroundColor:
+                                      Theme.of(context).colorScheme.error,
+                                  onPressed: () {
+                                    showConfirmDialog(
+                                      context: context,
+                                      title: "Delete Document",
+                                      message:
+                                          "Are you sure you want to delete this document?",
+                                      onConfirm: () {
+                                        setState(() {
+                                          isLoading = true;
+                                        });
+                                        _deleteDocument();
+                                      },
+                                    );
+                                  },
+                                ),
                             ]),
                       ))));
   }

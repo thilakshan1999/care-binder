@@ -38,7 +38,7 @@ class _SimpleEnumDropdownFieldState<T extends Enum>
     _controller = SingleValueDropDownController(
       data: initial != null
           ? DropDownValueModel(
-              name: TextFormatUtils.formatEnumName(widget.initialValue!.name),
+              name: TextFormatUtils.formatName(widget.initialValue!.name),
               value: widget.initialValue,
             )
           : null,
@@ -66,7 +66,7 @@ class _SimpleEnumDropdownFieldState<T extends Enum>
       enableSearch: widget.searchOption,
       dropDownList: widget.values
           .map((e) => DropDownValueModel(
-                name: TextFormatUtils.formatEnumName(e.name),
+                name: TextFormatUtils.formatName(e.name),
                 value: e,
               ))
           .toList(),

@@ -1,3 +1,4 @@
+import 'package:care_sync/src/utils/textFormatUtils.dart';
 import 'package:flutter/material.dart';
 
 class PrimaryText extends StatelessWidget {
@@ -13,7 +14,7 @@ class PrimaryText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      text,
+      TextFormatUtils.formatName(text),
       textAlign: textAlign,
       style: TextStyle(
         height: 1,

@@ -64,7 +64,7 @@ class MedDocument extends StatelessWidget {
               icon: Ph.pill_duotone,
               isEditable: isEditable,
               mainText: med.name,
-              subText: TextFormatUtils.formatEnumName(med.medForm.name),
+              subText: TextFormatUtils.formatName(med.medForm.name),
               status: medicinesWithStatus != null ? med.entityStatus : null,
               onTap: () {
                 CustomBottomSheet.show(

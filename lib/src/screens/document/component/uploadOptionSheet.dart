@@ -6,8 +6,11 @@ import 'package:care_sync/src/service/imagePickerService.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../models/user/userSummary.dart';
+
 class UploadOptionSheet extends StatelessWidget {
-  const UploadOptionSheet({super.key});
+  final UserSummary? patient;
+  const UploadOptionSheet({super.key, this.patient});
 
   Future<void> _pickImage(ImageSource source, BuildContext context) async {
     final navigator = Navigator.of(context);
@@ -15,7 +18,10 @@ class UploadOptionSheet extends StatelessWidget {
     if (imageFile != null) {
       navigator.push(
         MaterialPageRoute(
-          builder: (_) => TextAnalysisScreen(imageFile: imageFile),
+          builder: (_) => TextAnalysisScreen(
+            imageFile: imageFile,
+            patient: patient,
+          ),
         ),
       );
     }
@@ -30,6 +36,7 @@ class UploadOptionSheet extends StatelessWidget {
         MaterialPageRoute(
           builder: (_) => TextAnalysisScreen(
             documentData: docData,
+            patient: patient,
           ),
         ),
       );

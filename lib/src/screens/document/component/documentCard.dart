@@ -18,6 +18,7 @@ AccordionSection documentCard({
   required DateTime updatedTime,
   required String summary,
   required DocumentType type,
+  required bool fullAccess,
 }) {
   Color getDocumentTypeColor(DocumentType type) {
     switch (type) {
@@ -48,6 +49,7 @@ AccordionSection documentCard({
         builder: (_) => DocumentInfoScreen(
           id: id,
           name: name,
+          fullAccess: fullAccess,
         ),
       ),
     );
@@ -81,7 +83,7 @@ AccordionSection documentCard({
           SimpleBadge(
             color: getDocumentTypeColor(type),
             child: Text(
-              TextFormatUtils.formatEnumName(type.name),
+              TextFormatUtils.formatName(type.name),
               style: TextStyle(
                 color: getDocumentTypeColor(type),
                 fontWeight: FontWeight.w600,

@@ -4,20 +4,22 @@ import 'package:care_sync/src/component/appBar/appBar.dart';
 import 'package:care_sync/src/component/errorBox/ErrorBox.dart';
 import 'package:care_sync/src/screens/document/component/documentLoadingIndicator.dart';
 import 'package:care_sync/src/screens/document/documentAnalyzedScreen.dart';
-import 'package:care_sync/src/screens/login/loginScreen.dart';
 import 'package:care_sync/src/service/api/httpService.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../component/apiHandler/apiHandler.dart';
 import '../../component/btn/primaryBtn/primaryBtn.dart';
 import '../../component/textField/multiLine/multiLineTextField.dart';
+import '../../models/user/userSummary.dart';
 import '../../service/documentPickerService.dart';
 
 class TextAnalysisScreen extends StatefulWidget {
+  final UserSummary? patient;
   final File? imageFile;
   final DocumentData? documentData;
 
-  const TextAnalysisScreen({super.key, this.imageFile, this.documentData});
+  const TextAnalysisScreen(
+      {super.key, this.imageFile, this.documentData, this.patient});
 
   @override
   State<TextAnalysisScreen> createState() => _TextAnalysisScreenState();
@@ -43,10 +45,6 @@ class _TextAnalysisScreenState extends State<TextAnalysisScreen> {
         _analyzeImage(widget.imageFile!);
       } else if (widget.documentData != null) {
         _extractText();
-        // setState(() {
-        //   extractedText = 'Document';
-        //   isProcessing = false;
-        // });
       } else {
         setState(() {
           extractedText = '';
@@ -125,7 +123,10 @@ class _TextAnalysisScreenState extends State<TextAnalysisScreen> {
     final navigator = Navigator.of(context);
     navigator.push(
       MaterialPageRoute(
-        builder: (_) => DocumentAnalyzedScreen(extractedText: extractedText),
+        builder: (_) => DocumentAnalyzedScreen(
+          extractedText: extractedText,
+          patient: widget.patient,
+        ),
       ),
     );
   }

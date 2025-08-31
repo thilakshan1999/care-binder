@@ -18,13 +18,16 @@ import '../../component/appBar/appBar.dart';
 import '../../component/errorBox/ErrorBox.dart';
 import '../../component/snakbar/customSnakbar.dart';
 import '../../component/textField/multiLine/multiLineTextField.dart';
+import '../../models/user/userSummary.dart';
 import '../../service/api/httpService.dart';
 import '../../theme/customColors.dart';
 import 'component/documentLoadingIndicator.dart';
 
 class DocumentAnalyzedScreen extends StatefulWidget {
+  final UserSummary? patient;
   final String extractedText;
-  const DocumentAnalyzedScreen({super.key, required this.extractedText});
+  const DocumentAnalyzedScreen(
+      {super.key, required this.extractedText, this.patient});
 
   @override
   State<DocumentAnalyzedScreen> createState() => _DocumentAnalyzedScreenState();
@@ -67,7 +70,8 @@ class _DocumentAnalyzedScreenState extends State<DocumentAnalyzedScreen> {
 
     await ApiHandler.handleApiCall<AnalyzedDocument>(
       context: context,
-      request: () => httpService.documentService.analyzeDocument(extractedText),
+      request: () => httpService.documentService
+          .analyzeDocument(extractedText, widget.patient?.id),
       onSuccess: (data, msg) {
         setState(() {
           context.read<AnalyzedDocumentBloc>().setDocument(data);
@@ -92,7 +96,8 @@ class _DocumentAnalyzedScreenState extends State<DocumentAnalyzedScreen> {
 
     await ApiHandler.handleApiCall<void>(
       context: context,
-      request: () => httpService.documentService.saveDocument(dto),
+      request: () =>
+          httpService.documentService.saveDocument(dto, widget.patient?.id),
       onSuccess: (_, msg) {
         Navigator.of(context).push(
           MaterialPageRoute(
