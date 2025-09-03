@@ -6,6 +6,7 @@ class PasswordTextField extends StatefulWidget {
   final void Function(String)? onChanged;
   final String? Function(String?)? validator;
   final TextEditingController? controller;
+  final bool readOnly;
 
   const PasswordTextField({
     super.key,
@@ -14,6 +15,7 @@ class PasswordTextField extends StatefulWidget {
     this.labelText = 'Password',
     this.validator,
     this.controller,
+    this.readOnly = false,
   });
 
   @override
@@ -44,6 +46,7 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
     return TextFormField(
       focusNode: _focusNode,
       controller: widget.controller,
+      readOnly: widget.readOnly,
       obscureText: _obscureText, // hides or shows password
       initialValue: widget.controller != null ? null : widget.initialText,
       onChanged: widget.onChanged,

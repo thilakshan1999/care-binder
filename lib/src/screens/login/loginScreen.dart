@@ -3,6 +3,7 @@ import 'package:care_sync/src/component/btn/primaryBtn/priamaryLoadingBtn.dart';
 import 'package:care_sync/src/component/text/btnText.dart';
 import 'package:care_sync/src/models/user/loginRequest.dart';
 import 'package:care_sync/src/screens/main/mainScreen.dart';
+import 'package:care_sync/src/screens/registration/registrationScreen.dart';
 import 'package:care_sync/src/screens/registration/registrationScreen1.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -26,7 +27,7 @@ class _LoginScreenState extends State<LoginScreen> {
   String email = "";
   late final HttpService httpService;
 
-@override
+  @override
   void initState() {
     super.initState();
     httpService = HttpService(context.read<UserBloc>());
@@ -93,6 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       initialText: "",
                       keyboardType: TextInputType.emailAddress,
                       labelText: 'Email',
+                      readOnly: isLoading,
                       onChanged: (value) {
                         email = value;
                       },
@@ -112,6 +114,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(height: 20),
                     PasswordTextField(
                       initialText: "",
+                      readOnly: isLoading,
                       labelText: "Password",
                       onChanged: (value) {
                         password = value;
@@ -154,8 +157,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) =>
-                                  const RegistrationScreen1()),
+                              builder: (context) => const RegistrationScreen()),
                         );
                       },
                       child: BtnText(
