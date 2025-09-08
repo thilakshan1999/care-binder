@@ -1,14 +1,18 @@
+import 'package:care_sync/src/screens/profile/profileScreen.dart';
 import 'package:flutter/material.dart';
 
+import '../btn/profile/profileIconButton.dart';
 import '../text/screenTittleText.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String tittle;
   final bool showBackButton;
+  final bool showProfile;
   const CustomAppBar({
     super.key,
     required this.tittle,
     this.showBackButton = false,
+    this.showProfile = true,
   });
 
   @override
@@ -27,6 +31,17 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               onPressed: () => Navigator.pop(context),
             )
           : const SizedBox.shrink(),
+      actions: [
+        if (showProfile)
+          ProfileIconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ProfileScreen()),
+              );
+            },
+          ),
+      ],
       flexibleSpace: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(

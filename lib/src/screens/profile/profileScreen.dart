@@ -47,13 +47,23 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final userBloc = context.read<UserBloc>();
     return Scaffold(
-      appBar: const CustomAppBar(tittle: "Profile"),
+      appBar: const CustomAppBar(
+        tittle: "Profile",
+        showBackButton: true,
+        showProfile: false,
+      ),
       body: Column(
         children: [
           const SizedBox(height: 20),
-          const CircleAvatar(
+          CircleAvatar(
             radius: 75,
-            backgroundColor: Colors.grey,
+            backgroundColor:
+                Theme.of(context).colorScheme.primary.withOpacity(0.9),
+            child: Icon(
+              size: 120,
+              Icons.person,
+              color: Theme.of(context).colorScheme.onPrimary,
+            ),
           ),
 
           const SizedBox(height: 10),

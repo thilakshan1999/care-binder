@@ -2,9 +2,7 @@ import 'package:care_sync/src/bloc/userBloc.dart';
 import 'package:care_sync/src/component/btn/primaryBtn/priamaryLoadingBtn.dart';
 import 'package:care_sync/src/component/text/btnText.dart';
 import 'package:care_sync/src/models/user/loginRequest.dart';
-import 'package:care_sync/src/screens/main/mainScreen.dart';
 import 'package:care_sync/src/screens/registration/registrationScreen.dart';
-import 'package:care_sync/src/screens/registration/registrationScreen1.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -12,6 +10,7 @@ import '../../component/snakbar/customSnakbar.dart';
 import '../../component/textField/password/passwordTextField.dart';
 import '../../component/textField/simpleTextField/simpleTextField.dart';
 import '../../service/api/httpService.dart';
+import '../document/documentScreen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -50,7 +49,7 @@ class _LoginScreenState extends State<LoginScreen> {
               );
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const MainScreen()),
+            MaterialPageRoute(builder: (context) => const DocumentScreen()),
           );
         } else {
           CustomSnackbar.showCustomSnackbar(

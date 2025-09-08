@@ -1,5 +1,4 @@
 import 'package:care_sync/src/screens/login/loginScreen.dart';
-import 'package:care_sync/src/screens/main/mainScreen.dart';
 import 'package:care_sync/src/theme/darkTheme.dart';
 import 'package:care_sync/src/theme/lightTheme.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'src/bloc/blockProvider.dart';
 import 'src/bloc/userBloc.dart';
+import 'src/screens/document/documentScreen.dart';
 import 'src/screens/splashScreen/splashScreen.dart';
 
 void main() async {
@@ -59,13 +59,12 @@ class _AppEntryState extends State<AppEntry> {
 
   @override
   Widget build(BuildContext context) {
-    //context.read<UserBloc>().clear();
     if (_showSplash) {
       return const SplashScreen();
     }
 
     return context.read<UserBloc>().state.isLoggedIn
-        ? const MainScreen()
+        ? const DocumentScreen()
         : const LoginScreen();
   }
 }

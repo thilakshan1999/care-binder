@@ -18,6 +18,7 @@ class ApiHelper {
         return ApiResponse<T>.fromJson(jsonMap, fromJson);
       } else {
         final jsonMap = jsonDecode(response.body);
+        print("error");
         return ApiResponse<T>(
           success: false,
           message: '${jsonMap["message"]}',
@@ -40,6 +41,7 @@ class ApiHelper {
         data: null,
       );
     } on AuthException catch (e) {
+      print("AuthException");
       return ApiResponse<T>(
         success: false,
         message: e.message,

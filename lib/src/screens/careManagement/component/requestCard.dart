@@ -11,7 +11,6 @@ import 'package:flutter/material.dart';
 import '../../../component/badge/simpleBadge.dart';
 import '../../../component/text/btnText.dart';
 import '../../../component/text/subText.dart';
-import '../../../models/enums/careGiverPermission.dart';
 
 class RequestCard extends StatelessWidget {
   final CareGiverRequest request;
