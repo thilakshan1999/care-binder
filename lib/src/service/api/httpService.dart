@@ -20,7 +20,10 @@ class HttpService {
   late final CareGiverRequestService careGiverRequestService;
   late final CareGiverAssignmentService careGiverAssignmentService;
 
-  HttpService(UserBloc userBloc) : baseUrl = "http://10.0.2.2:8080/api" {
+  HttpService(UserBloc userBloc)
+      : baseUrl =
+            //"http://10.0.2.2:8080/api"
+            "https://caresync-service-309965347032.us-central1.run.app/api" {
     httpClient = InterceptedClient.build(
       interceptors: [
         LoggingInterceptor(),
