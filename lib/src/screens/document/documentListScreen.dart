@@ -2,6 +2,7 @@ import 'package:accordion/accordion.dart';
 import 'package:care_sync/src/bloc/userBloc.dart';
 import 'package:care_sync/src/component/appBar/appBar.dart';
 import 'package:care_sync/src/component/btn/floatingBtn/floatingBtn.dart';
+import 'package:care_sync/src/component/contraintBox/maxWidthConstraintBox.dart';
 import 'package:care_sync/src/component/text/bodyText.dart';
 import 'package:care_sync/src/models/enums/careGiverPermission.dart';
 import 'package:care_sync/src/models/enums/documentType.dart';
@@ -153,28 +154,30 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
                             textAlign: TextAlign.center,
                           ),
                         )))
-                      : Accordion(
-                          maxOpenSections: 1,
-                          headerBackgroundColor: Theme.of(context)
-                              .extension<CustomColors>()
-                              ?.primarySurface,
-                          headerBackgroundColorOpened: Colors.blue.shade50,
-                          headerBorderColor: Colors.blue.shade50,
-                          headerBorderWidth: 1,
-                          paddingListTop: 16,
-                          paddingListBottom: 16,
-                          paddingListHorizontal: 12,
-                          children: documentList.map((doc) {
-                            return documentCard(
-                                context: context,
-                                id: doc.id,
-                                name: doc.documentName,
-                                updatedTime: doc.updatedTime,
-                                summary: doc.summary,
-                                type: doc.documentType,
-                                fullAccess: fullAccess);
-                          }).toList(),
-                        ),
+                      : MaxWidthConstrainedBox(
+                          child: Accordion(
+                            maxOpenSections: 1,
+                            headerBackgroundColor: Theme.of(context)
+                                .extension<CustomColors>()
+                                ?.primarySurface,
+                            headerBackgroundColorOpened: Colors.blue.shade50,
+                            headerBorderColor: Colors.blue.shade50,
+                            headerBorderWidth: 1,
+                            paddingListTop: 16,
+                            paddingListBottom: 16,
+                            paddingListHorizontal: 12,
+                            children: documentList.map((doc) {
+                              return documentCard(
+                                  context: context,
+                                  id: doc.id,
+                                  name: doc.documentName,
+                                  updatedTime: doc.updatedTime,
+                                  summary: doc.summary,
+                                  type: doc.documentType,
+                                  fullAccess: fullAccess);
+                            }).toList(),
+                          ),
+                        )
                 ],
               ),
       ),

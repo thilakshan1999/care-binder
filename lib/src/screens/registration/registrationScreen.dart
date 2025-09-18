@@ -1,6 +1,7 @@
 import 'package:care_sync/src/bloc/userBloc.dart';
 import 'package:care_sync/src/component/appBar/appBar.dart';
 import 'package:care_sync/src/component/btn/primaryBtn/priamaryLoadingBtn.dart';
+import 'package:care_sync/src/component/contraintBox/maxWidthConstraintBox.dart';
 import 'package:care_sync/src/component/text/bodyText.dart';
 import 'package:care_sync/src/component/text/primaryText.dart';
 import 'package:care_sync/src/component/text/subText.dart';
@@ -94,6 +95,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         child: Padding(
             padding: const EdgeInsets.all(16),
             child: SingleChildScrollView(
+                child: MaxWidthConstrainedBox(
+              maxWidth: 400,
               child: Form(
                   key: formKey,
                   child: Column(
@@ -326,7 +329,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       )
                     ],
                   )),
-            )),
+            ))),
       ),
     );
   }

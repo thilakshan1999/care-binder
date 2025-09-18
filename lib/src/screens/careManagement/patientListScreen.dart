@@ -1,5 +1,6 @@
 import 'package:care_sync/src/bloc/userBloc.dart';
 import 'package:care_sync/src/component/appBar/appBar.dart';
+import 'package:care_sync/src/component/contraintBox/maxWidthConstraintBox.dart';
 import 'package:care_sync/src/models/user/userSummary.dart';
 import 'package:care_sync/src/screens/careManagement/component/patientCard.dart';
 import 'package:flutter/material.dart';
@@ -87,41 +88,45 @@ class _PatientListState extends State<PatientListScreen> {
       body: Padding(
           padding: const EdgeInsets.all(16),
           child: Skeletonizer(
-            enabled: isLoading,
-            child: hasError
-                ? ErrorBox(
-                    message: errorMessage ?? 'Something went wrong.',
-                    title: errorTittle ?? 'Something went wrong.',
-                    onRetry: () {
-                      _fetchUserList();
-                      setState(() {
-                        hasError = false;
-                        errorMessage = null;
-                        errorTittle = null;
-                      });
-                    },
-                  )
-                : (isLoading == false && members.isEmpty)
-                    ? const Center(
-                        child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 30),
-                        child: BodyText(
-                          text: 'No patients found yet.',
-                          textAlign: TextAlign.center,
-                        ),
-                      ))
-                    : ListView.builder(
-                        itemCount: members.length,
-                        itemBuilder: (context, index) {
-                          final member = members[index];
-                          return PatientCard(
-                              member: member,
-                              onTap: () {
-                                widget.onTap(member.patient, member.permission);
-                              });
-                        },
-                      ),
-          )),
+              enabled: isLoading,
+              child: hasError
+                  ? ErrorBox(
+                      message: errorMessage ?? 'Something went wrong.',
+                      title: errorTittle ?? 'Something went wrong.',
+                      onRetry: () {
+                        _fetchUserList();
+                        setState(() {
+                          hasError = false;
+                          errorMessage = null;
+                          errorTittle = null;
+                        });
+                      },
+                    )
+                  : (isLoading == false && members.isEmpty)
+                      ? const Center(
+                          child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 30),
+                          child: BodyText(
+                            text: 'No patients found yet.',
+                            textAlign: TextAlign.center,
+                          ),
+                        ))
+                      : Center(
+                          child: MaxWidthConstrainedBox(
+                            child: ListView.builder(
+                              itemCount: members.length,
+                              itemBuilder: (context, index) {
+                                final member = members[index];
+                                return PatientCard(
+                                    member: member,
+                                    onTap: () {
+                                      widget.onTap(
+                                          member.patient, member.permission);
+                                    });
+                              },
+                            ),
+                          ),
+                        ))),
     );
   }
 }

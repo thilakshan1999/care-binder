@@ -1,3 +1,4 @@
+import 'package:care_sync/src/component/contraintBox/maxWidthConstraintBox.dart';
 import 'package:care_sync/src/component/text/bodyText.dart';
 import 'package:care_sync/src/component/text/sectionTittleText.dart';
 import 'package:care_sync/src/component/text/subText.dart';
@@ -135,65 +136,70 @@ class _DocumentInfoScreenState extends State<DocumentInfoScreen> {
                         },
                       )
                     : SingleChildScrollView(
-                        child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SectionTittleText(text: "Basic Info"),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              buildInfoRow("Document Name", doc.documentName),
-                              buildInfoRow("Document Type",
-                                  TextFormatUtils.formatEnum(doc.documentType)),
-                              buildInfoRow("Document Summary", doc.summary),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              DoctorDocument(
-                                doctors: doc.doctors,
-                                isEditable: false,
-                              ),
-
-                              //Med
-                              MedDocument(
-                                medicines: doc.medicines,
-                                isEditable: false,
-                              ),
-
-                              //Appointment
-                              AppointmentDocument(
-                                appointments: doc.appointments,
-                                isEditable: false,
-                              ),
-
-                              //Vital
-                              VitalDocument(
-                                vitals: doc.vitals,
-                                isEditable: false,
-                              ),
-                              if (widget.fullAccess)
-                                PrimaryLoadingBtn(
-                                  label: 'Delete',
-                                  loading: isLoading,
-                                  backgroundColor:
-                                      Theme.of(context).colorScheme.error,
-                                  onPressed: () {
-                                    showConfirmDialog(
-                                      context: context,
-                                      title: "Delete Document",
-                                      message:
-                                          "Are you sure you want to delete this document?",
-                                      onConfirm: () {
-                                        setState(() {
-                                          isLoading = true;
-                                        });
-                                        _deleteDocument();
-                                      },
-                                    );
-                                  },
+                        child: Center(
+                        child: MaxWidthConstrainedBox(
+                          child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SectionTittleText(text: "Basic Info"),
+                                const SizedBox(
+                                  height: 10,
                                 ),
-                            ]),
-                      ))));
+                                buildInfoRow("Document Name", doc.documentName),
+                                buildInfoRow(
+                                    "Document Type",
+                                    TextFormatUtils.formatEnum(
+                                        doc.documentType)),
+                                buildInfoRow("Document Summary", doc.summary),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                DoctorDocument(
+                                  doctors: doc.doctors,
+                                  isEditable: false,
+                                ),
+
+                                //Med
+                                MedDocument(
+                                  medicines: doc.medicines,
+                                  isEditable: false,
+                                ),
+
+                                //Appointment
+                                AppointmentDocument(
+                                  appointments: doc.appointments,
+                                  isEditable: false,
+                                ),
+
+                                //Vital
+                                VitalDocument(
+                                  vitals: doc.vitals,
+                                  isEditable: false,
+                                ),
+                                if (widget.fullAccess)
+                                  PrimaryLoadingBtn(
+                                    label: 'Delete',
+                                    loading: isLoading,
+                                    backgroundColor:
+                                        Theme.of(context).colorScheme.error,
+                                    onPressed: () {
+                                      showConfirmDialog(
+                                        context: context,
+                                        title: "Delete Document",
+                                        message:
+                                            "Are you sure you want to delete this document?",
+                                        onConfirm: () {
+                                          setState(() {
+                                            isLoading = true;
+                                          });
+                                          _deleteDocument();
+                                        },
+                                      );
+                                    },
+                                  ),
+                              ]),
+                        ),
+                      )))));
   }
 
   Widget buildInfoRow(String label, String value) {

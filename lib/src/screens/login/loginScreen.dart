@@ -1,5 +1,6 @@
 import 'package:care_sync/src/bloc/userBloc.dart';
 import 'package:care_sync/src/component/btn/primaryBtn/priamaryLoadingBtn.dart';
+import 'package:care_sync/src/component/contraintBox/maxWidthConstraintBox.dart';
 import 'package:care_sync/src/component/text/btnText.dart';
 import 'package:care_sync/src/models/user/loginRequest.dart';
 import 'package:care_sync/src/screens/registration/registrationScreen.dart';
@@ -82,90 +83,94 @@ class _LoginScreenState extends State<LoginScreen> {
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Form(
-                key: _formKey,
-                child: Column(
-                  children: [
-                    SimpleTextField(
-                      initialText: "",
-                      keyboardType: TextInputType.emailAddress,
-                      labelText: 'Email',
-                      readOnly: isLoading,
-                      onChanged: (value) {
-                        email = value;
-                      },
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Email cannot be empty';
-                        }
-                        // Simple email regex
-                        final emailRegex =
-                            RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-                        if (!emailRegex.hasMatch(value)) {
-                          return 'Please enter a valid email';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 20),
-                    PasswordTextField(
-                      initialText: "",
-                      readOnly: isLoading,
-                      labelText: "Password",
-                      onChanged: (value) {
-                        password = value;
-                      },
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Password cannot be empty';
-                        }
-                        if (value.trim().length < 8) {
-                          return 'Password must be at least 8 characters';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    PrimaryLoadingBtn(
-                      loading: isLoading,
-                      label: "Login",
-                      onPressed: () {
-                        if (_formKey.currentState?.validate() ?? false) {
-                          setState(() {
-                            isLoading = true;
-                          });
-                          login();
-                        }
-                      },
-                    ),
-                  ],
+          child: MaxWidthConstrainedBox(
+            maxWidth: 400,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      SimpleTextField(
+                        initialText: "",
+                        keyboardType: TextInputType.emailAddress,
+                        labelText: 'Email',
+                        readOnly: isLoading,
+                        onChanged: (value) {
+                          email = value;
+                        },
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Email cannot be empty';
+                          }
+                          // Simple email regex
+                          final emailRegex =
+                              RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                          if (!emailRegex.hasMatch(value)) {
+                            return 'Please enter a valid email';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 20),
+                      PasswordTextField(
+                        initialText: "",
+                        readOnly: isLoading,
+                        labelText: "Password",
+                        onChanged: (value) {
+                          password = value;
+                        },
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Password cannot be empty';
+                          }
+                          if (value.trim().length < 8) {
+                            return 'Password must be at least 8 characters';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      PrimaryLoadingBtn(
+                        loading: isLoading,
+                        label: "Login",
+                        onPressed: () {
+                          if (_formKey.currentState?.validate() ?? false) {
+                            setState(() {
+                              isLoading = true;
+                            });
+                            login();
+                          }
+                        },
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  BtnText(
-                      text: "Don’t have an account? ",
-                      color: Theme.of(context).colorScheme.onSurface),
-                  GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const RegistrationScreen()),
-                        );
-                      },
-                      child: BtnText(
-                          fontWeight: FontWeight.bold,
-                          text: "SignUp",
-                          color: Theme.of(context).colorScheme.primary)),
-                ],
-              )
-            ],
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    BtnText(
+                        text: "Don’t have an account? ",
+                        color: Theme.of(context).colorScheme.onSurface),
+                    GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    const RegistrationScreen()),
+                          );
+                        },
+                        child: BtnText(
+                            fontWeight: FontWeight.bold,
+                            text: "SignUp",
+                            color: Theme.of(context).colorScheme.primary)),
+                  ],
+                )
+              ],
+            ),
           ),
         ),
       ),

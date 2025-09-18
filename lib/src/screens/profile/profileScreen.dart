@@ -1,5 +1,6 @@
 import 'package:care_sync/src/bloc/userBloc.dart';
 import 'package:care_sync/src/component/appBar/appBar.dart';
+import 'package:care_sync/src/component/contraintBox/maxWidthConstraintBox.dart';
 import 'package:care_sync/src/component/text/primaryText.dart';
 import 'package:care_sync/src/component/text/subText.dart';
 import 'package:care_sync/src/models/enums/userRole.dart';
@@ -47,104 +48,107 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final userBloc = context.read<UserBloc>();
     return Scaffold(
-      appBar: const CustomAppBar(
-        tittle: "Profile",
-        showBackButton: true,
-        showProfile: false,
-      ),
-      body: Column(
-        children: [
-          const SizedBox(height: 20),
-          CircleAvatar(
-            radius: 75,
-            backgroundColor:
-                Theme.of(context).colorScheme.primary.withOpacity(0.9),
-            child: Icon(
-              size: 120,
-              Icons.person,
-              color: Theme.of(context).colorScheme.onPrimary,
-            ),
-          ),
-
-          const SizedBox(height: 10),
-          // User Info
-          Column(
-            children: [
-              PrimaryText(text: userBloc.state.name!),
-              const SizedBox(height: 5),
-              SubText(text: userBloc.state.email!),
-              const SizedBox(height: 5),
-              RoleBadge(role: userBloc.state.role!)
-            ],
-          ),
-
-          const SizedBox(height: 10),
-
-          // Cards Section
-          Expanded(
-            child: ListView(
-              padding: const EdgeInsets.all(16),
+        appBar: const CustomAppBar(
+          tittle: "Profile",
+          showBackButton: true,
+          showProfile: false,
+        ),
+        body: Center(
+          child: MaxWidthConstrainedBox(
+            child: Column(
               children: [
-                ProfileCard(
-                  icon: Icons.person,
-                  title: "Personal Information",
-                  onTap: () {},
-                ),
-                const SizedBox(height: 12),
-                if (context.read<UserBloc>().state.role ==
-                    UserRole.CAREGIVER) ...[
-                  ProfileCard(
-                    icon: Icons.elderly,
-                    title: "Patient Info",
-                    onTap: () {
-                      _navigateToCareManagementScreen(context);
-                    },
+                const SizedBox(height: 20),
+                CircleAvatar(
+                  radius: 75,
+                  backgroundColor:
+                      Theme.of(context).colorScheme.primary.withOpacity(0.9),
+                  child: Icon(
+                    size: 120,
+                    Icons.person,
+                    color: Theme.of(context).colorScheme.onPrimary,
                   ),
-                  const SizedBox(height: 12),
-                ] else ...[
-                  ProfileCard(
-                    icon: Icons.health_and_safety,
-                    title: "Medical Info",
-                    onTap: () {},
-                  ),
-                  const SizedBox(height: 12),
-                  ProfileCard(
-                    icon: Icons.volunteer_activism,
-                    title: "Caregiver Info",
-                    onTap: () {
-                      _navigateToCareManagementScreen(context);
-                    },
-                  ),
-                  const SizedBox(height: 12),
-                ],
-                ProfileCard(
-                  icon: Icons.settings,
-                  title: "App Settings",
-                  onTap: () {},
                 ),
-                const SizedBox(height: 12),
-                ProfileCard(
-                  icon: Icons.logout,
-                  title: "Logout",
-                  onTap: () {
-                    showConfirmDialog(
-                      context: context,
-                      title: "Confirm Logout",
-                      message:
-                          "Are you sure you want to log out of your account?",
-                      onConfirm: () {
-                        _logout(context);
-                      },
-                      btnLabel: "Ok",
-                    );
-                  },
-                  showLogout: true,
+
+                const SizedBox(height: 10),
+                // User Info
+                Column(
+                  children: [
+                    PrimaryText(text: userBloc.state.name!),
+                    const SizedBox(height: 5),
+                    SubText(text: userBloc.state.email!),
+                    const SizedBox(height: 5),
+                    RoleBadge(role: userBloc.state.role!)
+                  ],
                 ),
+
+                const SizedBox(height: 10),
+
+                // Cards Section
+                Expanded(
+                  child: ListView(
+                    padding: const EdgeInsets.all(16),
+                    children: [
+                      ProfileCard(
+                        icon: Icons.person,
+                        title: "Personal Information",
+                        onTap: () {},
+                      ),
+                      const SizedBox(height: 12),
+                      if (context.read<UserBloc>().state.role ==
+                          UserRole.CAREGIVER) ...[
+                        ProfileCard(
+                          icon: Icons.elderly,
+                          title: "Patient Info",
+                          onTap: () {
+                            _navigateToCareManagementScreen(context);
+                          },
+                        ),
+                        const SizedBox(height: 12),
+                      ] else ...[
+                        ProfileCard(
+                          icon: Icons.health_and_safety,
+                          title: "Medical Info",
+                          onTap: () {},
+                        ),
+                        const SizedBox(height: 12),
+                        ProfileCard(
+                          icon: Icons.volunteer_activism,
+                          title: "Caregiver Info",
+                          onTap: () {
+                            _navigateToCareManagementScreen(context);
+                          },
+                        ),
+                        const SizedBox(height: 12),
+                      ],
+                      ProfileCard(
+                        icon: Icons.settings,
+                        title: "App Settings",
+                        onTap: () {},
+                      ),
+                      const SizedBox(height: 12),
+                      ProfileCard(
+                        icon: Icons.logout,
+                        title: "Logout",
+                        onTap: () {
+                          showConfirmDialog(
+                            context: context,
+                            title: "Confirm Logout",
+                            message:
+                                "Are you sure you want to log out of your account?",
+                            onConfirm: () {
+                              _logout(context);
+                            },
+                            btnLabel: "Ok",
+                          );
+                        },
+                        showLogout: true,
+                      ),
+                    ],
+                  ),
+                )
               ],
             ),
-          )
-        ],
-      ),
-    );
+          ),
+        ));
   }
 }
