@@ -7,9 +7,11 @@ import 'package:care_sync/src/models/enums/userRole.dart';
 import 'package:care_sync/src/screens/login/loginScreen.dart';
 import 'package:care_sync/src/screens/profile/component/profileCard.dart';
 import 'package:care_sync/src/screens/profile/component/roleBadge.dart';
+import 'package:care_sync/src/screens/qr/component/qrPermissionSheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../component/bottomSheet/bottomSheet.dart';
 import '../../component/dialog/confirmDeleteDialog.dart';
 import '../../component/snakbar/customSnakbar.dart';
 import '../careManagement/careManagementScreen.dart';
@@ -58,6 +60,7 @@ class ProfileScreen extends StatelessWidget {
             child: Column(
               children: [
                 const SizedBox(height: 20),
+                //Profile Img
                 CircleAvatar(
                   radius: 75,
                   backgroundColor:
@@ -70,6 +73,7 @@ class ProfileScreen extends StatelessWidget {
                 ),
 
                 const SizedBox(height: 10),
+
                 // User Info
                 Column(
                   children: [
@@ -88,14 +92,18 @@ class ProfileScreen extends StatelessWidget {
                   child: ListView(
                     padding: const EdgeInsets.all(16),
                     children: [
+                      //Personal Info
                       ProfileCard(
                         icon: Icons.person,
                         title: "Personal Information",
                         onTap: () {},
                       ),
+
                       const SizedBox(height: 12),
+
                       if (context.read<UserBloc>().state.role ==
                           UserRole.CAREGIVER) ...[
+                        //Patient Info
                         ProfileCard(
                           icon: Icons.elderly,
                           title: "Patient Info",
@@ -103,14 +111,30 @@ class ProfileScreen extends StatelessWidget {
                             _navigateToCareManagementScreen(context);
                           },
                         ),
+
+                        const SizedBox(height: 12),
+
+                        //Link with Patient
+                        ProfileCard(
+                          icon: Icons.qr_code_scanner,
+                          title: "Link with Patient",
+                          onTap: () {
+                            //_navigateToScanQrScreen(context);
+                          },
+                        ),
+
                         const SizedBox(height: 12),
                       ] else ...[
+                        //Medical Info
                         ProfileCard(
                           icon: Icons.health_and_safety,
                           title: "Medical Info",
                           onTap: () {},
                         ),
+
                         const SizedBox(height: 12),
+
+                        //Caregiver Info
                         ProfileCard(
                           icon: Icons.volunteer_activism,
                           title: "Caregiver Info",
@@ -118,14 +142,33 @@ class ProfileScreen extends StatelessWidget {
                             _navigateToCareManagementScreen(context);
                           },
                         ),
+
+                        const SizedBox(height: 12),
+
+                        //Share Access
+                        ProfileCard(
+                          icon: Icons.qr_code,
+                          title: "Share Access",
+                          onTap: () {
+                            CustomBottomSheet.show(
+                                context: context,
+                                child: const QRPermissionSheet());
+                          },
+                        ),
+
                         const SizedBox(height: 12),
                       ],
+
+                      //App Setting
                       ProfileCard(
                         icon: Icons.settings,
                         title: "App Settings",
                         onTap: () {},
                       ),
+
                       const SizedBox(height: 12),
+
+                      //Logout
                       ProfileCard(
                         icon: Icons.logout,
                         title: "Logout",

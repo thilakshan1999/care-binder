@@ -76,4 +76,35 @@ class CareGiverRequestService {
       return response;
     }, (_) {});
   }
+
+  /// POST /api/caregiver-requests/generate-qr
+  Future<ApiResponse<String>> generateQrToken(String permission) {
+    return ApiHelper.handleRequest<String>(() async {
+      var uri = Uri.parse('$baseUrl/caregiver-requests/generate-qr');
+
+      var response = await client.post(
+        uri.replace(queryParameters: {
+          'permission': permission, // VIEW_ONLY or FULL_ACCESS
+        }),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      return response;
+    }, (data) => data as String);
+  }
+
+  /// POST /api/caregiver-requests/link-via-qr
+  Future<ApiResponse<void>> linkViaQr(String qrToken) {
+    return ApiHelper.handleRequest<void>(() async {
+      var uri = Uri.parse('$baseUrl/caregiver-requests/link-via-qr');
+
+      var response = await client.post(
+        uri,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'qrToken': qrToken}),
+      );
+
+      return response;
+    }, (_) {});
+  }
 }
