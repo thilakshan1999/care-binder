@@ -46,7 +46,7 @@
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>Need camera access to take pictures</string>
+	<string>We need access to your camera to scan QR codes and capture photos.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Need access to photo library to select pictures</string>
 	<key>NSDocumentsFolderUsageDescription</key>

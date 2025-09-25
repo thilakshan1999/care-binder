@@ -8,6 +8,7 @@ import 'package:care_sync/src/screens/login/loginScreen.dart';
 import 'package:care_sync/src/screens/profile/component/profileCard.dart';
 import 'package:care_sync/src/screens/profile/component/roleBadge.dart';
 import 'package:care_sync/src/screens/qr/component/qrPermissionSheet.dart';
+import 'package:care_sync/src/screens/qr/qrScanScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -119,7 +120,11 @@ class ProfileScreen extends StatelessWidget {
                           icon: Icons.qr_code_scanner,
                           title: "Link with Patient",
                           onTap: () {
-                            //_navigateToScanQrScreen(context);
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => const QrScanScreen(),
+                              ),
+                            );
                           },
                         ),
 
