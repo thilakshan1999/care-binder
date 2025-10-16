@@ -59,12 +59,13 @@ class _AppEntryState extends State<AppEntry> {
 
   @override
   Widget build(BuildContext context) {
-    if (_showSplash) {
-      return const SplashScreen();
-    }
-
-    return context.read<UserBloc>().state.isLoggedIn
-        ? const DocumentScreen()
-        : const LoginScreen();
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 500),
+      child: _showSplash
+          ? const SplashScreen(key: ValueKey('splash'))
+          : context.read<UserBloc>().state.isLoggedIn
+              ? const DocumentScreen(key: ValueKey('document'))
+              : const LoginScreen(key: ValueKey('login')),
+    );
   }
 }
