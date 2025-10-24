@@ -4,6 +4,7 @@ import 'package:care_sync/src/component/contraintBox/maxWidthConstraintBox.dart'
 import 'package:care_sync/src/component/text/primaryText.dart';
 import 'package:care_sync/src/component/text/subText.dart';
 import 'package:care_sync/src/models/enums/userRole.dart';
+import 'package:care_sync/src/screens/document/documentScreen.dart';
 import 'package:care_sync/src/screens/login/loginScreen.dart';
 import 'package:care_sync/src/screens/profile/component/profileCard.dart';
 import 'package:care_sync/src/screens/profile/component/roleBadge.dart';
@@ -51,10 +52,17 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final userBloc = context.read<UserBloc>();
     return Scaffold(
-        appBar: const CustomAppBar(
+        appBar:  CustomAppBar(
           tittle: "Profile",
           showBackButton: true,
           showProfile: false,
+          onBackPressed: () {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => const DocumentScreen()),
+              (Route<dynamic> route) => false, // removes all previous screens
+            );
+          },
         ),
         body: Center(
           child: MaxWidthConstrainedBox(
@@ -94,13 +102,13 @@ class ProfileScreen extends StatelessWidget {
                     padding: const EdgeInsets.all(16),
                     children: [
                       //Personal Info
-                      ProfileCard(
-                        icon: Icons.person,
-                        title: "Personal Information",
-                        onTap: () {},
-                      ),
+                      // ProfileCard(
+                      //   icon: Icons.person,
+                      //   title: "Personal Information",
+                      //   onTap: () {},
+                      // ),
 
-                      const SizedBox(height: 12),
+                      // const SizedBox(height: 12),
 
                       if (context.read<UserBloc>().state.role ==
                           UserRole.CAREGIVER) ...[
@@ -131,13 +139,13 @@ class ProfileScreen extends StatelessWidget {
                         const SizedBox(height: 12),
                       ] else ...[
                         //Medical Info
-                        ProfileCard(
-                          icon: Icons.health_and_safety,
-                          title: "Medical Info",
-                          onTap: () {},
-                        ),
+                        // ProfileCard(
+                        //   icon: Icons.health_and_safety,
+                        //   title: "Medical Info",
+                        //   onTap: () {},
+                        // ),
 
-                        const SizedBox(height: 12),
+                        // const SizedBox(height: 12),
 
                         //Caregiver Info
                         ProfileCard(
@@ -165,13 +173,13 @@ class ProfileScreen extends StatelessWidget {
                       ],
 
                       //App Setting
-                      ProfileCard(
-                        icon: Icons.settings,
-                        title: "App Settings",
-                        onTap: () {},
-                      ),
+                      // ProfileCard(
+                      //   icon: Icons.settings,
+                      //   title: "App Settings",
+                      //   onTap: () {},
+                      // ),
 
-                      const SizedBox(height: 12),
+                      // const SizedBox(height: 12),
 
                       //Logout
                       ProfileCard(
