@@ -71,26 +71,25 @@ class _QrScanScreenState extends State<QrScanScreen>
     if (controller != null) {
       if (defaultTargetPlatform == TargetPlatform.android) {
         controller!.pauseCamera();
-      } else if (defaultTargetPlatform == TargetPlatform.iOS) {
-        controller!.resumeCamera();
-      }
+      } 
+      debugPrint("Resuming camera after reassemble");
+      controller!.resumeCamera();
     }
   }
 
-  Future<void> _checkCameraPermission() async {
-    final status = await Permission.camera.request();
-    if (status.isGranted) {
-      setState(() {
-        hasPermission = true;
-        isLoading = false;
-      });
-    } else {
-      setState(() {
-        hasPermission = false;
-        isLoading = false;
-      });
-    }
-  }
+ Future<void> _checkCameraPermission() async {
+  final status = await Permission.camera.status;
+  debugPrint('Current Camera Permission Status 1: $status');
+
+  final newStatus = await Permission.camera.request();
+  debugPrint('Requested Camera Permission Status: $newStatus');
+
+  setState(() {
+    hasPermission = newStatus.isGranted;
+    isLoading = false;
+  });
+}
+
 
   void onQRViewCreated(QRViewController ctrl) {
     controller = ctrl;
