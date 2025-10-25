@@ -7,6 +7,8 @@ import 'package:care_sync/src/screens/document/documentAnalyzedScreen.dart';
 import 'package:care_sync/src/service/api/httpService.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:path_provider/path_provider.dart';
 import '../../component/apiHandler/apiHandler.dart';
 import '../../component/btn/primaryBtn/primaryBtn.dart';
 import '../../component/textField/multiLine/multiLineTextField.dart';
@@ -66,9 +68,11 @@ class _TextAnalysisScreenState extends State<TextAnalysisScreen> {
       errorTittle = null;
     });
 
+    final uploadFile = await compressImageFile(imageFile, 75);
+
     await ApiHandler.handleApiCall<String?>(
       context: context,
-      request: () => httpService.visionService.extractTextFromImage(imageFile),
+      request: () => httpService.visionService.extractTextFromImage(uploadFile),
       onSuccess: (data, _) {
         setState(() {
           extractedText = data ?? 'No text found.';
@@ -86,6 +90,40 @@ class _TextAnalysisScreenState extends State<TextAnalysisScreen> {
       },
       onFinally: () => setState(() => isProcessing = false),
     );
+  }
+
+  Future<File> compressImageFile(File imageFile, int quality) async {
+    final fileSize = await imageFile.length();
+    final sizeInMB = (fileSize / (1024 * 1024)).toStringAsFixed(2);
+    debugPrint('📸 Image file size: $sizeInMB MB');
+
+    try {
+      final dir = await getTemporaryDirectory();
+      final targetPath =
+          '${dir.path}/compressed_${DateTime.now().millisecondsSinceEpoch}.jpg';
+
+      final XFile? compressedXFile =
+          await FlutterImageCompress.compressAndGetFile(
+        imageFile.absolute.path,
+        targetPath,
+        quality: quality,
+      );
+
+      if (compressedXFile != null) {
+        final compressedFile = File(compressedXFile.path);
+        final compressedSizeMB =
+            (await compressedFile.length()) / (1024 * 1024);
+        debugPrint(
+            '🗜️ Compressed image size: ${compressedSizeMB.toStringAsFixed(2)} MB');
+        return compressedFile;
+      } else {
+        debugPrint('⚠️ Compression failed, using original file.');
+        return imageFile;
+      }
+    } catch (e) {
+      debugPrint('⚠️ Compression error: $e');
+      return imageFile;
+    }
   }
 
   Future<void> _extractText() async {
