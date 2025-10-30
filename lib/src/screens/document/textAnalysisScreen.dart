@@ -8,6 +8,7 @@ import 'package:care_sync/src/service/api/httpService.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:mime/mime.dart';
 import 'package:path_provider/path_provider.dart';
 import '../../component/apiHandler/apiHandler.dart';
 import '../../component/btn/primaryBtn/primaryBtn.dart';
@@ -68,7 +69,13 @@ class _TextAnalysisScreenState extends State<TextAnalysisScreen> {
       errorTittle = null;
     });
 
+    final originalMime = lookupMimeType(imageFile.path);
+    print("Original file: ${imageFile.path}, MIME type: $originalMime");
+  
     final uploadFile = await compressImageFile(imageFile, 75);
+
+    final compressedMime = lookupMimeType(uploadFile.path);
+    print("Compressed file: ${uploadFile.path}, MIME type: $compressedMime");
 
     await ApiHandler.handleApiCall<String?>(
       context: context,

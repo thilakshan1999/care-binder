@@ -54,4 +54,5 @@ class VisionService {
       return await Response.fromStream(streamedResponse);
     }, (data) => data.toString());
   }
+
 }

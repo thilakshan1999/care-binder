@@ -8,6 +8,7 @@ import 'package:care_sync/src/screens/document/component/analyzedScreen/appointm
 import 'package:care_sync/src/screens/document/component/analyzedScreen/doctorDocument.dart';
 import 'package:care_sync/src/screens/document/component/analyzedScreen/medDocument.dart';
 import 'package:care_sync/src/screens/document/component/analyzedScreen/vitalDocument.dart';
+import 'package:care_sync/src/screens/document/documentScreen.dart';
 import 'package:care_sync/src/screens/main/mainScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -101,7 +102,7 @@ class _DocumentAnalyzedScreenState extends State<DocumentAnalyzedScreen> {
       onSuccess: (_, msg) {
         Navigator.of(context).push(
           MaterialPageRoute(
-              builder: (_) => const MainScreen(initialSelected: 3)),
+              builder: (_) => const DocumentScreen()),
         );
         CustomSnackbar.showCustomSnackbar(
           context: context,

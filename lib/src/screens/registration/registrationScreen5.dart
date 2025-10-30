@@ -1,5 +1,6 @@
 import 'package:care_sync/src/bloc/registrationBloc.dart';
 import 'package:care_sync/src/component/datePicker/dateTimePickerField.dart';
+import 'package:care_sync/src/screens/document/documentScreen.dart';
 import 'package:care_sync/src/screens/main/mainScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -47,7 +48,7 @@ class _RegistrationScreen5State extends State<RegistrationScreen5> {
               );
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const MainScreen()),
+            MaterialPageRoute(builder: (context) => const DocumentScreen()),
           );
         } else {
           CustomSnackbar.showCustomSnackbar(

@@ -3,6 +3,7 @@ import 'package:care_sync/src/component/text/bodyText.dart';
 import 'package:care_sync/src/component/text/sectionTittleText.dart';
 import 'package:care_sync/src/component/text/subText.dart';
 import 'package:care_sync/src/models/document/document.dart';
+import 'package:care_sync/src/screens/document/documentScreen.dart';
 import 'package:care_sync/src/screens/main/mainScreen.dart';
 import 'package:care_sync/src/utils/textFormatUtils.dart';
 import 'package:flutter/material.dart';
@@ -99,7 +100,7 @@ class _DocumentInfoScreenState extends State<DocumentInfoScreen> {
       onSuccess: (_, msg) {
         Navigator.of(context).push(
           MaterialPageRoute(
-              builder: (_) => const MainScreen(initialSelected: 3)),
+              builder: (_) => const DocumentScreen()),
         );
         CustomSnackbar.showCustomSnackbar(
           context: context,
