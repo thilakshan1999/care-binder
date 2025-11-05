@@ -130,15 +130,11 @@ class _RequestListState extends State<RequestList> {
       },
       onError: (title, message) {
         setState(() {
+          isLoading = false;
           hasError = true;
           errorMessage = message;
           errorTittle = title;
         });
-      },
-      onFinally: () {
-        if (mounted) {
-          setState(() => isLoading = false);
-        }
       },
     );
   }
