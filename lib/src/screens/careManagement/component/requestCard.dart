@@ -16,17 +16,18 @@ class RequestCard extends StatelessWidget {
   final CareGiverRequest request;
   final UserRole role;
   final void Function(bool) responseRequest;
+  final bool isSender;
 
   const RequestCard(
       {super.key,
       required this.request,
       required this.role,
-      required this.responseRequest});
+      required this.responseRequest,
+      required this.isSender});
 
   @override
   Widget build(BuildContext context) {
-    UserSummary userSummary =
-        role == UserRole.CAREGIVER ? request.toUser : request.fromUser;
+    UserSummary userSummary = isSender ? request.toUser : request.fromUser;
     return Card(
       elevation: 3,
       shape: RoundedRectangleBorder(
@@ -66,7 +67,7 @@ class RequestCard extends StatelessWidget {
                 ),
               ],
             ),
-            if (role == UserRole.PATIENT)
+            if (!isSender)
               Column(
                 children: [
                   ElevatedButton(

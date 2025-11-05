@@ -11,7 +11,7 @@ class CareGiverRequestSend {
 
   Map<String, dynamic> toJson() {
     return {
-      'patientUserEmail': patientUserEmail,
+      'receiveUserEmail': patientUserEmail,
       'requestedPermission': requestedPermission.toJson(),
     };
   }

@@ -6,10 +6,10 @@ import '../enums/medForm.dart';
 class Med {
   final int id;
   final String name;
-  final MedForm medForm;
+  final MedForm? medForm;
   final String? healthCondition;
   final Duration? intakeInterval;
-  final DateTime startDate;
+  final DateTime? startDate;
   final DateTime? endDate;
   final String? dosage;
   final int? stock;
@@ -34,11 +34,15 @@ class Med {
     return Med(
       id: json['id'],
       name: json['name'],
-      medForm: MedForm.fromJson(json['medForm']),
+      medForm:
+          json['medForm'] != null ? MedForm.fromJson(json['medForm']) : null,
+      //MedForm.fromJson(json['medForm']),
       healthCondition: json['healthCondition'],
       intakeInterval:
           DurationFormatUtils.parseIso8601Duration(json['intakeInterval']),
-      startDate: DateTime.parse(json['startDate']),
+      startDate: json['startDate'] != null
+          ? DateTime.parse(json['startDate'])
+          : null, //DateTime.parse(json['startDate']),
       endDate: json['endDate'] != null ? DateTime.parse(json['endDate']) : null,
       dosage: json['dosage'],
       stock: json['stock'],
@@ -52,11 +56,11 @@ class Med {
   Map<String, dynamic> toJson() => {
         'id': id,
         'name': name,
-        'medForm': medForm.toJson(),
+        'medForm': medForm?.toJson(),
         'healthCondition': healthCondition,
         'intakeInterval':
             DurationFormatUtils.formatIso8601Duration(intakeInterval),
-        'startDate': startDate.toIso8601String(),
+        'startDate': startDate?.toIso8601String(),
         'endDate': endDate?.toIso8601String(),
         'dosage': dosage,
         'stock': stock,

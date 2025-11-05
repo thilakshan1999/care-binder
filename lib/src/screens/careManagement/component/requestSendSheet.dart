@@ -1,6 +1,7 @@
 import 'package:care_sync/src/bloc/userBloc.dart';
 import 'package:care_sync/src/component/btn/primaryBtn/priamaryLoadingBtn.dart';
 import 'package:care_sync/src/models/enums/careGiverPermission.dart';
+import 'package:care_sync/src/models/enums/userRole.dart';
 import 'package:care_sync/src/models/user/careGiverRequestSent.dart';
 import 'package:care_sync/src/theme/customColors.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +15,8 @@ import '../../../component/textField/simpleTextField/simpleTextField.dart';
 import '../../../service/api/httpService.dart';
 
 class RequestSendSheet extends StatefulWidget {
-  const RequestSendSheet({super.key});
+  final UserRole userRole;
+  const RequestSendSheet({super.key, required this.userRole});
 
   @override
   State<RequestSendSheet> createState() => _RequestSendSheetState();
@@ -67,7 +69,10 @@ class _RequestSendSheetState extends State<RequestSendSheet> {
             child: Column(
               children: [
                 const SizedBox(height: 12),
-                const SectionTittleText(text: 'Connect with Patient'),
+                SectionTittleText(
+                    text: widget.userRole == UserRole.PATIENT
+                        ? 'Connect with Caregiver'
+                        : 'Connect with Patient'),
                 const SizedBox(height: 20),
                 SimpleTextField(
                   initialText: careGiverRequestSend.patientUserEmail,

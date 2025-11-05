@@ -54,9 +54,9 @@ class _DocumentAnalyzedScreenState extends State<DocumentAnalyzedScreen> {
       // final initialDoc = AnalyzedDocument.fromJson(sampleAnalyzedDocumentJson);
       // context.read<AnalyzedDocumentBloc>().setDocument(initialDoc);
 
-      // setState(() {
-      //   isProcessing = false;
-      // });
+      setState(() {
+        isProcessing = false;
+      });
       _isInitialized = true;
     }
   }
@@ -101,8 +101,7 @@ class _DocumentAnalyzedScreenState extends State<DocumentAnalyzedScreen> {
           httpService.documentService.saveDocument(dto, widget.patient?.id),
       onSuccess: (_, msg) {
         Navigator.of(context).push(
-          MaterialPageRoute(
-              builder: (_) => const DocumentScreen()),
+          MaterialPageRoute(builder: (_) => const DocumentScreen()),
         );
         CustomSnackbar.showCustomSnackbar(
           context: context,
@@ -120,6 +119,10 @@ class _DocumentAnalyzedScreenState extends State<DocumentAnalyzedScreen> {
         appBar: CustomAppBar(
           tittle: isProcessing ? "Analyzing Document" : "Analyzed Document",
           showBackButton: !isProcessing,
+          onBackPressed: () => {
+            context.read<AnalyzedDocumentBloc>().clear(),
+            Navigator.pop(context)
+          },
         ),
         body: Padding(
             padding: const EdgeInsets.all(16),
@@ -165,7 +168,7 @@ class _DocumentAnalyzedScreenState extends State<DocumentAnalyzedScreen> {
 
                                       SimpleEnumDropdownField<DocumentType>(
                                         initialValue: document.documentType,
-                                        values: DocumentType.values,
+                                        values: document.documentTypeList,
                                         labelText: "Document Type",
                                         onChanged: (value) {
                                           document.documentType = value!;

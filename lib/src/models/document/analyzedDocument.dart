@@ -13,6 +13,7 @@ import '../enums/documentType.dart';
 class AnalyzedDocument {
   String documentName;
   DocumentType documentType;
+  List<DocumentType> documentTypeList;
   String summary;
   List<DoctorWithStatus> doctors;
   List<VitalWithStatus> vitals;
@@ -22,6 +23,7 @@ class AnalyzedDocument {
   AnalyzedDocument({
     required this.documentName,
     required this.documentType,
+    required this.documentTypeList,
     required this.summary,
     required this.doctors,
     required this.vitals,
@@ -33,6 +35,10 @@ class AnalyzedDocument {
       AnalyzedDocument(
         documentName: json['documentName'] ?? "",
         documentType: DocumentType.fromJson(json['documentType']),
+        documentTypeList: (json['documentTypeList'] as List<dynamic>?)
+                ?.map((e) => DocumentType.fromJson(e))
+                .toList() ??
+            [],
         summary: json['summary'] ?? "",
         doctors: (json['doctors'] as List<dynamic>?)
                 ?.map((e) => DoctorWithStatus.fromJson(e))
@@ -55,6 +61,7 @@ class AnalyzedDocument {
   Map<String, dynamic> toJson() => {
         'documentName': documentName,
         'documentType': documentType.toJson(),
+        'documentTypeList': documentTypeList.map((e) => e.toJson()).toList(),
         'summary': summary,
         'doctors': doctors.map((e) => e.toJson()).toList(),
         'vitals': vitals.map((e) => e.toJson()).toList(),
@@ -65,6 +72,7 @@ class AnalyzedDocument {
   AnalyzedDocument copyWith({
     String? documentName,
     DocumentType? documentType,
+    List<DocumentType>? documentTypeList,
     String? summary,
     List<DoctorWithStatus>? doctors,
     List<MedWithStatus>? medicines,
@@ -74,6 +82,7 @@ class AnalyzedDocument {
     return AnalyzedDocument(
       documentName: documentName ?? this.documentName,
       documentType: documentType ?? this.documentType,
+      documentTypeList: documentTypeList ?? this.documentTypeList,
       summary: summary ?? this.summary,
       doctors: doctors ?? this.doctors,
       medicines: medicines ?? this.medicines,
@@ -97,6 +106,7 @@ class AnalyzedDocument {
 final sampleAnalyzedDocument = AnalyzedDocument(
   documentName: "John Doe Medical Report",
   documentType: DocumentType.MEDICAL_REPORT,
+  documentTypeList: [],
   summary: "Patient presents with mild fever and cough. "
       "Prescribed medication and follow-up in 1 week.",
   doctors: [
@@ -174,6 +184,7 @@ final sampleAnalyzedDocument = AnalyzedDocument(
 final sampleAnalyzedDocumentJson = {
   "documentName": "John Doe Medical Report",
   "documentType": "MEDICAL_REPORT",
+  "documentTypeList": ["MEDICAL_REPORT"],
   "summary":
       "Patient presents with mild fever and cough. Prescribed medication and follow-up in 1 week.",
   "doctors": [

@@ -11,6 +11,9 @@ class AnalyzedDocumentBloc extends Cubit<AnalyzedDocument?> {
 
   void setDocument(AnalyzedDocument doc) => emit(doc);
 
+  // ✅ Clear state
+  void clear() => emit(null);
+
   //Doctor
   void updateDoctor(int index, DoctorWithStatus updatedDoctor) {
     if (state == null) return;
