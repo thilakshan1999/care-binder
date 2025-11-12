@@ -199,6 +199,26 @@ class ProfileScreen extends StatelessWidget {
                         },
                         showLogout: true,
                       ),
+
+                      const SizedBox(height: 12),
+
+                       ProfileCard(
+                        icon: Icons.delete_forever,
+                        title: "Delete Account",
+                        onTap: () {
+                          showConfirmDialog(
+                            context: context,
+                            title: "Confirm Delete Account",
+                            message:
+                                "Are you sure you want to delete your account?",
+                            onConfirm: () {
+                              _logout(context);
+                            },
+                            btnLabel: "Ok",
+                          );
+                        },
+                        showLogout: true,
+                      ),
                     ],
                   ),
                 )
