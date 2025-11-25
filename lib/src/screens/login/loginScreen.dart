@@ -80,14 +80,14 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Padding(
+      body:  Padding(
           padding: const EdgeInsets.all(16),
           child: MaxWidthConstrainedBox(
             maxWidth: 400,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                  const Spacer(),
                 Form(
                   key: _formKey,
                   child: Column(
@@ -168,12 +168,25 @@ class _LoginScreenState extends State<LoginScreen> {
                             text: "SignUp",
                             color: Theme.of(context).colorScheme.primary)),
                   ],
-                )
+                ),
+               // Spacer pushes the copyright to the bottom
+            const Spacer(),
+
+            // Copyright at the bottom
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 16),
+              child: Text(
+                '© 2025 Hinetics (Pvt) Ltd. All rights reserved.',
+                style: TextStyle(fontSize: 12, color: Colors.grey),
+                textAlign: TextAlign.center,
+              ),
+            ),
+
               ],
             ),
           ),
         ),
-      ),
+      
     );
   }
 }
