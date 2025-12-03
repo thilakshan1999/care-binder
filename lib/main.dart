@@ -1,4 +1,9 @@
+import 'dart:io';
+
+import 'package:care_sync/src/lib/shareHandler.dart';
+import 'package:care_sync/src/screens/document/textAnalysisScreen.dart';
 import 'package:care_sync/src/screens/login/loginScreen.dart';
+import 'package:care_sync/src/service/documentPickerService.dart';
 import 'package:care_sync/src/theme/darkTheme.dart';
 import 'package:care_sync/src/theme/lightTheme.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +16,7 @@ import 'src/screens/splashScreen/splashScreen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
   runApp(
     MultiBlocProvider(
       providers: BlocProviders.providers(),
@@ -45,11 +51,62 @@ class AppEntry extends StatefulWidget {
 class _AppEntryState extends State<AppEntry> {
   bool _showSplash = true;
 
-  @override
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   checkSharedFile();
+  //   Future.delayed(const Duration(seconds: 2), () {
+  //     if (mounted) {
+  //       setState(() {
+  //         _showSplash = false;
+  //       });
+  //     }
+  //   });
+  // }
+    @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 2), () {
-      if (mounted) {
+    // Start splash delay
+    Future.delayed(const Duration(seconds: 2), () async {
+      if (!mounted) return;
+
+      // After splash ends, check for shared file
+      final sharedData = await ShareHandler.getSharedFile();
+
+      if (sharedData != null) {
+        final type = sharedData['type'];
+      final fileUrl = sharedData['url'];
+         if (type == 'image') {
+        // Convert to File for image
+        final imageFile = File(Uri.parse(fileUrl).path);
+        if (mounted) {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (_) => TextAnalysisScreen(
+                imageFile: imageFile,
+                documentData: null,
+                patient: null,
+              ),
+            ),
+          );
+        }
+      } else if (type == 'file') {
+        // Create a DocumentData for PDF
+        final document = await DocumentPickerService.getDocumentFromUrl(fileUrl);
+        if (mounted) {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (_) => TextAnalysisScreen(
+                imageFile: null,
+                documentData: document,
+                patient: null,
+              ),
+            ),
+          );
+        }
+      }
+      } else {
+        // No shared file, show normal flow
         setState(() {
           _showSplash = false;
         });

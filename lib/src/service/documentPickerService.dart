@@ -3,41 +3,60 @@ import 'package:file_picker/file_picker.dart';
 import 'package:path/path.dart' as p;
 
 class DocumentPickerService {
+  // 🔹 Unified method to detect MIME type
+  static String? _getMimeType(String ext) {
+    switch (ext.toLowerCase()) {
+      case '.pdf':
+        return 'application/pdf';
+      case '.txt':
+        return 'text/plain';
+      case '.doc':
+        return 'application/msword';
+      case '.docx':
+        return 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+      default:
+        return null;
+    }
+  }
+
+  // 🔹 Pick document manually
   static Future<DocumentData?> pickDocument() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
+    final result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
-      allowedExtensions: ['pdf'], //['pdf', 'doc', 'docx', 'txt'],
+      allowedExtensions: ['pdf', 'doc', 'docx', 'txt'],
       withData: true,
     );
 
-    if (result != null && result.files.single.path != null) {
-      final filePath = result.files.single.path!;
-      final file = File(filePath);
-      final ext = p.extension(result.files.single.name).toLowerCase();
+    final path = result?.files.single.path;
+    if (path == null) return null;
 
-      String? mimeType;
+    final file = File(path);
+    final mimeType = _getMimeType(p.extension(path));
+    if (mimeType == null) return null;
 
-      switch (ext) {
-        case '.pdf':
-          mimeType = 'application/pdf';
-          break;
-        case '.txt':
-          mimeType = 'text/plain';
-          break;
-        case '.doc':
-          mimeType = 'application/msword';
-          break;
-        case '.docx':
-          mimeType =
-              'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
-          break;
-        default:
-          return null; // Unsupported file type
+    return DocumentData(file: file, mimeType: mimeType);
+  }
+
+  // 🔹 Create DocumentData from shared file URL
+  static Future<DocumentData?> getDocumentFromUrl(String fileUrl) async {
+    try {
+      final file = File(Uri.parse(fileUrl).path);
+      if (!await file.exists()) {
+        print('⚠️ File not found: $fileUrl');
+        return null;
+      }
+
+      final mimeType = _getMimeType(p.extension(file.path));
+      if (mimeType == null) {
+        print('⚠️ Unsupported file type: ${p.extension(file.path)}');
+        return null;
       }
 
       return DocumentData(file: file, mimeType: mimeType);
+    } catch (e) {
+      print('❌ Error reading shared file: $e');
+      return null;
     }
-    return null;
   }
 }
 

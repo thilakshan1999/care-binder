@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:care_sync/src/bloc/userBloc.dart';
 import 'package:care_sync/src/component/appBar/appBar.dart';
 import 'package:care_sync/src/component/errorBox/ErrorBox.dart';
+import 'package:care_sync/src/lib/shareHandler.dart';
 import 'package:care_sync/src/screens/document/component/documentLoadingIndicator.dart';
 import 'package:care_sync/src/screens/document/documentAnalyzedScreen.dart';
 import 'package:care_sync/src/service/api/httpService.dart';
@@ -95,7 +96,10 @@ class _TextAnalysisScreenState extends State<TextAnalysisScreen> {
           errorTittle = title ?? "Request Failed";
         });
       },
-      onFinally: () => setState(() => isProcessing = false),
+      onFinally: () => {
+        setState(() => isProcessing = false),
+        ShareHandler.clearSharedFolder()
+      },
     );
   }
 
@@ -160,7 +164,10 @@ class _TextAnalysisScreenState extends State<TextAnalysisScreen> {
           errorTittle = title ?? "Request Failed";
         });
       },
-      onFinally: () => setState(() => isProcessing = false),
+      onFinally: () => {
+        setState(() => isProcessing = false),
+        ShareHandler.clearSharedFolder()
+      },
     );
   }
 
@@ -186,8 +193,8 @@ class _TextAnalysisScreenState extends State<TextAnalysisScreen> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: isProcessing
-            ? const DocumentLoadingIndicator(
-                message: "Processing document... Please wait.",
+            ?  DocumentLoadingIndicator(
+                message: widget.imageFile == null? "Processing document... Please wait.":" Extracting text... Please wait.",
               )
             : hasError
                 ? ErrorBox(
