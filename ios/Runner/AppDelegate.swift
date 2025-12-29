@@ -27,12 +27,16 @@ import Flutter
         
         GeneratedPluginRegistrant.register(with: self)
         
-        let controller = window?.rootViewController as! FlutterViewController
-        let channel = FlutterMethodChannel(name: "carebinder/share", binaryMessenger: controller.binaryMessenger)
+        guard let controller = window?.rootViewController as? FlutterViewController else {
+            return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+        }
         
-        // Flutter calls this to get the shared file
+        let channel = FlutterMethodChannel(name: "carebinder/share",
+                                           binaryMessenger: controller.binaryMessenger)
+        
         channel.setMethodCallHandler { [weak self] call, result in
-            if call.method == "getSharedFile" {
+            switch call.method {
+            case "getSharedFile":
                 if let fileURL = self?.sharedFileURL, let type = self?.sharedFileType {
                     result(["url": fileURL, "type": type])
                     self?.sharedFileURL = nil
@@ -40,15 +44,57 @@ import Flutter
                 } else {
                     result(nil)
                 }
+                
+            case "deleteSharedFile":
+                guard let args = call.arguments as? [String: Any],
+                      let fileUrlStr = args["fileUrl"] as? String,
+                      let fileUrl = URL(string: fileUrlStr) else {
+                    result(FlutterError(code: "INVALID_ARG", message: "Missing fileUrl", details: nil))
+                    return
+                }
+                do {
+                    try FileManager.default.removeItem(at: fileUrl)
+                    result(nil)
+                } catch {
+                    result(FlutterError(code: "DELETE_FAILED",
+                                        message: "Failed to delete file",
+                                        details: error.localizedDescription))
+                }
+                
+            case "clearSharedFolder":
+                if let container = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.hinetics.carebinder.shared") {
+                    do {
+                        let files = try FileManager.default.contentsOfDirectory(at: container, includingPropertiesForKeys: nil)
+                        for file in files {
+                            try FileManager.default.removeItem(at: file)
+                        }
+                        result(nil)
+                    } catch {
+                        result(FlutterError(code: "CLEAR_FAILED",
+                                            message: "Failed to clear folder",
+                                            details: error.localizedDescription))
+                    }
+                } else {
+                    result(FlutterError(code: "NO_CONTAINER",
+                                        message: "App Group not found",
+                                        details: nil))
+                }
+
+            default:
+                result(FlutterMethodNotImplemented)
             }
         }
         
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
     
-    // Handle URL scheme
-    override func application(_ app: UIApplication, open url: URL,
-                              options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+    override func application(
+        _ app: UIApplication,
+        open url: URL,
+        options: [UIApplication.OpenURLOptionsKey : Any] = [:]
+    ) -> Bool {
+        
+        // ✅ Your custom share parsing logic
         let components = URLComponents(url: url, resolvingAgainstBaseURL: false)
         if components?.host == "share", let queryItems = components?.queryItems {
             for item in queryItems {
@@ -59,6 +105,10 @@ import Flutter
                 }
             }
         }
-        return true
+
+        // ✅ Forward to Flutter so app_links still receives it
+        return super.application(app, open: url, options: options)
     }
 }
+
+

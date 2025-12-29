@@ -1,11 +1,11 @@
+import 'dart:async';
 import 'dart:io';
 
-import 'package:care_sync/src/lib/shareHandler.dart';
-import 'package:care_sync/src/screens/document/textAnalysisScreen.dart';
+import 'package:app_links/app_links.dart';
 import 'package:care_sync/src/screens/login/loginScreen.dart';
-import 'package:care_sync/src/service/documentPickerService.dart';
 import 'package:care_sync/src/theme/darkTheme.dart';
 import 'package:care_sync/src/theme/lightTheme.dart';
+import 'package:care_sync/src/utils/shareHandler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -50,73 +50,63 @@ class AppEntry extends StatefulWidget {
 
 class _AppEntryState extends State<AppEntry> {
   bool _showSplash = true;
+  StreamSubscription? _linkSub;
+  late final AppLinks _appLinks;
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   checkSharedFile();
-  //   Future.delayed(const Duration(seconds: 2), () {
-  //     if (mounted) {
-  //       setState(() {
-  //         _showSplash = false;
-  //       });
-  //     }
-  //   });
-  // }
-    @override
+  @override
   void initState() {
     super.initState();
-    // Start splash delay
-    Future.delayed(const Duration(seconds: 2), () async {
-      if (!mounted) return;
+    startSplash();
+  }
 
-      // After splash ends, check for shared file
-      final sharedData = await ShareHandler.getSharedFile();
-
-      if (sharedData != null) {
-        final type = sharedData['type'];
-      final fileUrl = sharedData['url'];
-         if (type == 'image') {
-        // Convert to File for image
-        final imageFile = File(Uri.parse(fileUrl).path);
-        if (mounted) {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (_) => TextAnalysisScreen(
-                imageFile: imageFile,
-                documentData: null,
-                patient: null,
-              ),
-            ),
-          );
-        }
-      } else if (type == 'file') {
-        // Create a DocumentData for PDF
-        final document = await DocumentPickerService.getDocumentFromUrl(fileUrl);
-        if (mounted) {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (_) => TextAnalysisScreen(
-                imageFile: null,
-                documentData: document,
-                patient: null,
-              ),
-            ),
-          );
-        }
-      }
-      } else {
-        // No shared file, show normal flow
-        setState(() {
-          _showSplash = false;
-        });
-      }
-    });
+  Future<void> startSplash() async {
+    await Future.delayed(const Duration(seconds: 2));
+    if (mounted) {
+      initDeepLinkListener();
+      setState(() => _showSplash = false);
+    }
   }
 
   @override
+  void dispose() {
+    _linkSub?.cancel();
+    super.dispose();
+  }
+
+  Future<void> initDeepLinkListener() async {
+    _appLinks = AppLinks();
+    print('🧊 Init Deep Link');
+    // 🔹 Handle cold start (app launched via deep link)
+    final initialUri = await _appLinks.getInitialLink();
+    if (initialUri != null) {
+      _handleUri(initialUri);
+    }
+
+     // Listen for links while app is running/resumed
+    _linkSub = _appLinks.uriLinkStream.listen(
+      (uri) => _handleUri(uri),
+      onError: (err) => print('❌ Deep link error: $err'),
+    );
+  }
+
+  void _handleUri(Uri uri) {
+    // ✅ Avoid reprocessing same link
+    if (ShareHandler.lastHandledUri == uri) {
+      print('⚪ Skipping duplicate deep link: $uri');
+      return;
+    }
+    ShareHandler.lastHandledUri = uri;
+
+    print('🔥 Handling deep link: $uri');
+    if(context.read<UserBloc>().state.isLoggedIn){
+      ShareHandler.handleIncomingShare(context, uri);
+    }
+  }
+ 
+  @override
   Widget build(BuildContext context) {
-    return AnimatedSwitcher(
+    return 
+    AnimatedSwitcher(
       duration: const Duration(milliseconds: 500),
       child: _showSplash
           ? const SplashScreen(key: ValueKey('splash'))
@@ -126,3 +116,4 @@ class _AppEntryState extends State<AppEntry> {
     );
   }
 }
+

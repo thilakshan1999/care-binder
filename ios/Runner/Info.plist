@@ -60,11 +60,13 @@
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>carebinder</string>
-			</array>
+		<key>CFBundleURLSchemes</key>
+		<array>
+			<string>carebinder</string>
+		</array>
 		</dict>
 	</array>
+	<key>FlutterDeepLinkingEnabled</key>
+	<false/>
 </dict>
 </plist>

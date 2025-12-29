@@ -1,6 +1,5 @@
 import 'package:care_sync/src/bloc/userBloc.dart';
 import 'package:care_sync/src/screens/careManagement/patientListScreen.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../models/enums/userRole.dart';

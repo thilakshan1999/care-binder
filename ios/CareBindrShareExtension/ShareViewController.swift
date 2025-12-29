@@ -1,35 +1,3 @@
-//
-//  ShareViewController.swift
-//  CareBindrShareExtension
-//
-//  Created by Kathiramalai Thilakshan on 2025-11-25.
-//
-
-//import UIKit
-//import Social
-//
-//class ShareViewController: SLComposeServiceViewController {
-//
-//    override func isContentValid() -> Bool {
-//        // Do validation of contentText and/or NSExtensionContext attachments here
-//        return true
-//    }
-//
-//    override func didSelectPost() {
-//        // This is called after the user selects Post. Do the upload of contentText and/or NSExtensionContext attachments.
-//    
-//        // Inform the host that we're done, so it un-blocks its UI. Note: Alternatively you could call super's -didSelectPost, which will similarly complete the extension context.
-//        self.extensionContext!.completeRequest(returningItems: [], completionHandler: nil)
-//    }
-//
-//    override func configurationItems() -> [Any]! {
-//        // To add configuration options via table cells at the bottom of the sheet, return an array of SLComposeSheetConfigurationItem here.
-//        return []
-//    }
-//
-//}
-
-
 import UIKit
 import UniformTypeIdentifiers
 
@@ -83,32 +51,6 @@ class ShareViewController: UIViewController {
         close()
     }
 
-//    private func openApp(with url: URL, type: String) {
-//        let escapedPath = url.absoluteString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
-//        let scheme = "carebinder://share?type=\(type)&file=\(escapedPath)"
-//
-//        guard let appURL = URL(string: scheme) else {
-//            close()
-//            return
-//        }
-//
-//        // Open app via responder chain
-//        var responder: UIResponder? = self
-//        while let r = responder {
-//            if let application = r as? UIApplication {
-//                if #available(iOS 10.0, *) {
-//                    application.open(appURL, options: [:], completionHandler: nil)
-//                }
-//                break
-//            }
-//            responder = r.next
-//        }
-//
-//        // Close extension shortly after
-//        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-//            self.close()
-//        }
-//    }
     private func openApp(with url: URL, type: String) {
         guard let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.hinetics.carebinder.shared") else {
                 close()
@@ -119,7 +61,8 @@ class ShareViewController: UIViewController {
             try? FileManager.default.copyItem(at: url, to: destURL)
 
             let escapedPath = destURL.absoluteString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
-            let scheme = "carebinder://share?type=\(type)&file=\(escapedPath)"
+            let uniqueID = UUID().uuidString
+            let scheme = "carebinder://share?type=\(type)&file=\(escapedPath)&uid=\(uniqueID)"
         
         if let appURL = URL(string: scheme) {
             var responder: UIResponder? = self

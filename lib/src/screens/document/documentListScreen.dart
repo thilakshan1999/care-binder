@@ -144,19 +144,22 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
                       });
                     },
                   ),
-                  (isLoading == false && documentList.isEmpty)
-                      ? const Expanded(
-                          child: Center(
+                  Expanded(
+                    child:  (isLoading == false && documentList.isEmpty)
+                      ?  const Center(
                               child: Padding(
                           padding: EdgeInsets.symmetric(horizontal: 30),
                           child: BodyText(
                             text: 'No documents found yet.',
                             textAlign: TextAlign.center,
                           ),
-                        )))
-                      : MaxWidthConstrainedBox(
+                        ))
+                      :SingleChildScrollView(
+                        padding: const EdgeInsets.only(bottom: 80),
+                         child: MaxWidthConstrainedBox(
                           child: Accordion(
                             maxOpenSections: 1,
+                            disableScrolling: true,
                             headerBackgroundColor: Theme.of(context)
                                 .extension<CustomColors>()
                                 ?.primarySurface,
@@ -166,6 +169,7 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
                             paddingListTop: 16,
                             paddingListBottom: 16,
                             paddingListHorizontal: 12,
+
                             children: documentList.map((doc) {
                               return documentCard(
                                   context: context,
@@ -178,6 +182,9 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
                             }).toList(),
                           ),
                         )
+                         )
+                      )
+                 
                 ],
               ),
       ),

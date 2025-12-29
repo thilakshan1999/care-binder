@@ -26,7 +26,7 @@ class ProfileScreen extends StatelessWidget {
 
     Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
       MaterialPageRoute(builder: (_) => const LoginScreen()),
-      (route) => false,
+      (route) => route.isFirst, // keep root alive
     );
   }
 
@@ -60,7 +60,7 @@ class ProfileScreen extends StatelessWidget {
             Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (context) => const DocumentScreen()),
-              (Route<dynamic> route) => false, // removes all previous screens
+              (Route<dynamic> route) => route.isFirst, // keep the root route
             );
           },
         ),

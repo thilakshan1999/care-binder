@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:care_sync/src/bloc/userBloc.dart';
 import 'package:care_sync/src/component/appBar/appBar.dart';
 import 'package:care_sync/src/component/errorBox/ErrorBox.dart';
-import 'package:care_sync/src/lib/shareHandler.dart';
+import 'package:care_sync/src/utils/shareHandler.dart';
 import 'package:care_sync/src/screens/document/component/documentLoadingIndicator.dart';
 import 'package:care_sync/src/screens/document/documentAnalyzedScreen.dart';
 import 'package:care_sync/src/service/api/httpService.dart';
@@ -21,9 +21,10 @@ class TextAnalysisScreen extends StatefulWidget {
   final UserSummary? patient;
   final File? imageFile;
   final DocumentData? documentData;
+  final bool isFromShare;
 
   const TextAnalysisScreen(
-      {super.key, this.imageFile, this.documentData, this.patient});
+      {super.key, this.imageFile, this.documentData, this.patient,this.isFromShare = false});
 
   @override
   State<TextAnalysisScreen> createState() => _TextAnalysisScreenState();
@@ -188,7 +189,7 @@ class _TextAnalysisScreenState extends State<TextAnalysisScreen> {
     return Scaffold(
       appBar: CustomAppBar(
         tittle: isProcessing ? "Reading Document" : "Document Summary",
-        showBackButton: !isProcessing,
+        showBackButton: !isProcessing && !widget.isFromShare,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

@@ -46,9 +46,9 @@ class _RegistrationScreen5State extends State<RegistrationScreen5> {
                 auth.accessToken,
                 auth.refreshToken,
               );
-          Navigator.pushReplacement(
-            context,
+          Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(builder: (context) => const DocumentScreen()),
+            (route) => route.isFirst, // keep the root route alive
           );
         } else {
           CustomSnackbar.showCustomSnackbar(

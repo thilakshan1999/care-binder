@@ -48,9 +48,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 auth.accessToken,
                 auth.refreshToken,
               );
-          Navigator.pushReplacement(
+          Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (context) => const DocumentScreen()),
+            (Route<dynamic> route) => route.isFirst, // keep the root route
           );
         } else {
           CustomSnackbar.showCustomSnackbar(
