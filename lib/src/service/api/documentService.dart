@@ -1,10 +1,13 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:care_sync/src/models/document/analyzedDocument.dart';
 import 'package:care_sync/src/models/apiResponse.dart';
 import 'package:care_sync/src/models/document/document.dart';
+import 'package:care_sync/src/models/document/documentReference.dart';
 import 'package:care_sync/src/models/document/documentSummary.dart';
 import 'package:http/http.dart';
+import 'package:http_parser/http_parser.dart';
 
 import 'apiHelper.dart';
 
@@ -56,6 +59,15 @@ class DocumentService {
     }, (data) => Document.fromJson(data));
   }
 
+  /// GET /api/documents/{id}/ref
+  Future<ApiResponse<DocumentReference>> getDocumentRefById(int id) {
+    return ApiHelper.handleRequest<DocumentReference>(() async {
+      var uri = Uri.parse('$baseUrl/documents/$id/ref');
+      var response = await client.get(uri);
+      return response;
+    }, (data) => DocumentReference.fromJson(data));
+  }
+
   /// GET /api/documents
   Future<ApiResponse<List<DocumentSummary>>> getAllDocumentsSummary({
     String? type,
@@ -82,21 +94,42 @@ class DocumentService {
   }
 
   /// POST /api/documents
-  Future<ApiResponse<void>> saveDocument(AnalyzedDocument dto, int? patientId) {
+  Future<ApiResponse<void>> saveDocument(
+    AnalyzedDocument dto,
+    int? patientId,
+    File file,
+    String token,
+  ) {
     return ApiHelper.handleRequest<void>(() async {
       var queryParams = <String, String>{};
 
       if (patientId != null) {
         queryParams['patientId'] = patientId.toString();
       }
-      var uri =
-          Uri.parse('$baseUrl/documents').replace(queryParameters: queryParams);
-      var response = await client.post(
-        uri,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(dto.toJson()),
+      var uri = Uri.parse('$baseUrl/documents/save')
+          .replace(queryParameters: queryParams);
+
+      var request = MultipartRequest('POST', uri);
+      request.files.add(MultipartFile.fromString(
+        'dto',
+        jsonEncode(dto.toJson()),
+        contentType: MediaType('application', 'json'),
+      ));
+
+      request.files.add(
+        await MultipartFile.fromPath(
+          'file',
+          file.path,
+        ),
       );
-      return response;
+
+      request.headers.addAll({
+        'Authorization': 'Bearer $token',
+        'Accept': 'application/json',
+      });
+
+      var streamedResponse = await client.send(request);
+      return await Response.fromStream(streamedResponse);
     }, (_) {});
   }
 }

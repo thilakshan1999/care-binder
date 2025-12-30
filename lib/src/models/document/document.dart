@@ -12,6 +12,7 @@ class Document {
   final String documentName;
   final DocumentType documentType;
   final String summary;
+  final String? fileUrl;
   final List<Doctor> doctors;
   final List<Vital> vitals;
   final List<Med> medicines;
@@ -23,6 +24,7 @@ class Document {
     required this.documentName,
     required this.documentType,
     required this.summary,
+    this.fileUrl,
     required this.doctors,
     required this.vitals,
     required this.medicines,
@@ -35,6 +37,7 @@ class Document {
         documentName: json['documentName'],
         documentType: DocumentType.fromJson(json['documentType']),
         summary: json['summary'],
+        fileUrl: json['fileUrl'],
         doctors: (json['doctors'] as List<dynamic>)
             .map((e) => Doctor.fromJson(e))
             .toList(),

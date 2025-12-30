@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:care_sync/src/bloc/analyzedDocumentBloc.dart';
 import 'package:care_sync/src/component/btn/primaryBtn/priamaryLoadingBtn.dart';
 import 'package:care_sync/src/component/dropdown/simpleEnumDropdown.dart';
@@ -9,7 +11,7 @@ import 'package:care_sync/src/screens/document/component/analyzedScreen/doctorDo
 import 'package:care_sync/src/screens/document/component/analyzedScreen/medDocument.dart';
 import 'package:care_sync/src/screens/document/component/analyzedScreen/vitalDocument.dart';
 import 'package:care_sync/src/screens/document/documentScreen.dart';
-import 'package:care_sync/src/screens/main/mainScreen.dart';
+import 'package:care_sync/src/service/documentPickerService.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -27,8 +29,14 @@ import 'component/documentLoadingIndicator.dart';
 class DocumentAnalyzedScreen extends StatefulWidget {
   final UserSummary? patient;
   final String extractedText;
+  final File? imageFile;
+  final DocumentData? documentData;
   const DocumentAnalyzedScreen(
-      {super.key, required this.extractedText, this.patient});
+      {super.key,
+      required this.extractedText,
+      this.patient,
+      this.imageFile,
+      this.documentData});
 
   @override
   State<DocumentAnalyzedScreen> createState() => _DocumentAnalyzedScreenState();
@@ -95,10 +103,20 @@ class _DocumentAnalyzedScreenState extends State<DocumentAnalyzedScreen> {
   Future<void> _saveDocument(AnalyzedDocument dto) async {
     setState(() => isLoading = true);
 
+    File? fileToSend;
+    if (widget.imageFile != null) {
+      fileToSend = widget.imageFile!;
+    } else if (widget.documentData?.file != null) {
+      fileToSend = widget.documentData!.file;
+    }
+
     await ApiHandler.handleApiCall<void>(
       context: context,
-      request: () =>
-          httpService.documentService.saveDocument(dto, widget.patient?.id),
+      request: () => httpService.documentService.saveDocument(
+          dto,
+          widget.patient?.id,
+          fileToSend!,
+          context.read<UserBloc>().state.accessToken!),
       onSuccess: (_, msg) {
         Navigator.of(context).push(
           MaterialPageRoute(builder: (_) => const DocumentScreen()),

@@ -1,3 +1,4 @@
+import 'package:care_sync/src/component/btn/primaryBtn/primaryBtn.dart';
 import 'package:care_sync/src/component/contraintBox/maxWidthConstraintBox.dart';
 import 'package:care_sync/src/component/text/bodyText.dart';
 import 'package:care_sync/src/component/text/sectionTittleText.dart';
@@ -99,8 +100,7 @@ class _DocumentInfoScreenState extends State<DocumentInfoScreen> {
       request: () => httpService.documentService.deleteDocument(doc.id!),
       onSuccess: (_, msg) {
         Navigator.of(context).push(
-          MaterialPageRoute(
-              builder: (_) => const DocumentScreen()),
+          MaterialPageRoute(builder: (_) => const DocumentScreen()),
         );
         CustomSnackbar.showCustomSnackbar(
           context: context,
@@ -198,6 +198,13 @@ class _DocumentInfoScreenState extends State<DocumentInfoScreen> {
                                       );
                                     },
                                   ),
+                                if (doc.fileUrl != null) ...[
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  PrimaryBtn(
+                                      label: "View File", onPressed: () {})
+                                ]
                               ]),
                         ),
                       )))));

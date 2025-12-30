@@ -24,7 +24,11 @@ class TextAnalysisScreen extends StatefulWidget {
   final bool isFromShare;
 
   const TextAnalysisScreen(
-      {super.key, this.imageFile, this.documentData, this.patient,this.isFromShare = false});
+      {super.key,
+      this.imageFile,
+      this.documentData,
+      this.patient,
+      this.isFromShare = false});
 
   @override
   State<TextAnalysisScreen> createState() => _TextAnalysisScreenState();
@@ -73,7 +77,7 @@ class _TextAnalysisScreenState extends State<TextAnalysisScreen> {
 
     final originalMime = lookupMimeType(imageFile.path);
     print("Original file: ${imageFile.path}, MIME type: $originalMime");
-  
+
     final uploadFile = await compressImageFile(imageFile, 75);
 
     final compressedMime = lookupMimeType(uploadFile.path);
@@ -177,6 +181,8 @@ class _TextAnalysisScreenState extends State<TextAnalysisScreen> {
     navigator.push(
       MaterialPageRoute(
         builder: (_) => DocumentAnalyzedScreen(
+          imageFile: widget.imageFile,
+          documentData: widget.documentData,
           extractedText: extractedText,
           patient: widget.patient,
         ),
@@ -194,8 +200,10 @@ class _TextAnalysisScreenState extends State<TextAnalysisScreen> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: isProcessing
-            ?  DocumentLoadingIndicator(
-                message: widget.imageFile == null? "Processing document... Please wait.":" Extracting text... Please wait.",
+            ? DocumentLoadingIndicator(
+                message: widget.imageFile == null
+                    ? "Processing document... Please wait."
+                    : " Extracting text... Please wait.",
               )
             : hasError
                 ? ErrorBox(
