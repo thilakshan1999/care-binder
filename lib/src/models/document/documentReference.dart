@@ -20,3 +20,10 @@ class DocumentReference {
     );
   }
 }
+
+final sampleDocumentRef = DocumentReference(
+    id: 101,
+    fileName: "blood_report_2025.pdf",
+    fileType: "application/pdf",
+    signedUrl:
+        "https://storage.googleapis.com/care-sync-bucket/blood_report_2025.pdf?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=fake-credential&X-Goog-Date=20251230T100000Z&X-Goog-Expires=900&X-Goog-SignedHeaders=host&X-Goog-Signature=fake-signature");

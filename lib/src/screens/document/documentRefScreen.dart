@@ -3,6 +3,7 @@ import 'package:care_sync/src/component/apiHandler/apiHandler.dart';
 import 'package:care_sync/src/component/appBar/appBar.dart';
 import 'package:care_sync/src/component/errorBox/ErrorBox.dart';
 import 'package:care_sync/src/models/document/documentReference.dart';
+import 'package:care_sync/src/screens/document/pdfViewerFromUrl.dart';
 import 'package:care_sync/src/service/api/httpService.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,7 +22,7 @@ class _DocumentRefScreenState extends State<DocumentRefScreen> {
   bool hasError = false;
   String? errorMessage;
   String? errorTittle;
-  late DocumentReference documentReference;
+  DocumentReference documentReference = sampleDocumentRef;
 
   late final HttpService httpService;
 
@@ -102,27 +103,19 @@ class _DocumentRefScreenState extends State<DocumentRefScreen> {
     final url = documentReference.signedUrl;
 
     return isPdf
-        ? SfPdfViewer.network(
-            url,
-            canShowScrollHead: true,
-            canShowScrollStatus: true,
-            enableDoubleTapZooming: true,
-            onDocumentLoadFailed: (details) {
-              return Center(
-                  child: Text("Failed to load PDF: ${details.description}"));
-            },
-          )
+        ? PdfViewerFromUrl(url: url)
         : InteractiveViewer(
-            child: Image.network(
-              url,
-              fit: BoxFit.contain,
-              loadingBuilder: (context, child, progress) {
-                if (progress == null) return child;
-                return const Center(child: CircularProgressIndicator());
-              },
-              errorBuilder: (context, error, stackTrace) =>
-                  const Center(child: Text("Failed to load image")),
-            ),
+            child: Image.network(url, fit: BoxFit.contain,
+                loadingBuilder: (context, child, progress) {
+              if (progress == null) return child;
+              return const Center(child: CircularProgressIndicator());
+            }, errorBuilder: (context, error, stackTrace) {
+              debugPrint(error.toString());
+              return const ErrorBox(
+                message: "Something went wrong while loading the image.",
+                title: "Failed to load image",
+              );
+            }),
           );
   }
 }

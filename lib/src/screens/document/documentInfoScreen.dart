@@ -4,6 +4,7 @@ import 'package:care_sync/src/component/text/bodyText.dart';
 import 'package:care_sync/src/component/text/sectionTittleText.dart';
 import 'package:care_sync/src/component/text/subText.dart';
 import 'package:care_sync/src/models/document/document.dart';
+import 'package:care_sync/src/screens/document/documentRefScreen.dart';
 import 'package:care_sync/src/screens/document/documentScreen.dart';
 import 'package:care_sync/src/screens/main/mainScreen.dart';
 import 'package:care_sync/src/utils/textFormatUtils.dart';
@@ -112,6 +113,19 @@ class _DocumentInfoScreenState extends State<DocumentInfoScreen> {
     );
   }
 
+  void navigateToDocumentRef(
+    BuildContext context,
+  ) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => DocumentRefScreen(
+          id: widget.id,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -203,7 +217,10 @@ class _DocumentInfoScreenState extends State<DocumentInfoScreen> {
                                     height: 10,
                                   ),
                                   PrimaryBtn(
-                                      label: "View File", onPressed: () {})
+                                      label: "View File",
+                                      onPressed: () {
+                                        navigateToDocumentRef(context);
+                                      })
                                 ]
                               ]),
                         ),
