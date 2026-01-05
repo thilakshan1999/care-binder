@@ -2,6 +2,7 @@ import 'package:care_sync/src/component/badge/simpleBadge.dart';
 import 'package:care_sync/src/component/text/bodyText.dart';
 import 'package:care_sync/src/component/text/primaryText.dart';
 import 'package:care_sync/src/component/text/subText.dart';
+import 'package:care_sync/src/models/enums/documentFilterOption.dart';
 import 'package:care_sync/src/models/enums/documentType.dart';
 import 'package:care_sync/src/utils/textFormatUtils.dart';
 import 'package:flutter/material.dart';
@@ -16,9 +17,12 @@ AccordionSection documentCard({
   required int id,
   required String name,
   required DateTime updatedTime,
+  required DateTime? visitTime,
+  required DateTime? testTime,
   required String summary,
   required DocumentType type,
   required bool fullAccess,
+  required DocumentFilterOption filterOption,
 }) {
   Color getDocumentTypeColor(DocumentType type) {
     switch (type) {
@@ -76,9 +80,7 @@ AccordionSection documentCard({
         children: [
           PrimaryText(text: name),
           const SizedBox(height: 6),
-          SubText(
-            text: "Upload At ${TextFormatUtils.formatDateTime(updatedTime)}",
-          ),
+          buildFilteredDate(filterOption, updatedTime, visitTime, testTime),
           const SizedBox(height: 6),
           SimpleBadge(
             color: getDocumentTypeColor(type),
@@ -105,5 +107,32 @@ AccordionSection documentCard({
     contentHorizontalPadding: 16,
     contentBorderColor: Colors.blue.shade50,
     contentBorderWidth: 1,
+  );
+}
+
+SubText buildFilteredDate(
+    DocumentFilterOption option, updatedTime, visitTime, testTime) {
+  DateTime? date;
+  String label;
+
+  switch (option) {
+    case DocumentFilterOption.UPLOAD_TIME:
+      date = updatedTime;
+      label = "Upload";
+      break;
+    case DocumentFilterOption.VISIT_TIME:
+      date = visitTime;
+      label = "Visit";
+      break;
+    case DocumentFilterOption.TEST_TIME:
+      date = testTime;
+      label = "Test";
+      break;
+  }
+
+  return SubText(
+    text: date != null
+        ? "$label At ${TextFormatUtils.formatDateTime(date)}"
+        : "$label Date Not Available",
   );
 }

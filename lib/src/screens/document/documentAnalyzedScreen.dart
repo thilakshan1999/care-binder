@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:care_sync/src/bloc/analyzedDocumentBloc.dart';
 import 'package:care_sync/src/component/btn/primaryBtn/priamaryLoadingBtn.dart';
+import 'package:care_sync/src/component/datePicker/dateTimePickerField.dart';
 import 'package:care_sync/src/component/dropdown/simpleEnumDropdown.dart';
 import 'package:care_sync/src/component/textField/simpleTextField/simpleTextField.dart';
 import 'package:care_sync/src/models/document/analyzedDocument.dart';
@@ -190,6 +191,38 @@ class _DocumentAnalyzedScreenState extends State<DocumentAnalyzedScreen> {
                                         labelText: "Document Type",
                                         onChanged: (value) {
                                           document.documentType = value!;
+                                        },
+                                      ),
+
+                                      const SizedBox(
+                                        height: 20,
+                                      ),
+
+                                      DateTimePickerField(
+                                        labelText: "Test Date",
+                                        initialDateTime: document.dateOfTest,
+                                        showTime: true,
+                                        allowClear: true,
+                                        onChanged: (dateTime) {
+                                          setState(() {
+                                            document.dateOfTest = dateTime;
+                                          });
+                                        },
+                                      ),
+
+                                      const SizedBox(
+                                        height: 20,
+                                      ),
+
+                                      DateTimePickerField(
+                                        labelText: "Visit Date",
+                                        initialDateTime: document.dateOfVisit,
+                                        showTime: true,
+                                        allowClear: true,
+                                        onChanged: (dateTime) {
+                                          setState(() {
+                                            document.dateOfVisit = dateTime;
+                                          });
                                         },
                                       ),
 

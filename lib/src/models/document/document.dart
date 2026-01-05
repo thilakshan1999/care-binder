@@ -18,6 +18,8 @@ class Document {
   final List<Med> medicines;
   final List<Appointment> appointments;
   final DateTime updatedTime;
+  final DateTime? dateOfTest;
+  final DateTime? dateOfVisit;
 
   Document({
     this.id,
@@ -30,6 +32,8 @@ class Document {
     required this.medicines,
     required this.appointments,
     required this.updatedTime,
+    this.dateOfTest,
+    this.dateOfVisit,
   });
 
   factory Document.fromJson(Map<String, dynamic> json) => Document(
@@ -51,6 +55,12 @@ class Document {
             .map((e) => Appointment.fromJson(e))
             .toList(),
         updatedTime: DateTime.parse(json['updatedTime']),
+        dateOfTest: json['dateOfTest'] != null
+            ? DateTime.parse(json['dateOfTest'])
+            : null,
+        dateOfVisit: json['dateOfVisit'] != null
+            ? DateTime.parse(json['dateOfVisit'])
+            : null,
       );
 
   Map<String, dynamic> toJson() => {
@@ -63,6 +73,8 @@ class Document {
         'meds': medicines.map((e) => e.toJson()).toList(),
         'appointments': appointments.map((e) => e.toJson()).toList(),
         'updatedTime': updatedTime.toIso8601String(),
+        'dateOfTest': dateOfTest?.toIso8601String(),
+        'dateOfVisit': dateOfVisit?.toIso8601String()
       };
 }
 

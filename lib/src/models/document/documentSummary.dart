@@ -6,6 +6,8 @@ class DocumentSummary {
   final DocumentType documentType;
   final String summary;
   final DateTime updatedTime;
+  final DateTime? dateOfTest;
+  final DateTime? dateOfVisit;
 
   DocumentSummary({
     required this.id,
@@ -13,6 +15,8 @@ class DocumentSummary {
     required this.documentType,
     required this.summary,
     required this.updatedTime,
+    this.dateOfTest,
+    this.dateOfVisit,
   });
 
   factory DocumentSummary.fromJson(Map<String, dynamic> json) {
@@ -22,6 +26,12 @@ class DocumentSummary {
       documentType: DocumentType.fromJson(json['documentType']),
       summary: json['summary'],
       updatedTime: DateTime.parse(json['updatedTime']),
+      dateOfTest: json['dateOfTest'] != null
+          ? DateTime.parse(json['dateOfTest'])
+          : null,
+      dateOfVisit: json['dateOfVisit'] != null
+          ? DateTime.parse(json['dateOfVisit'])
+          : null,
     );
   }
 
@@ -32,6 +42,8 @@ class DocumentSummary {
       'documentType': documentType.toJson(),
       'summary': summary,
       'updatedTime': updatedTime.toIso8601String(),
+      'dateOfTest': dateOfTest?.toIso8601String(),
+      'dateOfVisit': dateOfVisit?.toIso8601String()
     };
   }
 }

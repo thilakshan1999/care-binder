@@ -72,12 +72,20 @@ class DocumentService {
   Future<ApiResponse<List<DocumentSummary>>> getAllDocumentsSummary({
     String? type,
     int? patientId,
+    String? filterBy,
+    String? sortOrder,
   }) {
     return ApiHelper.handleRequest<List<DocumentSummary>>(() async {
       var queryParams = <String, String>{};
 
       if (type != null && type.isNotEmpty) {
         queryParams['type'] = type;
+      }
+      if (filterBy != null && filterBy.isNotEmpty) {
+        queryParams['filterBy'] = filterBy;
+      }
+      if (sortOrder != null && sortOrder.isNotEmpty) {
+        queryParams['sortOrder'] = sortOrder;
       }
       if (patientId != null) {
         queryParams['patientId'] = patientId.toString();

@@ -3,10 +3,13 @@ import 'package:care_sync/src/bloc/userBloc.dart';
 import 'package:care_sync/src/component/appBar/appBar.dart';
 import 'package:care_sync/src/component/btn/floatingBtn/floatingBtn.dart';
 import 'package:care_sync/src/component/contraintBox/maxWidthConstraintBox.dart';
+import 'package:care_sync/src/component/filterIcon/filterIcon.dart';
 import 'package:care_sync/src/component/text/bodyText.dart';
 import 'package:care_sync/src/models/enums/careGiverPermission.dart';
+import 'package:care_sync/src/models/enums/documentFilterOption.dart';
 import 'package:care_sync/src/models/enums/documentType.dart';
 import 'package:care_sync/src/models/user/userSummary.dart';
+import 'package:care_sync/src/screens/document/component/documentFilterSheet.dart';
 import 'package:care_sync/src/screens/document/component/uploadOptionSheet.dart';
 import 'package:care_sync/src/utils/textFormatUtils.dart';
 import 'package:flutter/material.dart';
@@ -40,6 +43,8 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
   List<String> categories =
       TextFormatUtils.enumListToStringList(DocumentType.values);
   int selectedIndex = 0;
+  DocumentFilterOption filterOption = DocumentFilterOption.UPLOAD_TIME;
+  SortOrder sortOrder = SortOrder.DESCENDING;
 
   late final HttpService httpService;
 
@@ -64,8 +69,11 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
     });
     await ApiHandler.handleApiCall<List<DocumentSummary>>(
       context: context,
-      request: () => httpService.documentService
-          .getAllDocumentsSummary(type: type, patientId: widget.patient?.id),
+      request: () => httpService.documentService.getAllDocumentsSummary(
+          type: type,
+          patientId: widget.patient?.id,
+          filterBy: filterOption.name,
+          sortOrder: sortOrder.name),
       onSuccess: (data, _) {
         setState(() {
           documentList = data;
@@ -130,61 +138,79 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
               )
             : Column(
                 children: [
-                  DocumentFilterBar(
-                    categories: categories,
-                    selectedIndex: selectedIndex,
-                    onChanged: (value) {
-                      _fetchAllDocumentsSummary(categories[value]);
-                      setState(() {
-                        selectedIndex = value;
-                        isLoading = true;
-                        hasError = false;
-                        errorMessage = null;
-                        errorTittle = null;
-                      });
-                    },
+                  Row(
+                    children: [
+                      Expanded(
+                        child: DocumentFilterBar(
+                          categories: categories,
+                          selectedIndex: selectedIndex,
+                          onChanged: (value) {
+                            _fetchAllDocumentsSummary(categories[value]);
+                            setState(() {
+                              selectedIndex = value;
+                              isLoading = true;
+                              hasError = false;
+                              errorMessage = null;
+                              errorTittle = null;
+                            });
+                          },
+                        ),
+                      ),
+                      FilterIcon(
+                          sheet: DocumentFilterSheet(
+                        initialOption: filterOption,
+                        initialSortOptions: sortOrder,
+                        onApply: (selectedOption, selectedSortOrder) {
+                          setState(() {
+                            filterOption = selectedOption;
+                            sortOrder = selectedSortOrder;
+                          });
+                          _fetchAllDocumentsSummary(categories[selectedIndex]);
+                        },
+                      ))
+                    ],
                   ),
                   Expanded(
-                    child:  (isLoading == false && documentList.isEmpty)
-                      ?  const Center(
+                      child: (isLoading == false && documentList.isEmpty)
+                          ? const Center(
                               child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 30),
-                          child: BodyText(
-                            text: 'No documents found yet.',
-                            textAlign: TextAlign.center,
-                          ),
-                        ))
-                      :SingleChildScrollView(
-                        padding: const EdgeInsets.only(bottom: 80),
-                         child: MaxWidthConstrainedBox(
-                          child: Accordion(
-                            maxOpenSections: 1,
-                            disableScrolling: true,
-                            headerBackgroundColor: Theme.of(context)
-                                .extension<CustomColors>()
-                                ?.primarySurface,
-                            headerBackgroundColorOpened: Colors.blue.shade50,
-                            headerBorderColor: Colors.blue.shade50,
-                            headerBorderWidth: 1,
-                            paddingListTop: 16,
-                            paddingListBottom: 16,
-                            paddingListHorizontal: 12,
-
-                            children: documentList.map((doc) {
-                              return documentCard(
-                                  context: context,
-                                  id: doc.id,
-                                  name: doc.documentName,
-                                  updatedTime: doc.updatedTime,
-                                  summary: doc.summary,
-                                  type: doc.documentType,
-                                  fullAccess: fullAccess);
-                            }).toList(),
-                          ),
-                        )
-                         )
-                      )
-                 
+                              padding: EdgeInsets.symmetric(horizontal: 30),
+                              child: BodyText(
+                                text: 'No documents found yet.',
+                                textAlign: TextAlign.center,
+                              ),
+                            ))
+                          : SingleChildScrollView(
+                              padding: const EdgeInsets.only(bottom: 80),
+                              child: MaxWidthConstrainedBox(
+                                child: Accordion(
+                                  maxOpenSections: 1,
+                                  disableScrolling: true,
+                                  headerBackgroundColor: Theme.of(context)
+                                      .extension<CustomColors>()
+                                      ?.primarySurface,
+                                  headerBackgroundColorOpened:
+                                      Colors.blue.shade50,
+                                  headerBorderColor: Colors.blue.shade50,
+                                  headerBorderWidth: 1,
+                                  paddingListTop: 16,
+                                  paddingListBottom: 16,
+                                  paddingListHorizontal: 12,
+                                  children: documentList.map((doc) {
+                                    return documentCard(
+                                        context: context,
+                                        id: doc.id,
+                                        name: doc.documentName,
+                                        updatedTime: doc.updatedTime,
+                                        visitTime: doc.dateOfVisit,
+                                        testTime: doc.dateOfTest,
+                                        summary: doc.summary,
+                                        type: doc.documentType,
+                                        filterOption: filterOption,
+                                        fullAccess: fullAccess);
+                                  }).toList(),
+                                ),
+                              )))
                 ],
               ),
       ),

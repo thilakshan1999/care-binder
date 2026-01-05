@@ -19,6 +19,8 @@ class AnalyzedDocument {
   List<VitalWithStatus> vitals;
   List<MedWithStatus> medicines;
   List<AppointmentWithStatus> appointments;
+  DateTime? dateOfTest;
+  DateTime? dateOfVisit;
 
   AnalyzedDocument({
     required this.documentName,
@@ -29,6 +31,8 @@ class AnalyzedDocument {
     required this.vitals,
     required this.medicines,
     required this.appointments,
+    this.dateOfTest,
+    this.dateOfVisit,
   });
 
   factory AnalyzedDocument.fromJson(Map<String, dynamic> json) =>
@@ -56,6 +60,12 @@ class AnalyzedDocument {
                 ?.map((e) => AppointmentWithStatus.fromJson(e))
                 .toList() ??
             [],
+        dateOfTest: json['dateOfTest'] != null
+            ? DateTime.parse(json['dateOfTest'])
+            : null,
+        dateOfVisit: json['dateOfVisit'] != null
+            ? DateTime.parse(json['dateOfVisit'])
+            : null,
       );
 
   Map<String, dynamic> toJson() => {
@@ -67,6 +77,8 @@ class AnalyzedDocument {
         'vitals': vitals.map((e) => e.toJson()).toList(),
         'meds': medicines.map((e) => e.toJson()).toList(),
         'appointments': appointments.map((e) => e.toJson()).toList(),
+        'dateOfTest': dateOfTest?.toIso8601String(),
+        'dateOfVisit': dateOfVisit?.toIso8601String()
       };
 
   AnalyzedDocument copyWith({
@@ -78,6 +90,8 @@ class AnalyzedDocument {
     List<MedWithStatus>? medicines,
     List<AppointmentWithStatus>? appointments,
     List<VitalWithStatus>? vitals,
+    DateTime? dateOfTest,
+    DateTime? dateOfVisit,
   }) {
     return AnalyzedDocument(
       documentName: documentName ?? this.documentName,
@@ -88,6 +102,8 @@ class AnalyzedDocument {
       medicines: medicines ?? this.medicines,
       appointments: appointments ?? this.appointments,
       vitals: vitals ?? this.vitals,
+      dateOfTest: dateOfTest ?? this.dateOfTest,
+      dateOfVisit: dateOfVisit ?? this.dateOfVisit,
     );
   }
 
