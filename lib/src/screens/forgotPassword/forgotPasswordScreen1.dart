@@ -1,32 +1,28 @@
 import 'package:care_sync/src/bloc/userBloc.dart';
+import 'package:care_sync/src/component/appBar/appBar.dart';
 import 'package:care_sync/src/component/btn/primaryBtn/priamaryLoadingBtn.dart';
 import 'package:care_sync/src/component/contraintBox/maxWidthConstraintBox.dart';
+import 'package:care_sync/src/component/snakbar/customSnakbar.dart';
 import 'package:care_sync/src/component/text/btnText.dart';
-import 'package:care_sync/src/models/user/loginRequest.dart';
-import 'package:care_sync/src/screens/forgotPassword/forgotPasswordScreen1.dart';
+import 'package:care_sync/src/component/text/primaryText.dart';
+import 'package:care_sync/src/component/textField/simpleTextField/simpleTextField.dart';
 import 'package:care_sync/src/screens/forgotPassword/forgotPasswordScreen2.dart';
-import 'package:care_sync/src/screens/forgotPassword/forgotPasswordScreen3.dart';
 import 'package:care_sync/src/screens/registration/registrationScreen.dart';
+import 'package:care_sync/src/service/api/httpService.dart';
+import 'package:care_sync/src/theme/customColors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../component/snakbar/customSnakbar.dart';
-import '../../component/textField/password/passwordTextField.dart';
-import '../../component/textField/simpleTextField/simpleTextField.dart';
-import '../../service/api/httpService.dart';
-import '../document/documentScreen.dart';
-
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class ForgotPassword1Screen extends StatefulWidget {
+  const ForgotPassword1Screen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<ForgotPassword1Screen> createState() => _ForgotPassword1ScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _ForgotPassword1ScreenState extends State<ForgotPassword1Screen> {
   bool isLoading = false;
   final _formKey = GlobalKey<FormState>();
-  String password = "";
   String email = "";
   late final HttpService httpService;
 
@@ -36,25 +32,26 @@ class _LoginScreenState extends State<LoginScreen> {
     httpService = HttpService(context.read<UserBloc>());
   }
 
-  Future<void> login() async {
+  Future<void> sendOtp() async {
     final theme = Theme.of(context);
 
     try {
-      final loginRequest = LoginRequest(email: email, password: password);
-      final result = await httpService.userService.login(loginRequest);
+      final result = await httpService.userService.forgotPassword(email);
 
       if (mounted) {
-        if (result.success && result.data != null) {
-          final auth = result.data!;
-
-          context.read<UserBloc>().setUserFromToken(
-                auth.accessToken,
-                auth.refreshToken,
-              );
-          Navigator.pushAndRemoveUntil(
+        if (result.success) {
+          CustomSnackbar.showCustomSnackbar(
+            context: context,
+            message: result.message,
+            backgroundColor:
+                Theme.of(context).extension<CustomColors>()!.success,
+          );
+          Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const DocumentScreen()),
-            (Route<dynamic> route) => route.isFirst, // keep the root route
+            MaterialPageRoute(
+                builder: (context) => ForgotPassword2Screen(
+                      email: email,
+                    )),
           );
         } else {
           CustomSnackbar.showCustomSnackbar(
@@ -84,6 +81,11 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: const CustomAppBar(
+        tittle: "Forgot Password",
+        showProfile: false,
+        showBackButton: true,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: MaxWidthConstrainedBox(
@@ -96,6 +98,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 key: _formKey,
                 child: Column(
                   children: [
+                    const PrimaryText(text: "Enter Email Address"),
+                    const SizedBox(height: 16),
                     SimpleTextField(
                       initialText: "",
                       keyboardType: TextInputType.emailAddress,
@@ -117,55 +121,16 @@ class _LoginScreenState extends State<LoginScreen> {
                         return null;
                       },
                     ),
-                    const SizedBox(height: 20),
-                    PasswordTextField(
-                      initialText: "",
-                      readOnly: isLoading,
-                      labelText: "Password",
-                      onChanged: (value) {
-                        password = value;
-                      },
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Password cannot be empty';
-                        }
-                        if (value.trim().length < 8) {
-                          return 'Password must be at least 8 characters';
-                        }
-                        return null;
-                      },
-                    ),
                     const SizedBox(height: 16),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  const ForgotPassword1Screen(),
-                            ),
-                          );
-                        },
-                        child: BtnText(
-                          fontWeight: FontWeight.normal,
-                          textAlign: TextAlign.right,
-                          text: "Forgot password?",
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
                     PrimaryLoadingBtn(
                       loading: isLoading,
-                      label: "Login",
+                      label: "Send Otp",
                       onPressed: () {
                         if (_formKey.currentState?.validate() ?? false) {
                           setState(() {
                             isLoading = true;
                           });
-                          login();
+                          sendOtp();
                         }
                       },
                     ),
@@ -193,18 +158,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           color: Theme.of(context).colorScheme.primary)),
                 ],
               ),
-              // Spacer pushes the copyright to the bottom
               const Spacer(),
-
-              // Copyright at the bottom
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 16),
-                child: Text(
-                  '© 2025 Hinetics (Pvt) Ltd. All rights reserved.',
-                  style: TextStyle(fontSize: 12, color: Colors.grey),
-                  textAlign: TextAlign.center,
-                ),
-              ),
             ],
           ),
         ),

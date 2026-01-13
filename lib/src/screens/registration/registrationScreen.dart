@@ -90,7 +90,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   Widget build(BuildContext context) {
     final formKey = GlobalKey<FormState>();
     return Scaffold(
-      appBar: const CustomAppBar(tittle: "Create account"),
+      appBar: const CustomAppBar(
+        tittle: "Create account",
+        showProfile: false,
+      ),
       body: Center(
         child: Padding(
             padding: const EdgeInsets.all(16),

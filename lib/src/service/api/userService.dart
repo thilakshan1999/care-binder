@@ -66,4 +66,55 @@ class UserService {
       return response;
     }, (data) => AuthResponse.fromJson(data));
   }
+
+  /// POST /api/users/forgot-password
+  Future<ApiResponse<String>> forgotPassword(String email) {
+    return ApiHelper.handleRequest<String>(() async {
+      final uri = Uri.parse('$baseUrl/users/forgot-password?email=$email');
+      final response = await client.post(
+        uri,
+        headers: {'Content-Type': 'application/json'},
+      );
+      return response;
+    }, (data) => data.toString());
+  }
+
+  /// POST /api/users/verify-otp
+  Future<ApiResponse<String>> verifyOtp(String email, String otp) {
+    return ApiHelper.handleRequest<String>(() async {
+      final uri =
+          Uri.parse('$baseUrl/users/verify-otp').replace(queryParameters: {
+        'email': email,
+        'otp': otp,
+      });
+
+      final response = await client.post(
+        uri,
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      return response;
+    }, (data) => data.toString());
+  }
+
+  /// POST /api/users/reset-password
+  Future<ApiResponse<String>> resetPassword({
+    required String email,
+    required String otp,
+    required String newPassword,
+  }) {
+    return ApiHelper.handleRequest<String>(() async {
+      final uri = Uri.parse('$baseUrl/users/reset-password');
+      final response = await client.post(
+        uri,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'email': email,
+          'otp': otp,
+          'newPassword': newPassword,
+        }),
+      );
+      return response;
+    }, (data) => data.toString());
+  }
 }
