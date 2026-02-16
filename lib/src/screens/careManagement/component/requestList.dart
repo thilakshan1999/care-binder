@@ -155,7 +155,6 @@ class _RequestListState extends State<RequestList> {
         );
         _fetchRequestReceivedList();
       },
-      onFinally: () => setState(() => isLoading = false),
     );
   }
 

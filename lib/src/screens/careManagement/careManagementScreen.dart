@@ -38,15 +38,17 @@ class _CareManagementScreenState extends State<CareManagementScreen> {
             tittle: userRole == UserRole.PATIENT
                 ? "Caregiver Info"
                 : "Patient Info"),
-        floatingActionButton: CustomFloatingBtn(
-          onPressed: () {
-            CustomBottomSheet.show(
-                context: context,
-                child: RequestSendSheet(
-                  userRole: userRole!,
-                ));
-          },
-        ),
+        floatingActionButton: selectedIndex == 0
+            ? CustomFloatingBtn(
+                onPressed: () {
+                  CustomBottomSheet.show(
+                      context: context,
+                      child: RequestSendSheet(
+                        userRole: userRole!,
+                      ));
+                },
+              )
+            : null,
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
         body: Center(
             child: MaxWidthConstrainedBox(

@@ -95,7 +95,6 @@ class _CareRelationshipListState extends State<CareRelationshipList> {
         );
         _fetchUserList();
       },
-      onFinally: () => setState(() => isLoading = false),
     );
   }
 
@@ -115,7 +114,6 @@ class _CareRelationshipListState extends State<CareRelationshipList> {
         Navigator.of(context).pop(true);
         _fetchUserList();
       },
-      onFinally: () => setState(() => isLoading = false),
     );
   }
 
