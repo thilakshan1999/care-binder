@@ -11,7 +11,6 @@ import 'package:care_sync/src/service/api/httpService.dart';
 import 'package:care_sync/src/theme/customColors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:http/http.dart';
 
 class ForgotPassword3Screen extends StatefulWidget {
   final String email;

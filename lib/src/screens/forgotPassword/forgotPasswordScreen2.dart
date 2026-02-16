@@ -83,16 +83,17 @@ class _ForgotPassword2ScreenState extends State<ForgotPassword2Screen> {
 
     try {
       final result = await httpService.userService.verifyOtp(widget.email, otp);
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => ForgotPassword3Screen(
-                  email: widget.email,
-                  otp: otp,
-                )),
-      );
       if (mounted) {
         if (result.success) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => ForgotPassword3Screen(
+                      email: widget.email,
+                      otp: otp,
+                    )),
+          );
+
           CustomSnackbar.showCustomSnackbar(
             context: context,
             message: result.message,
