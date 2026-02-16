@@ -6,6 +6,7 @@ import 'package:care_sync/src/component/text/subText.dart';
 import 'package:care_sync/src/models/enums/userRole.dart';
 import 'package:care_sync/src/screens/document/documentScreen.dart';
 import 'package:care_sync/src/screens/login/loginScreen.dart';
+import 'package:care_sync/src/screens/profile/component/appVersionWidget.dart';
 import 'package:care_sync/src/screens/profile/component/profileCard.dart';
 import 'package:care_sync/src/screens/profile/component/roleBadge.dart';
 import 'package:care_sync/src/screens/qr/component/qrPermissionSheet.dart';
@@ -52,7 +53,7 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final userBloc = context.read<UserBloc>();
     return Scaffold(
-        appBar:  CustomAppBar(
+        appBar: CustomAppBar(
           tittle: "Profile",
           showBackButton: true,
           showProfile: false,
@@ -202,7 +203,7 @@ class ProfileScreen extends StatelessWidget {
 
                       const SizedBox(height: 12),
 
-                       ProfileCard(
+                      ProfileCard(
                         icon: Icons.delete_forever,
                         title: "Delete Account",
                         onTap: () {
@@ -221,7 +222,9 @@ class ProfileScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                )
+                ),
+
+                const AppVersionWidget(),
               ],
             ),
           ),
