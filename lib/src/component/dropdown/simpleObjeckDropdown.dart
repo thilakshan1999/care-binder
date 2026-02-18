@@ -59,6 +59,27 @@ class _SimpleObjectDropdownFieldState<T>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
+    // 🩺 Handle empty list
+    final hasValues = widget.values.isNotEmpty;
+
+    if (!hasValues) {
+      return TextField(
+        decoration: InputDecoration(
+          labelText: widget.labelText,
+          border: const OutlineInputBorder(),
+          floatingLabelBehavior: FloatingLabelBehavior.always,
+          labelStyle: TextStyle(
+            height: 1,
+            letterSpacing: 0.5,
+            fontWeight: FontWeight.w600,
+            color: theme.colorScheme.onSecondary,
+          ),
+          hintText: 'No options available',
+        ),
+        enabled: false, // disable input
+      );
+    }
+
     return DropDownTextField(
       controller: _controller,
       textFieldFocusNode: _focusNode,

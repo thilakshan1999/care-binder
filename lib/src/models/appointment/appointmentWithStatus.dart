@@ -44,6 +44,7 @@ class AppointmentWithStatus {
     String? name,
     AppointmentType? type,
     Doctor? doctor,
+    bool clearDoctor = false,
     DateTime? appointmentDateTime,
     EntityStatus? entityStatus,
   }) {
@@ -51,7 +52,7 @@ class AppointmentWithStatus {
       id: id ?? this.id,
       name: name ?? this.name,
       type: type ?? this.type,
-      doctor: doctor ?? this.doctor,
+      doctor: clearDoctor ? null : (doctor ?? this.doctor),
       appointmentDateTime: appointmentDateTime ?? this.appointmentDateTime,
       entityStatus: entityStatus ?? this.entityStatus,
     );

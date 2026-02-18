@@ -24,10 +24,24 @@ class AnalyzedDocumentBloc extends Cubit<AnalyzedDocument?> {
 
   void deleteDoctor(int index) {
     if (state == null) return;
+
+    final removedDoctor = state!.doctors[index];
+
     final updatedDoctors = List<DoctorWithStatus>.from(state!.doctors)
       ..removeAt(index);
 
-    emit(state!.copyWith(doctors: updatedDoctors));
+    final updatedAppointments = state!.appointments.map((appointment) {
+      if (appointment.doctor != null &&
+          appointment.doctor!.name == removedDoctor.name) {
+        return appointment.copyWith(clearDoctor: true);
+      }
+      return appointment;
+    }).toList();
+
+    emit(state!.copyWith(
+      doctors: updatedDoctors,
+      appointments: updatedAppointments,
+    ));
   }
 
   // Med

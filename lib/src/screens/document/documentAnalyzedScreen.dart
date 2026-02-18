@@ -63,9 +63,9 @@ class _DocumentAnalyzedScreenState extends State<DocumentAnalyzedScreen> {
       // final initialDoc = AnalyzedDocument.fromJson(sampleAnalyzedDocumentJson);
       // context.read<AnalyzedDocumentBloc>().setDocument(initialDoc);
 
-      setState(() {
-        isProcessing = false;
-      });
+      // setState(() {
+      //   isProcessing = false;
+      // });
       _isInitialized = true;
     }
   }
