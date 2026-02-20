@@ -11,7 +11,7 @@ class ApiHelper {
     T Function(dynamic) fromJson,
   ) async {
     try {
-      final response = await requestFn().timeout(const Duration(seconds: 60));
+      final response = await requestFn().timeout(const Duration(seconds: 120));
 
       if (response.statusCode >= 200 && response.statusCode < 300) {
         final jsonMap = jsonDecode(response.body);
