@@ -61,6 +61,7 @@ class ShareViewController: UIViewController {
             try? FileManager.default.copyItem(at: url, to: destURL)
 
             let escapedPath = destURL.absoluteString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+        
             let uniqueID = UUID().uuidString
             let scheme = "carebinder://share?type=\(type)&file=\(escapedPath)&uid=\(uniqueID)"
         

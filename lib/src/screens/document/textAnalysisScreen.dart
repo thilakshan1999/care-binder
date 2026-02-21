@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:care_sync/src/bloc/userBloc.dart';
 import 'package:care_sync/src/component/appBar/appBar.dart';
 import 'package:care_sync/src/component/errorBox/ErrorBox.dart';
-import 'package:care_sync/src/utils/shareHandler.dart';
 import 'package:care_sync/src/screens/document/component/documentLoadingIndicator.dart';
 import 'package:care_sync/src/screens/document/documentAnalyzedScreen.dart';
 import 'package:care_sync/src/service/api/httpService.dart';
@@ -103,7 +102,6 @@ class _TextAnalysisScreenState extends State<TextAnalysisScreen> {
       },
       onFinally: () => {
         setState(() => isProcessing = false),
-        ShareHandler.clearSharedFolder()
       },
     );
   }
@@ -171,7 +169,6 @@ class _TextAnalysisScreenState extends State<TextAnalysisScreen> {
       },
       onFinally: () => {
         setState(() => isProcessing = false),
-        ShareHandler.clearSharedFolder()
       },
     );
   }

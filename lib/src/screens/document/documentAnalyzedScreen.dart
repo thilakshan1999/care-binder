@@ -13,6 +13,7 @@ import 'package:care_sync/src/screens/document/component/analyzedScreen/medDocum
 import 'package:care_sync/src/screens/document/component/analyzedScreen/vitalDocument.dart';
 import 'package:care_sync/src/screens/document/documentScreen.dart';
 import 'package:care_sync/src/service/documentPickerService.dart';
+import 'package:care_sync/src/utils/shareHandler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -128,7 +129,10 @@ class _DocumentAnalyzedScreenState extends State<DocumentAnalyzedScreen> {
           backgroundColor: Theme.of(context).extension<CustomColors>()!.success,
         );
       },
-      onFinally: () => setState(() => isLoading = false),
+      onFinally: () {
+        setState(() => isLoading = false);
+        ShareHandler.clearSharedFolder();
+      },
     );
   }
 
