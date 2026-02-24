@@ -14,73 +14,59 @@ class UploadOptionSheet extends StatelessWidget {
   final UserSummary? patient;
   const UploadOptionSheet({super.key, this.patient});
 
-  // Future<void> _pickImage(ImageSource source, BuildContext context) async {
-  //   final navigator = Navigator.of(context);
-  //   final imageFile = await ImagePickerService.pickImage(source);
-  //   if (imageFile != null) {
-  //     navigator.push(
-  //       MaterialPageRoute(
-  //         builder: (_) => TextAnalysisScreen(
-  //           imageFile: imageFile,
-  //           patient: patient,
-  //         ),
-  //       ),
-  //     );
-  //   }
-  // }
+  Future<void> _pickImage(ImageSource source, BuildContext context) async {
+    final navigator = Navigator.of(context);
 
-Future<void> _pickImage(ImageSource source, BuildContext context) async {
-  final navigator = Navigator.of(context);
+    // If the source is camera, check camera permission first
+    if (source == ImageSource.camera) {
+      final status = await Permission.camera.status;
 
-  // If the source is camera, check camera permission first
-  if (source == ImageSource.camera) {
-    final status = await Permission.camera.status;
+      if (status.isDenied) {
+        // Request permission if not granted yet
+        final newStatus = await Permission.camera.request();
 
-    if (status.isDenied) {
-      // Request permission if not granted yet
-      final newStatus = await Permission.camera.request();
+        if (newStatus.isDenied) {
+          CustomSnackbar.showCustomSnackbar(
+            context: context,
+            message: "Camera permission denied by user.",
+          );
+          return; // Stop here
+        }
 
-      if (newStatus.isDenied) {
-         CustomSnackbar.showCustomSnackbar(
-          context: context,
-          message: "Camera permission denied by user.",
-        );
-        return; // Stop here
+        if (newStatus.isPermanentlyDenied) {
+          CustomSnackbar.showCustomSnackbar(
+            context: context,
+            message:
+                "Camera permission permanently denied. Open settings to enable it.",
+          );
+          return;
+        }
       }
 
-      if (newStatus.isPermanentlyDenied) {
+      if (status.isPermanentlyDenied) {
         CustomSnackbar.showCustomSnackbar(
           context: context,
-          message: "Camera permission permanently denied. Open settings to enable it.",
+          message:
+              "Camera permission permanently denied. Open settings to enable it.",
         );
         return;
       }
     }
 
-    if (status.isPermanentlyDenied) {
-       CustomSnackbar.showCustomSnackbar(
-          context: context,
-          message: "Camera permission permanently denied. Open settings to enable it.",
-        );
-      return;
+    // Pick the image
+    final imageFile = await ImagePickerService.pickImage(source);
+
+    if (imageFile != null) {
+      navigator.push(
+        MaterialPageRoute(
+          builder: (_) => TextAnalysisScreen(
+            imageFile: imageFile,
+            patient: patient,
+          ),
+        ),
+      );
     }
   }
-
-  // Pick the image
-  final imageFile = await ImagePickerService.pickImage(source);
-
-  if (imageFile != null) {
-    navigator.push(
-      MaterialPageRoute(
-        builder: (_) => TextAnalysisScreen(
-          imageFile: imageFile,
-          patient: patient,
-        ),
-      ),
-    );
-  }
-}
-
 
   Future<void> _pickDocument(BuildContext context) async {
     final navigator = Navigator.of(context);

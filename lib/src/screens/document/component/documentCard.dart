@@ -117,7 +117,7 @@ SubText buildFilteredDate(
 
   switch (option) {
     case DocumentFilterOption.UPLOAD_TIME:
-      date = updatedTime;
+      date = updatedTime?.toLocal();
       label = "Upload";
       break;
     case DocumentFilterOption.VISIT_TIME:
