@@ -117,7 +117,17 @@ SubText buildFilteredDate(
 
   switch (option) {
     case DocumentFilterOption.UPLOAD_TIME:
-      date = updatedTime?.toLocal();
+      final normalizedUtc = updatedTime.isUtc
+          ? updatedTime
+          : DateTime.utc(
+              updatedTime.year,
+              updatedTime.month,
+              updatedTime.day,
+              updatedTime.hour,
+              updatedTime.minute,
+              updatedTime.second,
+            );
+      date = normalizedUtc.toLocal();
       label = "Upload";
       break;
     case DocumentFilterOption.VISIT_TIME:
