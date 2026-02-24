@@ -9,6 +9,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool showBackButton;
   final bool showProfile;
   final VoidCallback? onBackPressed;
+  final List<Widget>? customActions;
 
   const CustomAppBar({
     super.key,
@@ -16,6 +17,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.showBackButton = false,
     this.showProfile = true,
     this.onBackPressed,
+    this.customActions,
   });
 
   @override
@@ -31,7 +33,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           ? IconButton(
               icon: Icon(Icons.arrow_back_ios,
                   color: Theme.of(context).colorScheme.onPrimary),
-             onPressed: () {
+              onPressed: () {
                 if (onBackPressed != null) {
                   onBackPressed!(); // run custom function
                 } else {
@@ -41,6 +43,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             )
           : const SizedBox.shrink(),
       actions: [
+        if (customActions != null) ...customActions!,
         if (showProfile)
           ProfileIconButton(
             onPressed: () {

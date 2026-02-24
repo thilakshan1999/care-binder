@@ -12,6 +12,7 @@ import 'package:care_sync/src/screens/document/component/analyzedScreen/doctorDo
 import 'package:care_sync/src/screens/document/component/analyzedScreen/medDocument.dart';
 import 'package:care_sync/src/screens/document/component/analyzedScreen/vitalDocument.dart';
 import 'package:care_sync/src/screens/document/documentScreen.dart';
+import 'package:care_sync/src/screens/document/textEditScreen.dart';
 import 'package:care_sync/src/service/documentPickerService.dart';
 import 'package:care_sync/src/utils/shareHandler.dart';
 import 'package:flutter/material.dart';
@@ -142,10 +143,34 @@ class _DocumentAnalyzedScreenState extends State<DocumentAnalyzedScreen> {
         appBar: CustomAppBar(
           tittle: isProcessing ? "Analyzing Document" : "Analyzed Document",
           showBackButton: !isProcessing,
+          showProfile: false,
           onBackPressed: () => {
             context.read<AnalyzedDocumentBloc>().clear(),
-            Navigator.pop(context)
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => const DocumentScreen()),
+              (Route<dynamic> route) => route.isFirst, // keep the root route
+            )
           },
+          customActions: [
+            IconButton(
+              icon: Icon(Icons.edit,
+                  color: Theme.of(context).colorScheme.surface),
+              onPressed: () {
+                final navigator = Navigator.of(context);
+                navigator.push(
+                  MaterialPageRoute(
+                    builder: (_) => TextEditScreen(
+                      imageFile: widget.imageFile,
+                      documentData: widget.documentData,
+                      patient: widget.patient,
+                      extractText: widget.extractedText,
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
         ),
         body: Padding(
             padding: const EdgeInsets.all(16),
