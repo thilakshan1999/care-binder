@@ -11,8 +11,6 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:mime/mime.dart';
 import 'package:path_provider/path_provider.dart';
 import '../../component/apiHandler/apiHandler.dart';
-import '../../component/btn/primaryBtn/primaryBtn.dart';
-import '../../component/textField/multiLine/multiLineTextField.dart';
 import '../../models/user/userSummary.dart';
 import '../../service/documentPickerService.dart';
 
@@ -92,6 +90,7 @@ class _TextAnalysisScreenState extends State<TextAnalysisScreen> {
           errorMessage = null;
           errorTittle = null;
         });
+        _navigateAnalyzeScreen();
       },
       onError: (msg, title) {
         setState(() {
@@ -159,6 +158,7 @@ class _TextAnalysisScreenState extends State<TextAnalysisScreen> {
           errorMessage = null;
           errorTittle = null;
         });
+        _navigateAnalyzeScreen();
       },
       onError: (msg, title) {
         setState(() {
@@ -173,7 +173,7 @@ class _TextAnalysisScreenState extends State<TextAnalysisScreen> {
     );
   }
 
-  Future<void> _confirmText(String extractedText, BuildContext context) async {
+  Future<void> _navigateAnalyzeScreen() async {
     final navigator = Navigator.of(context);
     navigator.push(
       MaterialPageRoute(
@@ -193,50 +193,52 @@ class _TextAnalysisScreenState extends State<TextAnalysisScreen> {
       appBar: CustomAppBar(
         tittle: isProcessing ? "Reading Document" : "Document Summary",
         showBackButton: !isProcessing && !widget.isFromShare,
+        showProfile: false,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: isProcessing
-            ? DocumentLoadingIndicator(
-                message: widget.imageFile == null
-                    ? "Processing document... Please wait."
-                    : " Extracting text... Please wait.",
-              )
-            : hasError
-                ? ErrorBox(
-                    message: errorMessage ?? 'Something went wrong.',
-                    title: errorTittle ?? 'Something went wrong.',
-                    onRetry: () {
-                      if (widget.imageFile != null) {
-                        _analyzeImage(widget.imageFile!);
-                      } else if (widget.documentData != null) {
-                        _extractText();
-                      }
-                    },
-                  )
-                : Column(
-                    children: [
-                      Expanded(
-                        child: SingleChildScrollView(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          child: MultiLineTextField(
-                            initialText: extractedText,
-                            labelText: 'Extracted Text',
-                            onChanged: (value) {
-                              extractedText = value;
-                            },
-                          ),
-                        ),
-                      ),
-                      PrimaryBtn(
-                        label: 'Confirm',
-                        onPressed: () {
-                          _confirmText(extractedText, context);
-                        },
-                      ),
-                    ],
-                  ),
-      ),
+          padding: const EdgeInsets.all(16.0),
+          child: isProcessing
+              ? DocumentLoadingIndicator(
+                  message: widget.imageFile == null
+                      ? "Processing document... Please wait."
+                      : " Extracting text... Please wait.",
+                )
+              : hasError
+                  ? ErrorBox(
+                      message: errorMessage ?? 'Something went wrong.',
+                      title: errorTittle ?? 'Something went wrong.',
+                      onRetry: () {
+                        if (widget.imageFile != null) {
+                          _analyzeImage(widget.imageFile!);
+                        } else if (widget.documentData != null) {
+                          _extractText();
+                        }
+                      },
+                    )
+                  : null
+          // Column(
+          //     children: [
+          //       Expanded(
+          //         child: SingleChildScrollView(
+          //           padding: const EdgeInsets.symmetric(vertical: 16),
+          //           child: MultiLineTextField(
+          //             initialText: extractedText,
+          //             labelText: 'Extracted Text',
+          //             onChanged: (value) {
+          //               extractedText = value;
+          //             },
+          //           ),
+          //         ),
+          //       ),
+          //       PrimaryBtn(
+          //         label: 'Confirm',
+          //         onPressed: () {
+          //           _confirmText();
+          //         },
+          //       ),
+          //     ],
+          //   ),
+          ),
     );
   }
 }

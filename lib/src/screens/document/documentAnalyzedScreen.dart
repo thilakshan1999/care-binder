@@ -153,23 +153,24 @@ class _DocumentAnalyzedScreenState extends State<DocumentAnalyzedScreen> {
             )
           },
           customActions: [
-            IconButton(
-              icon: Icon(Icons.edit,
-                  color: Theme.of(context).colorScheme.surface),
-              onPressed: () {
-                final navigator = Navigator.of(context);
-                navigator.push(
-                  MaterialPageRoute(
-                    builder: (_) => TextEditScreen(
-                      imageFile: widget.imageFile,
-                      documentData: widget.documentData,
-                      patient: widget.patient,
-                      extractText: widget.extractedText,
+            if (!isProcessing)
+              IconButton(
+                icon: Icon(Icons.edit,
+                    color: Theme.of(context).colorScheme.surface),
+                onPressed: () {
+                  final navigator = Navigator.of(context);
+                  navigator.push(
+                    MaterialPageRoute(
+                      builder: (_) => TextEditScreen(
+                        imageFile: widget.imageFile,
+                        documentData: widget.documentData,
+                        patient: widget.patient,
+                        extractText: widget.extractedText,
+                      ),
                     ),
-                  ),
-                );
-              },
-            ),
+                  );
+                },
+              ),
           ],
         ),
         body: Padding(
