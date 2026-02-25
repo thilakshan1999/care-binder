@@ -23,6 +23,10 @@ AccordionSection documentCard({
   required DocumentType type,
   required bool fullAccess,
   required DocumentFilterOption filterOption,
+  required bool selectedMode,
+  required bool isSelected,
+  void Function(int id)? onLongPress,
+  void Function(int id)? onSelect,
 }) {
   Color getDocumentTypeColor(DocumentType type) {
     switch (type) {
@@ -39,7 +43,6 @@ AccordionSection documentCard({
       case DocumentType.TEST_RESULT:
         return Colors.red;
       case DocumentType.OTHER:
-      default:
         return Colors.grey;
     }
   }
@@ -59,12 +62,25 @@ AccordionSection documentCard({
     );
   }
 
+  void onTap() {
+    if (!selectedMode) {
+      navigateToDocumentInfo(context);
+    } else {
+      onSelect!(id);
+    }
+  }
+
+  void onHold() {
+    if (!selectedMode) {
+      onLongPress!(id);
+    }
+  }
+
   return AccordionSection(
     isOpen: false,
     leftIcon: InkWell(
-      onTap: () {
-        navigateToDocumentInfo(context);
-      },
+      onTap: onTap,
+      onLongPress: onHold,
       child: Icon(
         Icons.description,
         size: 32,
@@ -72,9 +88,8 @@ AccordionSection documentCard({
       ),
     ),
     header: InkWell(
-      onTap: () {
-        navigateToDocumentInfo(context);
-      },
+      onTap: onTap,
+      onLongPress: onHold,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -105,7 +120,17 @@ AccordionSection documentCard({
     contentBackgroundColor:
         Theme.of(context).extension<CustomColors>()?.primarySurface,
     contentHorizontalPadding: 16,
-    contentBorderColor: Colors.blue.shade50,
+    headerBorderColor:
+        isSelected ? Theme.of(context).colorScheme.primary : null,
+    headerBackgroundColor:
+        isSelected ? Theme.of(context).colorScheme.primary.withAlpha(25) : null,
+    headerBackgroundColorOpened:
+        isSelected ? Theme.of(context).colorScheme.primary.withAlpha(38) : null,
+    headerBorderColorOpened:
+        isSelected ? Theme.of(context).colorScheme.primary : null,
+    contentBorderColor: isSelected
+        ? Theme.of(context).colorScheme.primary
+        : Colors.blue.shade50,
     contentBorderWidth: 1,
   );
 }

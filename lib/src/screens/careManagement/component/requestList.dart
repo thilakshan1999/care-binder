@@ -28,7 +28,6 @@ class _RequestListState extends State<RequestList> {
   String? errorMessage;
   String? errorTittle;
 
-  //List<CareGiverRequest> requests = dummyCareGiverRequests;
   List<CareGiverRequest> sendRequests = dummyCareGiverRequests;
   List<CareGiverRequest> receiveRequests = dummyCareGiverRequests;
   late final HttpService httpService;
@@ -43,41 +42,6 @@ class _RequestListState extends State<RequestList> {
       _isInitialized = true;
     }
   }
-
-  // Future<void> _fetchRequestList() async {
-  //   setState(() {
-  //     isLoading = true;
-  //     hasError = false;
-  //     errorMessage = null;
-  //     errorTittle = null;
-  //   });
-  //   await ApiHandler.handleApiCall<List<CareGiverRequest>>(
-  //     context: context,
-  //     request: () => widget.role == UserRole.CAREGIVER
-  //         ? httpService.careGiverRequestService.getSentRequests()
-  //         : httpService.careGiverRequestService.getReceivedRequests(),
-  //     onSuccess: (data, _) {
-  //       setState(() {
-  //         requests = data;
-  //         hasError = false;
-  //         errorMessage = null;
-  //         errorTittle = null;
-  //       });
-  //     },
-  //     onError: (title, message) {
-  //       setState(() {
-  //         hasError = true;
-  //         errorMessage = message;
-  //         errorTittle = title;
-  //       });
-  //     },
-  //     onFinally: () {
-  //       if (mounted) {
-  //         setState(() => isLoading = false);
-  //       }
-  //     },
-  //   );
-  // }
 
   Future<void> _fetchRequestSendList() async {
     setState(() {
@@ -154,6 +118,14 @@ class _RequestListState extends State<RequestList> {
           backgroundColor: Theme.of(context).extension<CustomColors>()!.success,
         );
         _fetchRequestReceivedList();
+      },
+      onError: (message, title) => {
+        setState(() => isLoading = false),
+        CustomSnackbar.showCustomSnackbar(
+          context: context,
+          message: message,
+          backgroundColor: Theme.of(context).colorScheme.error,
+        )
       },
     );
   }
@@ -243,27 +215,3 @@ class _RequestListState extends State<RequestList> {
                   )));
   }
 }
-
-
-  // (isLoading == false && requests.isEmpty)
-  //                           ? const Center(
-  //                               child: Padding(
-  //                               padding: EdgeInsets.symmetric(horizontal: 30),
-  //                               child: BodyText(
-  //                                 text: 'No request found yet.',
-  //                                 textAlign: TextAlign.center,
-  //                               ),
-  //                             ))
-  //                           : ListView.builder(
-  //                               itemCount: requests.length,
-  //                               itemBuilder: (context, index) {
-  //                                 final request = requests[index];
-  //                                 return RequestCard(
-  //                                   request: request,
-  //                                   role: widget.role,
-  //                                   responseRequest: (accept) {
-  //                                     responseRequest(request.id, accept);
-  //                                   },
-  //                                 );
-  //                               },
-  //                             ),

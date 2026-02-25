@@ -140,4 +140,33 @@ class DocumentService {
       return await Response.fromStream(streamedResponse);
     }, (_) {});
   }
+
+  /// DELETE /api/documents/bulk-delete
+  Future<ApiResponse<void>> deleteMultipleDocuments(List<int> ids) {
+    return ApiHelper.handleRequest<void>(() async {
+      var uri = Uri.parse('$baseUrl/documents/bulk-delete');
+      var response = await client.delete(
+        uri,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(ids),
+      );
+      return response;
+    }, (_) {});
+  }
+
+  /// POST /api/documents/file-urls
+  Future<ApiResponse<List<DocumentReference>>> getDocumentsFileUrls(
+      List<int> ids) {
+    return ApiHelper.handleRequest<List<DocumentReference>>(() async {
+      var uri = Uri.parse('$baseUrl/documents/file-urls');
+      var response = await client.post(
+        uri,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(ids),
+      );
+      return response;
+    },
+        (data) =>
+            (data as List).map((e) => DocumentReference.fromJson(e)).toList());
+  }
 }

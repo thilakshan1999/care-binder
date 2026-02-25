@@ -95,6 +95,14 @@ class _CareRelationshipListState extends State<CareRelationshipList> {
         );
         _fetchUserList();
       },
+      onError: (message, title) => {
+        setState(() => isLoading = false),
+        CustomSnackbar.showCustomSnackbar(
+          context: context,
+          message: message,
+          backgroundColor: Theme.of(context).colorScheme.error,
+        )
+      },
     );
   }
 

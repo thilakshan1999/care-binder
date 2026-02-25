@@ -3,7 +3,9 @@ import 'package:care_sync/src/bloc/userBloc.dart';
 import 'package:care_sync/src/component/appBar/appBar.dart';
 import 'package:care_sync/src/component/btn/floatingBtn/floatingBtn.dart';
 import 'package:care_sync/src/component/contraintBox/maxWidthConstraintBox.dart';
+import 'package:care_sync/src/component/dialog/confirmDeleteDialog.dart';
 import 'package:care_sync/src/component/filterIcon/filterIcon.dart';
+import 'package:care_sync/src/component/snakbar/customSnakbar.dart';
 import 'package:care_sync/src/component/text/bodyText.dart';
 import 'package:care_sync/src/models/enums/careGiverPermission.dart';
 import 'package:care_sync/src/models/enums/documentFilterOption.dart';
@@ -11,6 +13,7 @@ import 'package:care_sync/src/models/enums/documentType.dart';
 import 'package:care_sync/src/models/user/userSummary.dart';
 import 'package:care_sync/src/screens/document/component/documentFilterSheet.dart';
 import 'package:care_sync/src/screens/document/component/uploadOptionSheet.dart';
+import 'package:care_sync/src/screens/document/component/selectionBottomBar.dart';
 import 'package:care_sync/src/utils/textFormatUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -45,10 +48,10 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
   int selectedIndex = 0;
   DocumentFilterOption filterOption = DocumentFilterOption.UPLOAD_TIME;
   SortOrder sortOrder = SortOrder.DESCENDING;
-
   late final HttpService httpService;
-
   bool _isInitialized = false;
+  bool selectedMode = false;
+  List<int> selectedIds = [];
 
   @override
   void didChangeDependencies() {
@@ -97,6 +100,38 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
     );
   }
 
+  Future<void> _deleteDocuments() async {
+    setState(() => isLoading = true);
+
+    await ApiHandler.handleApiCall<void>(
+        context: context,
+        request: () =>
+            httpService.documentService.deleteMultipleDocuments(selectedIds),
+        onSuccess: (_, msg) {
+          _fetchAllDocumentsSummary(categories[selectedIndex]);
+          CustomSnackbar.showCustomSnackbar(
+            context: context,
+            message: msg,
+            backgroundColor:
+                Theme.of(context).extension<CustomColors>()!.success,
+          );
+        },
+        onError: (message, title) => {
+              setState(() => isLoading = false),
+              CustomSnackbar.showCustomSnackbar(
+                context: context,
+                message: message,
+                backgroundColor: Theme.of(context).colorScheme.error,
+              )
+            },
+        onFinally: () {
+          setState(() {
+            selectedMode = false;
+            selectedIds.clear();
+          });
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     bool fullAccess = widget.permission != null
@@ -105,115 +140,183 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
             : true
         : true;
     return Scaffold(
-      appBar: CustomAppBar(
-        showBackButton: widget.patient != null,
-        tittle: widget.patient != null
-            ? "${TextFormatUtils.formatName(widget.patient!.name)} Doc"
-            : "Medical Document",
-      ),
-      floatingActionButton: fullAccess
-          ? CustomFloatingBtn(
-              onPressed: () {
-                CustomBottomSheet.show(
-                    context: context,
-                    child: UploadOptionSheet(patient: widget.patient));
-              },
-            )
-          : null,
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      body: Skeletonizer(
-        enabled: isLoading,
-        child: hasError
-            ? ErrorBox(
-                message: errorMessage ?? 'Something went wrong.',
-                title: errorTittle ?? 'Something went wrong.',
-                onRetry: () {
-                  _fetchAllDocumentsSummary(categories[selectedIndex]);
+        appBar: CustomAppBar(
+          showBackButton: widget.patient != null,
+          showProfile: !selectedMode,
+          tittle: widget.patient != null
+              ? "${TextFormatUtils.formatName(widget.patient!.name)} Doc"
+              : "Medical Document",
+          customActions: [
+            if (selectedMode)
+              IconButton(
+                icon: Icon(Icons.close,
+                    color: Theme.of(context).colorScheme.surface),
+                onPressed: () {
                   setState(() {
-                    hasError = false;
-                    errorMessage = null;
-                    errorTittle = null;
+                    selectedMode = false;
+                    selectedIds.clear();
                   });
                 },
-              )
-            : Column(
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: DocumentFilterBar(
-                          categories: categories,
-                          selectedIndex: selectedIndex,
-                          onChanged: (value) {
-                            _fetchAllDocumentsSummary(categories[value]);
-                            setState(() {
-                              selectedIndex = value;
-                              isLoading = true;
-                              hasError = false;
-                              errorMessage = null;
-                              errorTittle = null;
-                            });
-                          },
-                        ),
-                      ),
-                      FilterIcon(
-                          sheet: DocumentFilterSheet(
-                        initialOption: filterOption,
-                        initialSortOptions: sortOrder,
-                        onApply: (selectedOption, selectedSortOrder) {
-                          setState(() {
-                            filterOption = selectedOption;
-                            sortOrder = selectedSortOrder;
-                          });
-                          _fetchAllDocumentsSummary(categories[selectedIndex]);
-                        },
-                      ))
-                    ],
-                  ),
-                  Expanded(
-                      child: (isLoading == false && documentList.isEmpty)
-                          ? const Center(
-                              child: Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 30),
-                              child: BodyText(
-                                text: 'No documents found yet.',
-                                textAlign: TextAlign.center,
-                              ),
-                            ))
-                          : SingleChildScrollView(
-                              padding: const EdgeInsets.only(bottom: 80),
-                              child: MaxWidthConstrainedBox(
-                                child: Accordion(
-                                  maxOpenSections: 1,
-                                  disableScrolling: true,
-                                  headerBackgroundColor: Theme.of(context)
-                                      .extension<CustomColors>()
-                                      ?.primarySurface,
-                                  headerBackgroundColorOpened:
-                                      Colors.blue.shade50,
-                                  headerBorderColor: Colors.blue.shade50,
-                                  headerBorderWidth: 1,
-                                  paddingListTop: 16,
-                                  paddingListBottom: 16,
-                                  paddingListHorizontal: 12,
-                                  children: documentList.map((doc) {
-                                    return documentCard(
-                                        context: context,
-                                        id: doc.id,
-                                        name: doc.documentName,
-                                        updatedTime: doc.updatedTime,
-                                        visitTime: doc.dateOfVisit,
-                                        testTime: doc.dateOfTest,
-                                        summary: doc.summary,
-                                        type: doc.documentType,
-                                        filterOption: filterOption,
-                                        fullAccess: fullAccess);
-                                  }).toList(),
-                                ),
-                              )))
-                ],
               ),
-      ),
-    );
+          ],
+        ),
+        floatingActionButton: fullAccess
+            ? !selectedMode
+                ? CustomFloatingBtn(
+                    onPressed: () {
+                      CustomBottomSheet.show(
+                          context: context,
+                          child: UploadOptionSheet(patient: widget.patient));
+                    },
+                  )
+                : null
+            : null,
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+        body: Stack(
+          children: [
+            Skeletonizer(
+              enabled: isLoading,
+              child: hasError
+                  ? ErrorBox(
+                      message: errorMessage ?? 'Something went wrong.',
+                      title: errorTittle ?? 'Something went wrong.',
+                      onRetry: () {
+                        _fetchAllDocumentsSummary(categories[selectedIndex]);
+                        setState(() {
+                          hasError = false;
+                          errorMessage = null;
+                          errorTittle = null;
+                        });
+                      },
+                    )
+                  : Column(
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: DocumentFilterBar(
+                                categories: categories,
+                                selectedIndex: selectedIndex,
+                                onChanged: (value) {
+                                  _fetchAllDocumentsSummary(categories[value]);
+                                  setState(() {
+                                    selectedIndex = value;
+                                    isLoading = true;
+                                    hasError = false;
+                                    errorMessage = null;
+                                    errorTittle = null;
+                                  });
+                                },
+                              ),
+                            ),
+                            FilterIcon(
+                                sheet: DocumentFilterSheet(
+                              initialOption: filterOption,
+                              initialSortOptions: sortOrder,
+                              onApply: (selectedOption, selectedSortOrder) {
+                                setState(() {
+                                  filterOption = selectedOption;
+                                  sortOrder = selectedSortOrder;
+                                });
+                                _fetchAllDocumentsSummary(
+                                    categories[selectedIndex]);
+                              },
+                            ))
+                          ],
+                        ),
+                        Expanded(
+                            child: (isLoading == false && documentList.isEmpty)
+                                ? const Center(
+                                    child: Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 30),
+                                    child: BodyText(
+                                      text: 'No documents found yet.',
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ))
+                                : SingleChildScrollView(
+                                    padding: const EdgeInsets.only(bottom: 80),
+                                    child: MaxWidthConstrainedBox(
+                                      child: Accordion(
+                                        maxOpenSections: 1,
+                                        disableScrolling: true,
+                                        headerBackgroundColor: Theme.of(context)
+                                            .extension<CustomColors>()
+                                            ?.primarySurface,
+                                        headerBackgroundColorOpened:
+                                            Colors.blue.shade50,
+                                        headerBorderColor: Colors.blue.shade50,
+                                        headerBorderWidth: 1,
+                                        paddingListTop: 16,
+                                        paddingListBottom: 16,
+                                        paddingListHorizontal: 12,
+                                        children: documentList.map((doc) {
+                                          return documentCard(
+                                              context: context,
+                                              id: doc.id,
+                                              name: doc.documentName,
+                                              updatedTime: doc.updatedTime,
+                                              visitTime: doc.dateOfVisit,
+                                              testTime: doc.dateOfTest,
+                                              summary: doc.summary,
+                                              type: doc.documentType,
+                                              filterOption: filterOption,
+                                              fullAccess: fullAccess,
+                                              selectedMode: selectedMode,
+                                              isSelected:
+                                                  selectedIds.contains(doc.id),
+                                              onLongPress: (id) {
+                                                setState(() {
+                                                  selectedMode = true;
+                                                  selectedIds.add(id);
+                                                });
+                                              },
+                                              onSelect: (id) {
+                                                setState(() {
+                                                  if (selectedIds
+                                                      .contains(id)) {
+                                                    selectedIds.remove(id);
+                                                  } else {
+                                                    selectedIds.add(id);
+                                                  }
+                                                });
+                                              });
+                                        }).toList(),
+                                      ),
+                                    )))
+                      ],
+                    ),
+            ),
+            // ✅ Bottom selection bar
+            if (selectedMode)
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: SelectionBottomBar(
+                  selectedCount: selectedIds.length,
+                  fullAccess: fullAccess,
+                  onShare: () {
+                    print("Share ${selectedIds.length} documents");
+                  },
+                  onDelete: () {
+                    showConfirmDialog(
+                      context: context,
+                      title: "Delete Documents",
+                      message:
+                          "Are you sure you want to delete this documents?",
+                      onConfirm: () {
+                        setState(() {
+                          isLoading = true;
+                        });
+                        _deleteDocuments();
+                      },
+                    );
+                  },
+                ),
+              ),
+          ],
+        ));
   }
 }
