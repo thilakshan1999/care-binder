@@ -17,6 +17,7 @@ import 'package:care_sync/src/screens/document/component/selectionBottomBar.dart
 import 'package:care_sync/src/utils/textFormatUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../component/apiHandler/apiHandler.dart';
@@ -298,7 +299,8 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
                   selectedCount: selectedIds.length,
                   fullAccess: fullAccess,
                   onShare: () {
-                    print("Share ${selectedIds.length} documents");
+                    SharePlus.instance
+                        .share(ShareParams(text: 'check out my app'));
                   },
                   onDelete: () {
                     showConfirmDialog(
