@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:accordion/accordion.dart';
 import 'package:care_sync/src/bloc/userBloc.dart';
 import 'package:care_sync/src/component/appBar/appBar.dart';
@@ -7,6 +9,7 @@ import 'package:care_sync/src/component/dialog/confirmDeleteDialog.dart';
 import 'package:care_sync/src/component/filterIcon/filterIcon.dart';
 import 'package:care_sync/src/component/snakbar/customSnakbar.dart';
 import 'package:care_sync/src/component/text/bodyText.dart';
+import 'package:care_sync/src/models/document/documentReference.dart';
 import 'package:care_sync/src/models/enums/careGiverPermission.dart';
 import 'package:care_sync/src/models/enums/documentFilterOption.dart';
 import 'package:care_sync/src/models/enums/documentType.dart';
@@ -17,6 +20,8 @@ import 'package:care_sync/src/screens/document/component/selectionBottomBar.dart
 import 'package:care_sync/src/utils/textFormatUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -40,6 +45,7 @@ class DocumentListScreen extends StatefulWidget {
 
 class _DocumentListScreenState extends State<DocumentListScreen> {
   bool isLoading = true;
+  bool isLoadShare = false;
   bool hasError = false;
   String? errorMessage;
   String? errorTittle;
@@ -99,6 +105,67 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
         }
       },
     );
+  }
+
+  Future<void> _fetchDocumentReference() async {
+    setState(() => isLoadShare = true);
+
+    await ApiHandler.handleApiCall<List<DocumentReference>>(
+        context: context,
+        request: () =>
+            httpService.documentService.getDocumentsFileUrls(selectedIds),
+        onSuccess: (data, _) async {
+          try {
+            // Create a temporary directory to store downloaded files
+            final directory = await getTemporaryDirectory();
+            final List<XFile> sharedFiles = [];
+
+            for (final doc in data) {
+              final filePath = '${directory.path}/${doc.fileName}';
+              final file = File(filePath);
+
+              // Download file from signed URL
+              final response = await http.get(Uri.parse(doc.signedUrl));
+              if (response.statusCode == 200) {
+                await file.writeAsBytes(response.bodyBytes);
+                sharedFiles.add(XFile(filePath));
+                print('Downloaded: ${file.path}');
+              } else {
+                print('Failed to download ${doc.fileName}');
+              }
+            }
+
+            for (final file in sharedFiles) {
+              print(
+                  'Ready to share: ${file.path}, exists: ${await File(file.path).exists()}');
+            }
+
+            // Share all downloaded files
+            final params = ShareParams(
+              files: sharedFiles,
+              text: 'Check out my documents from CareBinder!',
+            );
+
+            await SharePlus.instance.share(params);
+            setState(() => isLoadShare = false);
+          } catch (e) {
+            setState(() => isLoadShare = false);
+            debugPrint('Error sharing files: $e');
+            CustomSnackbar.showCustomSnackbar(
+              context: context,
+              message: 'Failed to share documents.',
+              backgroundColor: Theme.of(context).colorScheme.error,
+            );
+          }
+        },
+        onError: (message, title) {
+          setState(() => isLoadShare = false);
+          CustomSnackbar.showCustomSnackbar(
+            context: context,
+            message: message,
+            backgroundColor: Theme.of(context).colorScheme.error,
+          );
+        });
   }
 
   Future<void> _deleteDocuments() async {
@@ -298,9 +365,9 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
                 child: SelectionBottomBar(
                   selectedCount: selectedIds.length,
                   fullAccess: fullAccess,
+                  isLoading: isLoadShare,
                   onShare: () {
-                    SharePlus.instance
-                        .share(ShareParams(text: 'check out my app'));
+                    _fetchDocumentReference();
                   },
                   onDelete: () {
                     showConfirmDialog(

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 class SelectionBottomBar extends StatelessWidget {
   final int selectedCount;
   final bool fullAccess;
+  final bool isLoading;
   final VoidCallback? onShare;
   final VoidCallback? onDelete;
 
@@ -13,6 +14,7 @@ class SelectionBottomBar extends StatelessWidget {
     super.key,
     required this.fullAccess,
     required this.selectedCount,
+    required this.isLoading,
     this.onShare,
     this.onDelete,
   });
@@ -23,8 +25,9 @@ class SelectionBottomBar extends StatelessWidget {
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
         child: Container(
-          height: 55,
-          padding: const EdgeInsets.symmetric(horizontal: 4),
+          height: 70,
+          alignment: const Alignment(0, -1),
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.onSurface.withAlpha(150),
             boxShadow: const [
@@ -39,9 +42,20 @@ class SelectionBottomBar extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               IconButton(
-                icon: Icon(Icons.ios_share,
-                    size: 28, color: Theme.of(context).colorScheme.surface),
-                onPressed: onShare,
+                icon: isLoading
+                    ? SizedBox(
+                        height: 22,
+                        width: 22,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.4,
+                          valueColor: AlwaysStoppedAnimation(
+                            Theme.of(context).colorScheme.surface,
+                          ),
+                        ),
+                      )
+                    : Icon(Icons.ios_share,
+                        size: 28, color: Theme.of(context).colorScheme.surface),
+                onPressed: isLoading ? null : onShare,
               ),
               BtnText(
                   text: "$selectedCount Document Selected",
