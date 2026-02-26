@@ -129,15 +129,9 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
               if (response.statusCode == 200) {
                 await file.writeAsBytes(response.bodyBytes);
                 sharedFiles.add(XFile(filePath));
-                print('Downloaded: ${file.path}');
               } else {
-                print('Failed to download ${doc.fileName}');
+                debugPrint('Failed to download ${doc.fileName}');
               }
-            }
-
-            for (final file in sharedFiles) {
-              print(
-                  'Ready to share: ${file.path}, exists: ${await File(file.path).exists()}');
             }
 
             // Share all downloaded files
@@ -146,8 +140,24 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
               text: 'Check out my documents from CareBinder!',
             );
 
-            await SharePlus.instance.share(params);
-            setState(() => isLoadShare = false);
+            try {
+              await SharePlus.instance.share(params);
+            } finally {
+              // Clean up temporary files after sharing
+              for (final file in sharedFiles) {
+                final tempFile = File(file.path);
+                if (await tempFile.exists()) {
+                  await tempFile.delete();
+                  print('Deleted temp file: ${tempFile.path}');
+                }
+
+                setState(() {
+                  isLoadShare = false;
+                  selectedMode = false;
+                  selectedIds.clear();
+                });
+              }
+            }
           } catch (e) {
             setState(() => isLoadShare = false);
             debugPrint('Error sharing files: $e');
