@@ -1,16 +1,41 @@
-# care_sync
+# 🩺 Care Sync
 
-A new Flutter project.
+A Flutter-based mobile application designed to streamline document management, analysis, and syncing features for healthcare or related use cases.
 
-## Getting Started
+---
 
-This project is a starting point for a Flutter application.
+## 🧭 Project Maintenance Notes
 
-A few resources to get you started if this is your first Flutter project:
+### 🔢 Version and Build Number
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Whenever you release or add a new version of the app, **update the version and build number** in the `pubspec.yaml` file.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Example:
+
+```yaml
+version: 1.0.1+2
+```
+
+### 📁 Folder Structure
+
+lib/
+│
+├── src/
+│ ├── models/ # Data models
+│ ├── screens/ # UI screens
+│ ├── service/
+│ │ └── api/
+│ │ └── httpService.dart # Contains Base URL configuration
+│ ├── widgets/ # Reusable widgets
+│ └── utils/ # Helper functions, constants, etc.
+│
+└── main.dart # Entry point
+
+### 🌐 Live Server Configuration
+
+Before building or deploying the app to production:
+Navigate to:
+lib/src/service/api/httpService.dart
+Ensure the baseUrl points to the live (production) server before building a release.
+
+⚠️ Do not release the app with a staging or local server URL.
