@@ -9,10 +9,11 @@ class ProfileIconButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return IconButton(
       icon: CircleAvatar(
-        radius: 18,
+        radius: 16,
         backgroundColor:
             Theme.of(context).colorScheme.onPrimary.withOpacity(0.9),
         child: Icon(
+          size: 24,
           Icons.person,
           color: Theme.of(context).colorScheme.primary,
         ),

@@ -6,6 +6,7 @@ import 'package:care_sync/src/component/appBar/appBar.dart';
 import 'package:care_sync/src/component/btn/floatingBtn/floatingBtn.dart';
 import 'package:care_sync/src/component/contraintBox/maxWidthConstraintBox.dart';
 import 'package:care_sync/src/component/dialog/confirmDeleteDialog.dart';
+import 'package:care_sync/src/component/dialog/guidelineDialog.dart';
 import 'package:care_sync/src/component/filterIcon/filterIcon.dart';
 import 'package:care_sync/src/component/snakbar/customSnakbar.dart';
 import 'package:care_sync/src/component/text/bodyText.dart';
@@ -225,6 +226,22 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
               ? "${TextFormatUtils.formatName(widget.patient!.name)} Doc"
               : "Medical Document",
           customActions: [
+            IconButton(
+              icon: Icon(Icons.info_outline,
+                  color: Theme.of(context).colorScheme.surface),
+              onPressed: () {
+                GuidelineDialog.show(
+                  context,
+                  title: "How to Select Documents",
+                  instructions: [
+                    "Use long press on any document to enable selection mode.",
+                    "In selection mode, you can share selected documents using the Share icon at the bottom left corner.",
+                    "Delete selected documents using the Delete icon at the bottom right corner.",
+                    "Return to normal mode by tapping the Close icon at the top right corner.",
+                  ],
+                );
+              },
+            ),
             if (selectedMode)
               IconButton(
                 icon: Icon(Icons.close,
