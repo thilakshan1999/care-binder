@@ -137,7 +137,8 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
             // Share all downloaded files
             final params = ShareParams(
               files: sharedFiles,
-              text: 'Check out my documents from CareBinder!',
+              text:
+                  'Shared medical records for ${widget.patient?.name ?? context.read<UserBloc>().state.name ?? 'Patient'} via CareBinder.',
             );
 
             try {
