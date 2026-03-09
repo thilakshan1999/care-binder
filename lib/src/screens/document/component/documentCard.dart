@@ -73,6 +73,8 @@ AccordionSection documentCard({
   void onHold() {
     if (!selectedMode) {
       onLongPress!(id);
+    } else {
+      onSelect!(id);
     }
   }
 

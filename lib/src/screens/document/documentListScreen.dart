@@ -143,8 +143,16 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
             );
 
             try {
+              setState(() {
+                isLoadShare = false;
+              });
               await SharePlus.instance.share(params);
             } finally {
+              setState(() {
+                selectedMode = false;
+                selectedIds.clear();
+              });
+
               // Clean up temporary files after sharing
               for (final file in sharedFiles) {
                 final tempFile = File(file.path);
@@ -152,12 +160,6 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
                   await tempFile.delete();
                   print('Deleted temp file: ${tempFile.path}');
                 }
-
-                setState(() {
-                  isLoadShare = false;
-                  selectedMode = false;
-                  selectedIds.clear();
-                });
               }
             }
           } catch (e) {
