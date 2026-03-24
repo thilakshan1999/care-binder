@@ -90,6 +90,7 @@
 import UIKit
 import UniformTypeIdentifiers
 import PDFKit
+import UniformTypeIdentifiers
 
 class ShareViewController: UIViewController {
 
@@ -211,17 +212,113 @@ class ShareViewController: UIViewController {
         }
     }
 
-    // MARK: - Send Action
     @objc private func sendTapped() {
+        guard let fileURL = sharedFileURL else {
+            print("No file found")
+            return
+        }
 
-        print("Send tapped 🚀")
-        print("File: \(sharedFileURL?.lastPathComponent ?? "No file")")
-
-        close()
+        if let type = UTType(filenameExtension: fileURL.pathExtension) {
+            
+            if type.conforms(to: .image) {
+                compressAndUploadImage(fileURL: fileURL)
+            } else if type.conforms(to: .pdf) {
+                print("PDF upload not implemented yet")
+                close()
+            } else {
+                print("Unsupported file type")
+                close()
+            }
+        }
     }
     
     @objc private func closeTapped() {
         close()
+    }
+    
+    private func compressAndUploadImage(fileURL: URL) {
+        guard let image = UIImage(contentsOfFile: fileURL.path) else {
+            print("Failed to load image")
+            return
+        }
+
+        guard let compressedData = image.jpegData(compressionQuality: 0.75) else {
+            print("Compression failed")
+            return
+        }
+
+        uploadImage(data: compressedData, fileName: "image.jpg")
+    }
+    
+    private func uploadImage(data: Data, fileName: String) {
+        guard let token = getAccessToken() else {
+               print("❌ No access token found")
+               close()
+               return
+           }
+        
+        let url = URL(string: "https://caresync-service-309965347032.us-central1.run.app/api/vision/extract")!
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        
+        // ✅ Add Authorization header
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+
+        let boundary = UUID().uuidString
+        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+
+        let mimeType = mimeType(for: fileName)
+        var body = Data()
+        // Add file
+        body.append("--\(boundary)\r\n".data(using: .utf8)!)
+        body.append("Content-Disposition: form-data; name=\"file\"; filename=\"\(fileName)\"\r\n".data(using: .utf8)!)
+        body.append("Content-Type: \(mimeType)\r\n\r\n".data(using: .utf8)!)
+        body.append(data)
+        body.append("\r\n".data(using: .utf8)!)
+
+        body.append("--\(boundary)--\r\n".data(using: .utf8)!)
+
+        request.httpBody = body
+
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                print("Upload error:", error)
+                return
+            }
+
+            guard let data = data else {
+                print("No response data")
+                return
+            }
+
+            let responseString = String(data: data, encoding: .utf8) ?? ""
+            print("API Response:", responseString)
+
+            DispatchQueue.main.async {
+                self.close()
+            }
+        }
+
+        task.resume()
+    }
+    
+    private func getAccessToken() -> String? {
+        let defaults = UserDefaults(suiteName: "group.com.hinetics.carebinder.shared")
+        return defaults?.string(forKey: "access_token")
+    }
+    
+    private func mimeType(for fileName: String) -> String {
+        let ext = (fileName as NSString).pathExtension.lowercased()
+        switch ext {
+        case "jpg", "jpeg": return "image/jpeg"
+        case "png": return "image/png"
+        case "gif": return "image/gif"
+        case "bmp": return "image/bmp"
+        case "webp": return "image/webp"
+        case "pdf": return "application/pdf"
+        default: return "application/octet-stream"
+        }
     }
 
     private func close() {
