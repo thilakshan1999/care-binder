@@ -28,6 +28,11 @@ class ShareViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        guard isUserLoggedIn() else {
+            handleNotLoggedIn()
+            return
+        }
+        
         setupUI()
         configureUIBasedOnRole()
         
@@ -68,6 +73,25 @@ class ShareViewController: UIViewController {
     @objc private func closeTapped() {
         close()
     }
+    
+    private func isUserLoggedIn() -> Bool {
+        return UserManager.getAccessToken() != nil
+    }
+    
+    private func handleNotLoggedIn() {
+            let alert = UIAlertController(
+                title: "Login Required",
+                message: "Please log in to CareBinder to share files.",
+                preferredStyle: .alert
+            )
+
+            alert.addAction(UIAlertAction(title: "Cancel", style: .cancel) { _ in
+                self.close()
+            })
+
+            present(alert, animated: true)
+    }
+
     
     private func setupUserDropdown() {
         let actions = users.map { user in

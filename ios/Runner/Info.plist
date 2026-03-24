@@ -67,6 +67,6 @@
 		</dict>
 	</array>
 	<key>FlutterDeepLinkingEnabled</key>
-	<false/>
+	<true/>
 </dict>
 </plist>
