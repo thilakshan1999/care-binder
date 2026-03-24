@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -15,6 +16,7 @@ class UserBloc extends Cubit<UserState> {
     await loadUserFromPref();
   }
 
+  static const _channel = MethodChannel('app.group.share');
   static const _prefKey = 'user_state';
 
   Future<void> setUserFromToken(String accessToken, String refreshToken) async {
@@ -59,6 +61,18 @@ class UserBloc extends Cubit<UserState> {
             'name': name,
             'role': role.toString().split('.').last,
           }));
+
+      try {
+        await _channel.invokeMethod('saveToAppGroup', {
+          'accessToken': accessToken,
+          'refreshToken': refreshToken,
+          'name': name,
+          'role': role.toString().split('.').last,
+        });
+      } catch (e) {
+        print("Failed to save in App Group: $e");
+      }
+      // 🔥 NEW: Save to iOS App Group
     } catch (e) {
       emit(UserState.initial());
     }
@@ -99,6 +113,13 @@ class UserBloc extends Cubit<UserState> {
     emit(UserState.initial());
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_prefKey);
+
+    // ✅ Clear App Group (iOS)
+    try {
+      await _channel.invokeMethod('clearCredentials');
+    } catch (e) {
+      print("Failed to clear App Group tokens: $e");
+    }
   }
 
   UserRole? _mapRole(String? role) {
