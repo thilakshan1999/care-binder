@@ -8,6 +8,7 @@ import 'package:care_sync/src/component/contraintBox/maxWidthConstraintBox.dart'
 import 'package:care_sync/src/component/dialog/confirmDeleteDialog.dart';
 import 'package:care_sync/src/component/dialog/guidelineDialog.dart';
 import 'package:care_sync/src/component/filterIcon/filterIcon.dart';
+import 'package:care_sync/src/component/offlineComponent/offlineBanner.dart';
 import 'package:care_sync/src/component/snakbar/customSnakbar.dart';
 import 'package:care_sync/src/component/text/bodyText.dart';
 import 'package:care_sync/src/models/document/documentReference.dart';
@@ -289,6 +290,7 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
                     )
                   : Column(
                       children: [
+                        const OfflineBanner(),
                         Row(
                           children: [
                             Expanded(

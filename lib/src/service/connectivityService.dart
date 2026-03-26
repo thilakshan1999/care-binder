@@ -17,6 +17,7 @@ class ConnectivityService extends ChangeNotifier {
   }
 
   Future<void> _init() async {
+    print("ConnectivityService initalized...");
     // Check initial status
     final results = await _connectivity.checkConnectivity();
     _updateStatus(results);
