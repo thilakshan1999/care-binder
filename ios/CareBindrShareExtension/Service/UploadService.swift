@@ -1,53 +1,81 @@
 import Foundation
 
 class UploadService {
-
-    static func uploadImage(data: Data, fileName: String, completion: @escaping () -> Void) {
-
-        guard let token = UserManager.getAccessToken() else {
-            print("❌ No access token found")
-            completion()
-            return
-        }
-
-        let url = URL(string: "https://caresync-service-309965347032.us-central1.run.app/api/vision/extract")!
-
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-
-        let boundary = UUID().uuidString
-        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
-
-        let mimeType = mimeType(for: fileName)
-
-        var body = Data()
-        body.append("--\(boundary)\r\n".data(using: .utf8)!)
-        body.append("Content-Disposition: form-data; name=\"file\"; filename=\"\(fileName)\"\r\n".data(using: .utf8)!)
-        body.append("Content-Type: \(mimeType)\r\n\r\n".data(using: .utf8)!)
-        body.append(data)
-        body.append("\r\n--\(boundary)--\r\n".data(using: .utf8)!)
-
-        request.httpBody = body
-
-        URLSession.shared.dataTask(with: request) { _, _, error in
-            if let error = error {
-                print("Upload error:", error)
+    static func uploadDocument(
+            fileData: Data,
+            fileName: String,
+            mimeType: String,
+            patientId: String?, // optional
+            completion: @escaping (Bool, String?) -> Void
+        ) {
+            
+            guard let token = UserManager.getAccessToken() else {
+                completion(false, "No access token")
+                return
             }
-            completion()
-        }.resume()
-    }
-
-    private static func mimeType(for fileName: String) -> String {
-        let ext = (fileName as NSString).pathExtension.lowercased()
-        switch ext {
-        case "jpg", "jpeg": return "image/jpeg"
-        case "png": return "image/png"
-        case "gif": return "image/gif"
-        case "bmp": return "image/bmp"
-        case "webp": return "image/webp"
-        case "pdf": return "application/pdf"
-        default: return "application/octet-stream"
+            
+            let url = URL(string: "\(APIConfig.baseURL)/share/process")!
+            var request = URLRequest(url: url)
+            request.httpMethod = "POST"
+            
+            // ✅ Headers
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+            
+            // ✅ Multipart boundary
+            let boundary = UUID().uuidString
+            request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+            
+            // ✅ Body
+            var body = Data()
+            
+            // File part
+            body.append("--\(boundary)\r\n".data(using: .utf8)!)
+            body.append("Content-Disposition: form-data; name=\"file\"; filename=\"\(fileName)\"\r\n".data(using: .utf8)!)
+            body.append("Content-Type: \(mimeType)\r\n\r\n".data(using: .utf8)!)
+            body.append(fileData)
+            body.append("\r\n".data(using: .utf8)!)
+            
+            // Optional patientId
+            if let patientId = patientId {
+                body.append("--\(boundary)\r\n".data(using: .utf8)!)
+                body.append("Content-Disposition: form-data; name=\"patientId\"\r\n\r\n".data(using: .utf8)!)
+                body.append("\(patientId)\r\n".data(using: .utf8)!)
+            }
+            
+            // End boundary
+            body.append("--\(boundary)--\r\n".data(using: .utf8)!)
+            
+            request.httpBody = body
+            
+            // ✅ Call API
+            URLSession.shared.dataTask(with: request) { data, response, error in
+                
+                if let error = error {
+                    completion(false, error.localizedDescription)
+                    return
+                }
+                
+                guard let data = data else {
+                    completion(false, "No response data")
+                    return
+                }
+                
+                do {
+                    if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                        
+                        let success = (json["success"] as? Bool) ?? ((json["success"] as? Int) == 1)
+                        let message = json["message"] as? String
+                        
+                        if success {
+                            completion(true, nil)
+                        } else {
+                            completion(false, message ?? "Upload failed")
+                        }
+                    }
+                } catch {
+                    completion(false, "Parsing error")
+                }
+                
+            }.resume()
         }
-    }
 }
