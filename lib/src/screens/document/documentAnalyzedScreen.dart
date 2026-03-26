@@ -14,7 +14,6 @@ import 'package:care_sync/src/screens/document/component/analyzedScreen/vitalDoc
 import 'package:care_sync/src/screens/document/documentScreen.dart';
 import 'package:care_sync/src/screens/document/textEditScreen.dart';
 import 'package:care_sync/src/service/documentPickerService.dart';
-import 'package:care_sync/src/utils/shareHandler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -132,7 +131,6 @@ class _DocumentAnalyzedScreenState extends State<DocumentAnalyzedScreen> {
       },
       onFinally: () {
         setState(() => isLoading = false);
-        ShareHandler.clearSharedFolder();
       },
     );
   }
