@@ -142,8 +142,12 @@ class ShareHandler {
             return nil
         }
 
-        let fileName = url.lastPathComponent
+        print("file Name : ")
+        print(url.lastPathComponent)
+        let fileName = sanitizeFilename(url.lastPathComponent)
         let destURL = containerURL.appendingPathComponent(fileName)
+        print("file new Name : ")
+        print(fileName)
 
         // Remove if exists
         if FileManager.default.fileExists(atPath: destURL.path) {
@@ -160,17 +164,23 @@ class ShareHandler {
     }
 
     private func sanitizeFilename(_ filename: String) -> String {
-        print("file Name : ")
-        print(filename)  
         let fileExtension = (filename as NSString).pathExtension
-        let timestamp = Int(Date().timeIntervalSince1970)
-        let newName = "file_\(timestamp)"
-        print("file new Name : ")
-        print(newName)  
+        var nameWithoutExtension = (filename as NSString).deletingPathExtension
+
+        // Replace spaces with underscores
+        nameWithoutExtension = nameWithoutExtension.replacingOccurrences(of: " ", with: "_")
+
+        // Remove characters that are not allowed in filenames
+        let allowedCharacters = CharacterSet.alphanumerics.union(CharacterSet(charactersIn: "-_"))
+        nameWithoutExtension = nameWithoutExtension.unicodeScalars
+            .filter { allowedCharacters.contains($0) }
+            .map { String($0) }
+            .joined()
+
         if fileExtension.isEmpty {
-            return newName
+            return nameWithoutExtension
         } else {
-            return "\(newName).\(fileExtension)"
+            return "\(nameWithoutExtension).\(fileExtension)"
         }
     }
 
