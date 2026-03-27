@@ -159,6 +159,21 @@ class ShareHandler {
         }
     }
 
+    private func sanitizeFilename(_ filename: String) -> String {
+        print("file Name : ")
+        print(filename)  
+        let fileExtension = (filename as NSString).pathExtension
+        let timestamp = Int(Date().timeIntervalSince1970)
+        let newName = "file_\(timestamp)"
+        print("file new Name : ")
+        print(newName)  
+        if fileExtension.isEmpty {
+            return newName
+        } else {
+            return "\(newName).\(fileExtension)"
+        }
+    }
+
     // MARK: - Save UIImage as Temp File
     private func saveTempImage(image: UIImage) -> URL? {
         let tempURL = FileManager.default.temporaryDirectory

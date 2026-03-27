@@ -290,7 +290,7 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
                     )
                   : Column(
                       children: [
-                        const OfflineBanner(),
+                        // const OfflineBanner(),
                         Row(
                           children: [
                             Expanded(
