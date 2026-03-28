@@ -205,24 +205,22 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                                 const SizedBox(
                                   height: 10,
                                 ),
-                                if (widget.fullAccess) ...[
-                                  if (task.status == "FAILED") ...[
-                                    PrimaryLoadingBtn(
-                                      label: 'Retry',
-                                      loading: isLoadingRetry,
-                                      backgroundColor:
-                                          Theme.of(context).colorScheme.primary,
-                                      onPressed: () {
-                                        if (!isLoadingDelete &&
-                                            !isLoadingRetry) {
-                                          _retryDocument();
-                                        }
-                                      },
-                                    ),
-                                    const SizedBox(
-                                      height: 10,
-                                    ),
-                                  ],
+                                if (widget.fullAccess &&
+                                    task.status == "FAILED") ...[
+                                  PrimaryLoadingBtn(
+                                    label: 'Retry',
+                                    loading: isLoadingRetry,
+                                    backgroundColor:
+                                        Theme.of(context).colorScheme.primary,
+                                    onPressed: () {
+                                      if (!isLoadingDelete && !isLoadingRetry) {
+                                        _retryDocument();
+                                      }
+                                    },
+                                  ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
                                   PrimaryLoadingBtn(
                                     label: 'Delete',
                                     loading: isLoadingDelete,
