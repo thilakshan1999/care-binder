@@ -77,7 +77,7 @@ class TaskCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     PrimaryText(
-                      text: task.fileName,
+                      text: TextFormatUtils.displayFileName(task.fileName),
                       singleLine: true,
                     ),
                     const SizedBox(height: 6),

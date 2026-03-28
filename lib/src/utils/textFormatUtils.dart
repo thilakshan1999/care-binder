@@ -121,4 +121,10 @@ class TextFormatUtils {
       'unit': unitPart,
     };
   }
+
+  static String displayFileName(String fileName) {
+    return fileName.contains('_')
+        ? fileName.substring(fileName.indexOf('_') + 1)
+        : fileName;
+  }
 }

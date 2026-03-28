@@ -180,7 +180,10 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                                   height: 10,
                                 ),
                                 isPdf
-                                    ? PdfViewerFromUrl(url: url)
+                                    ? SizedBox(
+                                        height: 500,
+                                        child: PdfViewerFromUrl(url: url),
+                                      )
                                     : InteractiveViewer(
                                         child: Image.network(url,
                                             fit: BoxFit.contain, loadingBuilder:
