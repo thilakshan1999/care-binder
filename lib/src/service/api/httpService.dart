@@ -3,6 +3,7 @@ import 'package:care_sync/src/service/api/careGiverRequestService.dart';
 import 'package:care_sync/src/service/api/documentService.dart';
 import 'package:care_sync/src/service/api/documetAIService.dart';
 import 'package:care_sync/src/service/api/loggingInterceptor.dart';
+import 'package:care_sync/src/service/api/uploadTaskService.dart';
 import 'package:care_sync/src/service/api/userService.dart';
 import 'package:http_interceptor/http/intercepted_client.dart';
 import '../../bloc/userBloc.dart';
@@ -19,6 +20,7 @@ class HttpService {
   late final UserService userService;
   late final CareGiverRequestService careGiverRequestService;
   late final CareGiverAssignmentService careGiverAssignmentService;
+  late final UploadTaskService uploadTaskService;
 
   HttpService(UserBloc userBloc)
       : baseUrl =
@@ -40,5 +42,6 @@ class HttpService {
         CareGiverRequestService(baseUrl: baseUrl, client: httpClient);
     careGiverAssignmentService =
         CareGiverAssignmentService(baseUrl: baseUrl, client: httpClient);
+    uploadTaskService = UploadTaskService(baseUrl: baseUrl, client: httpClient);
   }
 }

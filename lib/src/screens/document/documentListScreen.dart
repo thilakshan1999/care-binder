@@ -15,8 +15,10 @@ import 'package:care_sync/src/models/document/documentReference.dart';
 import 'package:care_sync/src/models/enums/careGiverPermission.dart';
 import 'package:care_sync/src/models/enums/documentFilterOption.dart';
 import 'package:care_sync/src/models/enums/documentType.dart';
+import 'package:care_sync/src/models/task/uploadTask.dart';
 import 'package:care_sync/src/models/user/userSummary.dart';
 import 'package:care_sync/src/screens/document/component/documentFilterSheet.dart';
+import 'package:care_sync/src/screens/document/component/taskCard.dart';
 import 'package:care_sync/src/screens/document/component/uploadOptionSheet.dart';
 import 'package:care_sync/src/screens/document/component/selectionBottomBar.dart';
 import 'package:care_sync/src/utils/textFormatUtils.dart';
@@ -52,6 +54,7 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
   String? errorMessage;
   String? errorTittle;
   List<DocumentSummary> documentList = mockDocumentSummaries;
+  List<UploadTask> taskList = [];
   List<String> categories =
       TextFormatUtils.enumListToStringList(DocumentType.values);
   int selectedIndex = 0;
@@ -87,8 +90,44 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
           filterBy: filterOption.name,
           sortOrder: sortOrder.name),
       onSuccess: (data, _) {
+        print("type...");
+        print(type);
+        if (type != null && type != "All") {
+          setState(() {
+            documentList = data;
+            isLoading = false;
+            hasError = false;
+            errorMessage = null;
+            errorTittle = null;
+            taskList.clear();
+          });
+        } else {
+          _fetchUploadTask();
+          setState(() {
+            documentList = data;
+          });
+        }
+      },
+      onError: (title, message) {
         setState(() {
-          documentList = data;
+          isLoading = false;
+          hasError = true;
+          errorMessage = message;
+          errorTittle = title;
+        });
+      },
+    );
+  }
+
+  Future<void> _fetchUploadTask() async {
+    await ApiHandler.handleApiCall<List<UploadTask>>(
+      context: context,
+      request: () => httpService.uploadTaskService.getUserTasks(
+        patientId: widget.patient?.id,
+      ),
+      onSuccess: (data, _) {
+        setState(() {
+          taskList = data;
           hasError = false;
           errorMessage = null;
           errorTittle = null;
@@ -338,53 +377,65 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
                                 : SingleChildScrollView(
                                     padding: const EdgeInsets.only(bottom: 80),
                                     child: MaxWidthConstrainedBox(
-                                      child: Accordion(
-                                        maxOpenSections: 1,
-                                        disableScrolling: true,
-                                        headerBackgroundColor: Theme.of(context)
-                                            .extension<CustomColors>()
-                                            ?.primarySurface,
-                                        headerBackgroundColorOpened:
-                                            Colors.blue.shade50,
-                                        headerBorderColor: Colors.blue.shade50,
-                                        headerBorderWidth: 1,
-                                        paddingListTop: 16,
-                                        paddingListBottom: 16,
-                                        paddingListHorizontal: 12,
-                                        children: documentList.map((doc) {
-                                          return documentCard(
-                                              context: context,
-                                              id: doc.id,
-                                              name: doc.documentName,
-                                              updatedTime: doc.updatedTime,
-                                              visitTime: doc.dateOfVisit,
-                                              testTime: doc.dateOfTest,
-                                              summary: doc.summary,
-                                              type: doc.documentType,
-                                              filterOption: filterOption,
-                                              fullAccess: fullAccess,
-                                              selectedMode: selectedMode,
-                                              isSelected:
-                                                  selectedIds.contains(doc.id),
-                                              onLongPress: (id) {
-                                                setState(() {
-                                                  selectedMode = true;
-                                                  selectedIds.add(id);
-                                                });
-                                              },
-                                              onSelect: (id) {
-                                                setState(() {
-                                                  if (selectedIds
-                                                      .contains(id)) {
-                                                    selectedIds.remove(id);
-                                                  } else {
+                                        child: Column(
+                                      children: [
+                                        if (taskList.isNotEmpty)
+                                          ...taskList.map((task) => TaskCard(
+                                                task: task,
+                                                context: context,
+                                                fullAccess: fullAccess,
+                                                patientId: widget.patient?.id,
+                                              )),
+                                        Accordion(
+                                          maxOpenSections: 1,
+                                          disableScrolling: true,
+                                          headerBackgroundColor:
+                                              Theme.of(context)
+                                                  .extension<CustomColors>()
+                                                  ?.primarySurface,
+                                          headerBackgroundColorOpened:
+                                              Colors.blue.shade50,
+                                          headerBorderColor:
+                                              Colors.blue.shade50,
+                                          headerBorderWidth: 1,
+                                          paddingListTop: 6,
+                                          paddingListBottom: 16,
+                                          paddingListHorizontal: 12,
+                                          children: documentList.map((doc) {
+                                            return documentCard(
+                                                context: context,
+                                                id: doc.id,
+                                                name: doc.documentName,
+                                                updatedTime: doc.updatedTime,
+                                                visitTime: doc.dateOfVisit,
+                                                testTime: doc.dateOfTest,
+                                                summary: doc.summary,
+                                                type: doc.documentType,
+                                                filterOption: filterOption,
+                                                fullAccess: fullAccess,
+                                                selectedMode: selectedMode,
+                                                isSelected: selectedIds
+                                                    .contains(doc.id),
+                                                onLongPress: (id) {
+                                                  setState(() {
+                                                    selectedMode = true;
                                                     selectedIds.add(id);
-                                                  }
+                                                  });
+                                                },
+                                                onSelect: (id) {
+                                                  setState(() {
+                                                    if (selectedIds
+                                                        .contains(id)) {
+                                                      selectedIds.remove(id);
+                                                    } else {
+                                                      selectedIds.add(id);
+                                                    }
+                                                  });
                                                 });
-                                              });
-                                        }).toList(),
-                                      ),
-                                    )))
+                                          }).toList(),
+                                        ),
+                                      ],
+                                    ))))
                       ],
                     ),
             ),

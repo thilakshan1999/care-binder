@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 class PrimaryText extends StatelessWidget {
   final String text;
   final TextAlign textAlign;
+  final bool singleLine;
 
   const PrimaryText({
     super.key,
     required this.text,
     this.textAlign = TextAlign.left,
+    this.singleLine = false,
   });
 
   @override
@@ -16,6 +18,7 @@ class PrimaryText extends StatelessWidget {
     return Text(
       TextFormatUtils.formatName(text),
       textAlign: textAlign,
+      maxLines: singleLine ? 1 : null,
       style: TextStyle(
         height: 1,
         letterSpacing: 0.5,

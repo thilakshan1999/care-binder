@@ -45,3 +45,14 @@ class UploadTask {
     };
   }
 }
+
+final sampleTask = UploadTask(
+  id: 101,
+  fileName: 'chest_xray_v4.png',
+  fileUrl: 'https://storage.med-app.com/uploads/101/xray.png',
+  mimeType: 'image/png',
+  patientId: 5502,
+  createdBy: 'Dr. Sarah Smith',
+  status: 'completed',
+  errorMessage: null, // No error for a successful task
+);
