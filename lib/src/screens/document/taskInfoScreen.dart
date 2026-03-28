@@ -134,8 +134,6 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
   Widget build(BuildContext context) {
     final isPdf = task.mimeType == "application/pdf";
     final url = task.fileUrl;
-    print("url");
-    print(url);
     return Scaffold(
         appBar: CustomAppBar(
           tittle: "Task Info",

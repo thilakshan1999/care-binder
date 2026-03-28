@@ -383,6 +383,7 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
                                           ...taskList.map((task) => TaskCard(
                                                 task: task,
                                                 context: context,
+                                                selectedMode: selectedMode,
                                                 fullAccess: fullAccess,
                                                 patientId: widget.patient?.id,
                                               )),
