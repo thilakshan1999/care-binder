@@ -1,6 +1,7 @@
 import 'package:care_sync/src/bloc/userBloc.dart';
 import 'package:care_sync/src/component/appBar/appBar.dart';
 import 'package:care_sync/src/component/contraintBox/maxWidthConstraintBox.dart';
+import 'package:care_sync/src/component/offlineComponent/offlineBanner.dart';
 import 'package:care_sync/src/component/text/primaryText.dart';
 import 'package:care_sync/src/component/text/subText.dart';
 import 'package:care_sync/src/models/enums/userRole.dart';
@@ -11,6 +12,7 @@ import 'package:care_sync/src/screens/profile/component/profileCard.dart';
 import 'package:care_sync/src/screens/profile/component/roleBadge.dart';
 import 'package:care_sync/src/screens/qr/component/qrPermissionSheet.dart';
 import 'package:care_sync/src/screens/qr/qrScanScreen.dart';
+import 'package:care_sync/src/service/connectivityService.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -19,8 +21,29 @@ import '../../component/dialog/confirmDeleteDialog.dart';
 import '../../component/snakbar/customSnakbar.dart';
 import '../careManagement/careManagementScreen.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  @override
+  void initState() {
+    super.initState();
+    connectivityService.addListener(_onConnectivityChange);
+  }
+
+  @override
+  void dispose() {
+    connectivityService.removeListener(_onConnectivityChange);
+    super.dispose();
+  }
+
+  void _onConnectivityChange() {
+    if (mounted) setState(() {});
+  }
 
   Future<void> _logout(BuildContext context) async {
     context.read<UserBloc>().clear();
@@ -69,6 +92,7 @@ class ProfileScreen extends StatelessWidget {
           child: MaxWidthConstrainedBox(
             child: Column(
               children: [
+                const OfflineBanner(),
                 const SizedBox(height: 20),
                 //Profile Img
                 CircleAvatar(
@@ -124,20 +148,21 @@ class ProfileScreen extends StatelessWidget {
 
                         const SizedBox(height: 12),
 
-                        //Link with Patient
-                        ProfileCard(
-                          icon: Icons.qr_code_scanner,
-                          title: "Link with Patient",
-                          onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) => const QrScanScreen(),
-                              ),
-                            );
-                          },
-                        ),
-
-                        const SizedBox(height: 12),
+                        if (connectivityService.isOnline) ...[
+                          //Link with Patient
+                          ProfileCard(
+                            icon: Icons.qr_code_scanner,
+                            title: "Link with Patient",
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => const QrScanScreen(),
+                                ),
+                              );
+                            },
+                          ),
+                          const SizedBox(height: 12),
+                        ],
                       ] else ...[
                         //Medical Info
                         // ProfileCard(
@@ -159,18 +184,20 @@ class ProfileScreen extends StatelessWidget {
 
                         const SizedBox(height: 12),
 
-                        //Share Access
-                        ProfileCard(
-                          icon: Icons.qr_code,
-                          title: "Share Access",
-                          onTap: () {
-                            CustomBottomSheet.show(
-                                context: context,
-                                child: const QRPermissionSheet());
-                          },
-                        ),
+                        if (connectivityService.isOnline) ...[
+                          //Share Access
+                          ProfileCard(
+                            icon: Icons.qr_code,
+                            title: "Share Access",
+                            onTap: () {
+                              CustomBottomSheet.show(
+                                  context: context,
+                                  child: const QRPermissionSheet());
+                            },
+                          ),
 
-                        const SizedBox(height: 12),
+                          const SizedBox(height: 12),
+                        ]
                       ],
 
                       //App Setting

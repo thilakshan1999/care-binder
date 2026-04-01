@@ -46,6 +46,7 @@ class _CareRelationshipListState extends State<CareRelationshipList> {
     super.initState();
     _db = AppDatabase();
     _userRepo = UserRepository(_db);
+    connectivityService.addListener(_onConnectivityChange);
   }
 
   @override
@@ -56,6 +57,16 @@ class _CareRelationshipListState extends State<CareRelationshipList> {
       _fetchUserList();
       _isInitialized = true;
     }
+  }
+
+  @override
+  void dispose() {
+    connectivityService.removeListener(_onConnectivityChange);
+    super.dispose();
+  }
+
+  void _onConnectivityChange() {
+    _fetchUserList();
   }
 
   Future<void> _fetchUserList() async {

@@ -7,6 +7,7 @@ import 'package:care_sync/src/models/enums/userRole.dart';
 import 'package:care_sync/src/screens/careManagement/component/careRelationshipList.dart';
 import 'package:care_sync/src/screens/careManagement/component/requestList.dart';
 import 'package:care_sync/src/screens/careManagement/component/requestSendSheet.dart';
+import 'package:care_sync/src/service/connectivityService.dart';
 import 'package:care_sync/src/theme/customColors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -25,6 +26,22 @@ class _CareManagementScreenState extends State<CareManagementScreen> {
   int selectedIndex = 0;
 
   @override
+  void initState() {
+    super.initState();
+    connectivityService.addListener(_onConnectivityChange);
+  }
+
+  @override
+  void dispose() {
+    connectivityService.removeListener(_onConnectivityChange);
+    super.dispose();
+  }
+
+  void _onConnectivityChange() {
+    if (mounted) setState(() {});
+  }
+
+  @override
   Widget build(BuildContext context) {
     UserRole? userRole = context.read<UserBloc>().state.role;
 
@@ -40,15 +57,17 @@ class _CareManagementScreenState extends State<CareManagementScreen> {
                 ? "Caregiver Info"
                 : "Patient Info"),
         floatingActionButton: selectedIndex == 0
-            ? CustomFloatingBtn(
-                onPressed: () {
-                  CustomBottomSheet.show(
-                      context: context,
-                      child: RequestSendSheet(
-                        userRole: userRole!,
-                      ));
-                },
-              )
+            ? connectivityService.isOnline
+                ? CustomFloatingBtn(
+                    onPressed: () {
+                      CustomBottomSheet.show(
+                          context: context,
+                          child: RequestSendSheet(
+                            userRole: userRole!,
+                          ));
+                    },
+                  )
+                : null
             : null,
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
         body: Center(
@@ -57,52 +76,53 @@ class _CareManagementScreenState extends State<CareManagementScreen> {
             children: [
               const OfflineBanner(),
               const SizedBox(height: 16),
-              Center(
-                child: AnimatedToggleSwitch<int>.size(
-                  current: selectedIndex,
-                  onChanged: (value) => setState(() => selectedIndex = value),
-                  values: const [0, 1],
-                  height: 46,
-                  style: ToggleStyle(
-                    backgroundColor: Theme.of(context)
-                        .extension<CustomColors>()
-                        ?.primarySurface,
-                    indicatorColor: Theme.of(context).colorScheme.primary,
-                    borderColor: Colors.transparent,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
-                        blurRadius: 4,
-                        spreadRadius: 1,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                    borderRadius: BorderRadius.circular(8.0),
-                    indicatorBorderRadius: BorderRadius.circular(6.0),
+              if (connectivityService.isOnline)
+                Center(
+                  child: AnimatedToggleSwitch<int>.size(
+                    current: selectedIndex,
+                    onChanged: (value) => setState(() => selectedIndex = value),
+                    values: const [0, 1],
+                    height: 46,
+                    style: ToggleStyle(
+                      backgroundColor: Theme.of(context)
+                          .extension<CustomColors>()
+                          ?.primarySurface,
+                      indicatorColor: Theme.of(context).colorScheme.primary,
+                      borderColor: Colors.transparent,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          blurRadius: 4,
+                          spreadRadius: 1,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                      borderRadius: BorderRadius.circular(8.0),
+                      indicatorBorderRadius: BorderRadius.circular(6.0),
+                    ),
+                    //spacing: 20.0,
+                    iconOpacity: 1,
+                    selectedIconScale: 1.0,
+                    indicatorSize: const Size.fromWidth(120),
+                    iconAnimationType: AnimationType.onHover,
+                    styleAnimationType: AnimationType.onHover,
+                    borderWidth: 5.0,
+                    customIconBuilder: (context, local, global) {
+                      final text = toggleLabels[local.index];
+                      return Center(
+                          child: Text(text,
+                              style: TextStyle(
+                                  height: 1,
+                                  letterSpacing: 0.6,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color.lerp(
+                                      Theme.of(context).colorScheme.onSurface,
+                                      Theme.of(context).colorScheme.onPrimary,
+                                      local.animationValue))));
+                    },
                   ),
-                  //spacing: 20.0,
-                  iconOpacity: 1,
-                  selectedIconScale: 1.0,
-                  indicatorSize: const Size.fromWidth(120),
-                  iconAnimationType: AnimationType.onHover,
-                  styleAnimationType: AnimationType.onHover,
-                  borderWidth: 5.0,
-                  customIconBuilder: (context, local, global) {
-                    final text = toggleLabels[local.index];
-                    return Center(
-                        child: Text(text,
-                            style: TextStyle(
-                                height: 1,
-                                letterSpacing: 0.6,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Color.lerp(
-                                    Theme.of(context).colorScheme.onSurface,
-                                    Theme.of(context).colorScheme.onPrimary,
-                                    local.animationValue))));
-                  },
                 ),
-              ),
               const SizedBox(height: 16),
               Expanded(
                   child: selectedIndex == 0

@@ -1,8 +1,12 @@
 import 'package:care_sync/src/bloc/userBloc.dart';
 import 'package:care_sync/src/component/appBar/appBar.dart';
 import 'package:care_sync/src/component/contraintBox/maxWidthConstraintBox.dart';
+import 'package:care_sync/src/component/offlineComponent/offlineBanner.dart';
+import 'package:care_sync/src/database/app_database.dart';
+import 'package:care_sync/src/database/repository/user_repository.dart';
 import 'package:care_sync/src/models/user/userSummary.dart';
 import 'package:care_sync/src/screens/careManagement/component/patientCard.dart';
+import 'package:care_sync/src/service/connectivityService.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -28,6 +32,9 @@ class PatientListScreen extends StatefulWidget {
 }
 
 class _PatientListState extends State<PatientListScreen> {
+  late final AppDatabase _db;
+  late final UserRepository _userRepo;
+
   bool isLoading = true;
   bool hasError = false;
   String? errorMessage;
@@ -36,6 +43,14 @@ class _PatientListState extends State<PatientListScreen> {
   List<CareGiverAssignment> members = dummyCareGiverAssignments;
   late final HttpService httpService;
   bool _isInitialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _db = AppDatabase();
+    _userRepo = UserRepository(_db);
+    connectivityService.addListener(_onConnectivityChange);
+  }
 
   @override
   void didChangeDependencies() {
@@ -47,13 +62,34 @@ class _PatientListState extends State<PatientListScreen> {
     }
   }
 
+  @override
+  void dispose() {
+    connectivityService.removeListener(_onConnectivityChange);
+    super.dispose();
+  }
+
+  void _onConnectivityChange() {
+    _fetchUserList();
+  }
+
   Future<void> _fetchUserList() async {
     setState(() {
+      members = [];
       isLoading = true;
       hasError = false;
       errorMessage = null;
       errorTittle = null;
     });
+
+    if (connectivityService.isOnline) {
+      _fetchUserListApi();
+    } else {
+      _fetchAssignmentsLocally(context.read<UserBloc>().state.email!);
+    }
+  }
+
+  //Online
+  Future<void> _fetchUserListApi() async {
     await ApiHandler.handleApiCall<List<CareGiverAssignment>>(
       context: context,
       request: () =>
@@ -65,6 +101,7 @@ class _PatientListState extends State<PatientListScreen> {
           errorMessage = null;
           errorTittle = null;
         });
+        _saveAssignmentsLocally(data);
       },
       onError: (title, message) {
         setState(() {
@@ -81,52 +118,95 @@ class _PatientListState extends State<PatientListScreen> {
     );
   }
 
+  // Offline
+  Future<void> _saveAssignmentsLocally(
+      List<CareGiverAssignment> assignments) async {
+    try {
+      await _userRepo.saveCaregiverAssignments(assignments);
+    } catch (e) {
+      print("Error saving assignments locally: $e");
+    }
+  }
+
+  Future<void> _fetchAssignmentsLocally(String email) async {
+    try {
+      List<CareGiverAssignment> data =
+          await _userRepo.getPatientsByCaregiverEmail(email);
+
+      if (mounted) {
+        setState(() {
+          members = data;
+          hasError = false;
+          errorMessage = null;
+          errorTittle = null;
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          members = [];
+          hasError = true;
+          errorMessage = "$e";
+          errorTittle = "Error fetching assignments locally";
+          isLoading = false;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(tittle: widget.tittle),
-      body: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Skeletonizer(
-              enabled: isLoading,
-              child: hasError
-                  ? ErrorBox(
-                      message: errorMessage ?? 'Something went wrong.',
-                      title: errorTittle ?? 'Something went wrong.',
-                      onRetry: () {
-                        _fetchUserList();
-                        setState(() {
-                          hasError = false;
-                          errorMessage = null;
-                          errorTittle = null;
-                        });
-                      },
-                    )
-                  : (isLoading == false && members.isEmpty)
-                      ? const Center(
-                          child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 30),
-                          child: BodyText(
-                            text: 'No patients found yet.',
-                            textAlign: TextAlign.center,
-                          ),
-                        ))
-                      : Center(
-                          child: MaxWidthConstrainedBox(
-                            child: ListView.builder(
-                              itemCount: members.length,
-                              itemBuilder: (context, index) {
-                                final member = members[index];
-                                return PatientCard(
-                                    member: member,
-                                    onTap: () {
-                                      widget.onTap(
-                                          member.patient, member.permission);
-                                    });
+        appBar: CustomAppBar(tittle: widget.tittle),
+        body: Column(
+          children: [
+            const OfflineBanner(),
+            Expanded(
+              child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Skeletonizer(
+                      enabled: isLoading,
+                      child: hasError
+                          ? ErrorBox(
+                              message: errorMessage ?? 'Something went wrong.',
+                              title: errorTittle ?? 'Something went wrong.',
+                              onRetry: () {
+                                _fetchUserList();
+                                setState(() {
+                                  hasError = false;
+                                  errorMessage = null;
+                                  errorTittle = null;
+                                });
                               },
-                            ),
-                          ),
-                        ))),
-    );
+                            )
+                          : (isLoading == false && members.isEmpty)
+                              ? const Center(
+                                  child: Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 30),
+                                  child: BodyText(
+                                    text: 'No patients found yet.',
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ))
+                              : Center(
+                                  child: MaxWidthConstrainedBox(
+                                    child: ListView.builder(
+                                      itemCount: members.length,
+                                      itemBuilder: (context, index) {
+                                        final member = members[index];
+                                        return PatientCard(
+                                            member: member,
+                                            onTap: () {
+                                              widget.onTap(member.patient,
+                                                  member.permission);
+                                            });
+                                      },
+                                    ),
+                                  ),
+                                ))),
+            )
+          ],
+        ));
   }
 }

@@ -1,3 +1,4 @@
+import 'package:care_sync/src/service/connectivityService.dart';
 import 'package:flutter/material.dart';
 
 import '../../../component/badge/simpleBadge.dart';
@@ -70,48 +71,50 @@ class CareRelationshipCard extends StatelessWidget {
               ],
             ),
             const Spacer(),
-            PopupMenuButton<String>(
-              icon: const Icon(Icons.more_vert),
-              onSelected: (value) {
-                if (value == 'update') {
-                  onUpdate();
-                } else if (value == 'delete') {
-                  onDelete();
-                }
-              },
-              itemBuilder: (BuildContext context) => [
-                if (role == UserRole.PATIENT)
+            if (connectivityService.isOnline)
+              PopupMenuButton<String>(
+                icon: const Icon(Icons.more_vert),
+                onSelected: (value) {
+                  if (value == 'update') {
+                    onUpdate();
+                  } else if (value == 'delete') {
+                    onDelete();
+                  }
+                },
+                itemBuilder: (BuildContext context) => [
+                  if (role == UserRole.PATIENT)
+                    PopupMenuItem(
+                      value: 'update',
+                      child: Row(
+                        children: [
+                          Icon(Icons.admin_panel_settings,
+                              size: 20,
+                              color: Theme.of(context).colorScheme.onSecondary),
+                          BtnText(
+                            text: "Access",
+                            color: Theme.of(context).colorScheme.onSecondary,
+                            fontWeight: FontWeight.w400,
+                          )
+                        ],
+                      ),
+                    ),
                   PopupMenuItem(
-                    value: 'update',
+                    value: 'delete',
                     child: Row(
                       children: [
-                        Icon(Icons.admin_panel_settings,
+                        Icon(Icons.delete,
                             size: 20,
-                            color: Theme.of(context).colorScheme.onSecondary),
+                            color: Theme.of(context).colorScheme.error),
                         BtnText(
-                          text: "Access",
-                          color: Theme.of(context).colorScheme.onSecondary,
+                          text: "Delete",
+                          color: Theme.of(context).colorScheme.error,
                           fontWeight: FontWeight.w400,
                         )
                       ],
                     ),
                   ),
-                PopupMenuItem(
-                  value: 'delete',
-                  child: Row(
-                    children: [
-                      Icon(Icons.delete,
-                          size: 20, color: Theme.of(context).colorScheme.error),
-                      BtnText(
-                        text: "Delete",
-                        color: Theme.of(context).colorScheme.error,
-                        fontWeight: FontWeight.w400,
-                      )
-                    ],
-                  ),
-                ),
-              ],
-            ),
+                ],
+              ),
           ],
         ),
       ),

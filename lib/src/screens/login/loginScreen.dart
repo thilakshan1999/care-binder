@@ -1,11 +1,14 @@
 import 'package:care_sync/src/bloc/userBloc.dart';
+import 'package:care_sync/src/component/apiHandler/apiHandler.dart';
 import 'package:care_sync/src/component/btn/primaryBtn/priamaryLoadingBtn.dart';
 import 'package:care_sync/src/component/contraintBox/maxWidthConstraintBox.dart';
 import 'package:care_sync/src/component/text/btnText.dart';
+import 'package:care_sync/src/database/app_database.dart';
+import 'package:care_sync/src/database/repository/user_repository.dart';
+import 'package:care_sync/src/models/enums/userRole.dart';
+import 'package:care_sync/src/models/user/careGiverAssignment.dart';
 import 'package:care_sync/src/models/user/loginRequest.dart';
 import 'package:care_sync/src/screens/forgotPassword/forgotPasswordScreen1.dart';
-import 'package:care_sync/src/screens/forgotPassword/forgotPasswordScreen2.dart';
-import 'package:care_sync/src/screens/forgotPassword/forgotPasswordScreen3.dart';
 import 'package:care_sync/src/screens/registration/registrationScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -24,6 +27,9 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  late final AppDatabase _db;
+  late final UserRepository _userRepo;
+
   bool isLoading = false;
   final _formKey = GlobalKey<FormState>();
   String password = "";
@@ -33,6 +39,8 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
+    _db = AppDatabase();
+    _userRepo = UserRepository(_db);
     httpService = HttpService(context.read<UserBloc>());
   }
 
@@ -51,6 +59,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 auth.accessToken,
                 auth.refreshToken,
               );
+          _fetchUserListApi();
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (context) => const DocumentScreen()),
@@ -78,6 +87,28 @@ class _LoginScreenState extends State<LoginScreen> {
           backgroundColor: theme.colorScheme.error,
         );
       }
+    }
+  }
+
+  Future<void> _fetchUserListApi() async {
+    await ApiHandler.handleApiCall<List<CareGiverAssignment>>(
+      context: context,
+      request: () => context.read<UserBloc>().state.role == UserRole.CAREGIVER
+          ? httpService.careGiverAssignmentService.getPatientsOfCaregiver()
+          : httpService.careGiverAssignmentService.getCaregiversOfPatient(),
+      onSuccess: (data, _) {
+        _saveAssignmentsLocally(data);
+      },
+      onError: (title, message) {},
+    );
+  }
+
+  Future<void> _saveAssignmentsLocally(
+      List<CareGiverAssignment> assignments) async {
+    try {
+      await _userRepo.saveCaregiverAssignments(assignments);
+    } catch (e) {
+      print("Error saving assignments locally: $e");
     }
   }
 

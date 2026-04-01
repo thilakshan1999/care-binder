@@ -1,11 +1,15 @@
 import 'package:care_sync/src/bloc/userBloc.dart';
+import 'package:care_sync/src/component/apiHandler/apiHandler.dart';
 import 'package:care_sync/src/component/appBar/appBar.dart';
 import 'package:care_sync/src/component/btn/primaryBtn/priamaryLoadingBtn.dart';
 import 'package:care_sync/src/component/contraintBox/maxWidthConstraintBox.dart';
 import 'package:care_sync/src/component/text/bodyText.dart';
 import 'package:care_sync/src/component/text/primaryText.dart';
 import 'package:care_sync/src/component/text/subText.dart';
+import 'package:care_sync/src/database/app_database.dart';
+import 'package:care_sync/src/database/repository/user_repository.dart';
 import 'package:care_sync/src/models/enums/userRole.dart';
+import 'package:care_sync/src/models/user/careGiverAssignment.dart';
 import 'package:care_sync/src/models/user/userRegistration.dart';
 import 'package:care_sync/src/screens/login/loginScreen.dart';
 import 'package:flutter/material.dart';
@@ -27,6 +31,9 @@ class RegistrationScreen extends StatefulWidget {
 }
 
 class _RegistrationScreenState extends State<RegistrationScreen> {
+  late final AppDatabase _db;
+  late final UserRepository _userRepo;
+
   UserRegistration userRegistration = UserRegistration();
   String? errorMessage;
   bool isLoading = false;
@@ -36,6 +43,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   @override
   void initState() {
     super.initState();
+    _db = AppDatabase();
+    _userRepo = UserRepository(_db);
     httpService = HttpService(context.read<UserBloc>());
   }
 
@@ -57,6 +66,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 auth.accessToken,
                 auth.refreshToken,
               );
+          _fetchUserListApi();
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => const DocumentScreen()),
@@ -83,6 +93,28 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           backgroundColor: theme.colorScheme.error,
         );
       }
+    }
+  }
+
+  Future<void> _fetchUserListApi() async {
+    await ApiHandler.handleApiCall<List<CareGiverAssignment>>(
+      context: context,
+      request: () => context.read<UserBloc>().state.role == UserRole.CAREGIVER
+          ? httpService.careGiverAssignmentService.getPatientsOfCaregiver()
+          : httpService.careGiverAssignmentService.getCaregiversOfPatient(),
+      onSuccess: (data, _) {
+        _saveAssignmentsLocally(data);
+      },
+      onError: (title, message) {},
+    );
+  }
+
+  Future<void> _saveAssignmentsLocally(
+      List<CareGiverAssignment> assignments) async {
+    try {
+      await _userRepo.saveCaregiverAssignments(assignments);
+    } catch (e) {
+      print("Error saving assignments locally: $e");
     }
   }
 
