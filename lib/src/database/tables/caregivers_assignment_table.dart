@@ -1,6 +1,6 @@
 import 'package:drift/drift.dart';
 
-class CareGiverAssignments extends Table {
+class CareGiverAssignmentTable extends Table {
   IntColumn get id => integer()();
 
   IntColumn get caregiverId => integer()();

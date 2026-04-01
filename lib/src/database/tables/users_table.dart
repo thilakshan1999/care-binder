@@ -1,6 +1,6 @@
 import 'package:drift/drift.dart';
 
-class Users extends Table {
+class UserTable extends Table {
   IntColumn get id => integer()();
 
   TextColumn get name => text()();

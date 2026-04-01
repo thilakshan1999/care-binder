@@ -1,8 +1,11 @@
 import 'package:care_sync/src/bloc/userBloc.dart';
+import 'package:care_sync/src/database/app_database.dart';
+import 'package:care_sync/src/database/repository/user_repository.dart';
 import 'package:care_sync/src/models/enums/userRole.dart';
 import 'package:care_sync/src/models/user/careGiverAssignment.dart';
 import 'package:care_sync/src/screens/careManagement/component/accessUpdateSheet.dart';
 import 'package:care_sync/src/screens/careManagement/component/careRelationshipCard.dart';
+import 'package:care_sync/src/service/connectivityService.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -26,6 +29,9 @@ class CareRelationshipList extends StatefulWidget {
 }
 
 class _CareRelationshipListState extends State<CareRelationshipList> {
+  late final AppDatabase _db;
+  late final UserRepository _userRepo;
+
   bool isLoading = true;
   bool hasError = false;
   String? errorMessage;
@@ -34,6 +40,13 @@ class _CareRelationshipListState extends State<CareRelationshipList> {
   List<CareGiverAssignment> members = dummyCareGiverAssignments;
   late final HttpService httpService;
   bool _isInitialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _db = AppDatabase();
+    _userRepo = UserRepository(_db);
+  }
 
   @override
   void didChangeDependencies() {
@@ -52,32 +65,12 @@ class _CareRelationshipListState extends State<CareRelationshipList> {
       errorMessage = null;
       errorTittle = null;
     });
-    await ApiHandler.handleApiCall<List<CareGiverAssignment>>(
-      context: context,
-      request: () => widget.role == UserRole.CAREGIVER
-          ? httpService.careGiverAssignmentService.getPatientsOfCaregiver()
-          : httpService.careGiverAssignmentService.getCaregiversOfPatient(),
-      onSuccess: (data, _) {
-        setState(() {
-          members = data;
-          hasError = false;
-          errorMessage = null;
-          errorTittle = null;
-        });
-      },
-      onError: (title, message) {
-        setState(() {
-          hasError = true;
-          errorMessage = message;
-          errorTittle = title;
-        });
-      },
-      onFinally: () {
-        if (mounted) {
-          setState(() => isLoading = false);
-        }
-      },
-    );
+
+    if (connectivityService.isOnline) {
+      _fetchUserListApi();
+    } else {
+      _fetchAssignmentsLocally(context.read<UserBloc>().state.email!);
+    }
   }
 
   Future<void> _deleteUser(int assignmentId) async {
@@ -123,6 +116,80 @@ class _CareRelationshipListState extends State<CareRelationshipList> {
         _fetchUserList();
       },
     );
+  }
+
+  //Online
+  Future<void> _fetchUserListApi() async {
+    await ApiHandler.handleApiCall<List<CareGiverAssignment>>(
+      context: context,
+      request: () => widget.role == UserRole.CAREGIVER
+          ? httpService.careGiverAssignmentService.getPatientsOfCaregiver()
+          : httpService.careGiverAssignmentService.getCaregiversOfPatient(),
+      onSuccess: (data, _) {
+        setState(() {
+          members = data;
+          hasError = false;
+          errorMessage = null;
+          errorTittle = null;
+        });
+        _saveAssignmentsLocally(data);
+      },
+      onError: (title, message) {
+        setState(() {
+          members = [];
+          hasError = true;
+          errorMessage = message;
+          errorTittle = title;
+        });
+      },
+      onFinally: () {
+        if (mounted) {
+          setState(() => isLoading = false);
+        }
+      },
+    );
+  }
+
+  // Offline
+  Future<void> _saveAssignmentsLocally(
+      List<CareGiverAssignment> assignments) async {
+    try {
+      await _userRepo.saveCaregiverAssignments(assignments);
+    } catch (e) {
+      print("Error saving assignments locally: $e");
+    }
+  }
+
+  Future<void> _fetchAssignmentsLocally(String email) async {
+    try {
+      List<CareGiverAssignment> data;
+
+      if (widget.role == UserRole.PATIENT) {
+        data = await _userRepo.getCaregiversByPatientEmail(email);
+      } else {
+        data = await _userRepo.getPatientsByCaregiverEmail(email);
+      }
+      // Update UI
+      if (mounted) {
+        setState(() {
+          members = data;
+          hasError = false;
+          errorMessage = null;
+          errorTittle = null;
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          members = [];
+          hasError = true;
+          errorMessage = "$e";
+          errorTittle = "Error fetching assignments locally";
+          isLoading = false;
+        });
+      }
+    }
   }
 
   @override

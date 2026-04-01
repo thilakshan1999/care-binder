@@ -2,6 +2,7 @@ import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:care_sync/src/bloc/userBloc.dart';
 import 'package:care_sync/src/component/appBar/appBar.dart';
 import 'package:care_sync/src/component/contraintBox/maxWidthConstraintBox.dart';
+import 'package:care_sync/src/component/offlineComponent/offlineBanner.dart';
 import 'package:care_sync/src/models/enums/userRole.dart';
 import 'package:care_sync/src/screens/careManagement/component/careRelationshipList.dart';
 import 'package:care_sync/src/screens/careManagement/component/requestList.dart';
@@ -54,6 +55,7 @@ class _CareManagementScreenState extends State<CareManagementScreen> {
             child: MaxWidthConstrainedBox(
           child: Column(
             children: [
+              const OfflineBanner(),
               const SizedBox(height: 16),
               Center(
                 child: AnimatedToggleSwitch<int>.size(

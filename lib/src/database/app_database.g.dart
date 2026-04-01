@@ -3,11 +3,12 @@
 part of 'app_database.dart';
 
 // ignore_for_file: type=lint
-class $UsersTable extends Users with TableInfo<$UsersTable, User> {
+class $UserTableTable extends UserTable
+    with TableInfo<$UserTableTable, UserTableData> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $UsersTable(this.attachedDatabase, [this._alias]);
+  $UserTableTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
@@ -34,9 +35,9 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'users';
+  static const String $name = 'user_table';
   @override
-  VerificationContext validateIntegrity(Insertable<User> instance,
+  VerificationContext validateIntegrity(Insertable<UserTableData> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
@@ -67,9 +68,9 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  User map(Map<String, dynamic> data, {String? tablePrefix}) {
+  UserTableData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return User(
+    return UserTableData(
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
       name: attachedDatabase.typeMapping
@@ -82,17 +83,17 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
   }
 
   @override
-  $UsersTable createAlias(String alias) {
-    return $UsersTable(attachedDatabase, alias);
+  $UserTableTable createAlias(String alias) {
+    return $UserTableTable(attachedDatabase, alias);
   }
 }
 
-class User extends DataClass implements Insertable<User> {
+class UserTableData extends DataClass implements Insertable<UserTableData> {
   final int id;
   final String name;
   final String email;
   final String role;
-  const User(
+  const UserTableData(
       {required this.id,
       required this.name,
       required this.email,
@@ -107,8 +108,8 @@ class User extends DataClass implements Insertable<User> {
     return map;
   }
 
-  UsersCompanion toCompanion(bool nullToAbsent) {
-    return UsersCompanion(
+  UserTableCompanion toCompanion(bool nullToAbsent) {
+    return UserTableCompanion(
       id: Value(id),
       name: Value(name),
       email: Value(email),
@@ -116,10 +117,10 @@ class User extends DataClass implements Insertable<User> {
     );
   }
 
-  factory User.fromJson(Map<String, dynamic> json,
+  factory UserTableData.fromJson(Map<String, dynamic> json,
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return User(
+    return UserTableData(
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
       email: serializer.fromJson<String>(json['email']),
@@ -137,14 +138,16 @@ class User extends DataClass implements Insertable<User> {
     };
   }
 
-  User copyWith({int? id, String? name, String? email, String? role}) => User(
+  UserTableData copyWith(
+          {int? id, String? name, String? email, String? role}) =>
+      UserTableData(
         id: id ?? this.id,
         name: name ?? this.name,
         email: email ?? this.email,
         role: role ?? this.role,
       );
-  User copyWithCompanion(UsersCompanion data) {
-    return User(
+  UserTableData copyWithCompanion(UserTableCompanion data) {
+    return UserTableData(
       id: data.id.present ? data.id.value : this.id,
       name: data.name.present ? data.name.value : this.name,
       email: data.email.present ? data.email.value : this.email,
@@ -154,7 +157,7 @@ class User extends DataClass implements Insertable<User> {
 
   @override
   String toString() {
-    return (StringBuffer('User(')
+    return (StringBuffer('UserTableData(')
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('email: $email, ')
@@ -168,25 +171,25 @@ class User extends DataClass implements Insertable<User> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is User &&
+      (other is UserTableData &&
           other.id == this.id &&
           other.name == this.name &&
           other.email == this.email &&
           other.role == this.role);
 }
 
-class UsersCompanion extends UpdateCompanion<User> {
+class UserTableCompanion extends UpdateCompanion<UserTableData> {
   final Value<int> id;
   final Value<String> name;
   final Value<String> email;
   final Value<String> role;
-  const UsersCompanion({
+  const UserTableCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
     this.email = const Value.absent(),
     this.role = const Value.absent(),
   });
-  UsersCompanion.insert({
+  UserTableCompanion.insert({
     this.id = const Value.absent(),
     required String name,
     required String email,
@@ -194,7 +197,7 @@ class UsersCompanion extends UpdateCompanion<User> {
   })  : name = Value(name),
         email = Value(email),
         role = Value(role);
-  static Insertable<User> custom({
+  static Insertable<UserTableData> custom({
     Expression<int>? id,
     Expression<String>? name,
     Expression<String>? email,
@@ -208,12 +211,12 @@ class UsersCompanion extends UpdateCompanion<User> {
     });
   }
 
-  UsersCompanion copyWith(
+  UserTableCompanion copyWith(
       {Value<int>? id,
       Value<String>? name,
       Value<String>? email,
       Value<String>? role}) {
-    return UsersCompanion(
+    return UserTableCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
       email: email ?? this.email,
@@ -241,7 +244,7 @@ class UsersCompanion extends UpdateCompanion<User> {
 
   @override
   String toString() {
-    return (StringBuffer('UsersCompanion(')
+    return (StringBuffer('UserTableCompanion(')
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('email: $email, ')
@@ -251,12 +254,14 @@ class UsersCompanion extends UpdateCompanion<User> {
   }
 }
 
-class $CareGiverAssignmentsTable extends CareGiverAssignments
-    with TableInfo<$CareGiverAssignmentsTable, CareGiverAssignment> {
+class $CareGiverAssignmentTableTable extends CareGiverAssignmentTable
+    with
+        TableInfo<$CareGiverAssignmentTableTable,
+            CareGiverAssignmentTableData> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $CareGiverAssignmentsTable(this.attachedDatabase, [this._alias]);
+  $CareGiverAssignmentTableTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
@@ -287,10 +292,10 @@ class $CareGiverAssignmentsTable extends CareGiverAssignments
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'care_giver_assignments';
+  static const String $name = 'care_giver_assignment_table';
   @override
   VerificationContext validateIntegrity(
-      Insertable<CareGiverAssignment> instance,
+      Insertable<CareGiverAssignmentTableData> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
@@ -325,9 +330,10 @@ class $CareGiverAssignmentsTable extends CareGiverAssignments
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  CareGiverAssignment map(Map<String, dynamic> data, {String? tablePrefix}) {
+  CareGiverAssignmentTableData map(Map<String, dynamic> data,
+      {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return CareGiverAssignment(
+    return CareGiverAssignmentTableData(
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
       caregiverId: attachedDatabase.typeMapping
@@ -340,18 +346,18 @@ class $CareGiverAssignmentsTable extends CareGiverAssignments
   }
 
   @override
-  $CareGiverAssignmentsTable createAlias(String alias) {
-    return $CareGiverAssignmentsTable(attachedDatabase, alias);
+  $CareGiverAssignmentTableTable createAlias(String alias) {
+    return $CareGiverAssignmentTableTable(attachedDatabase, alias);
   }
 }
 
-class CareGiverAssignment extends DataClass
-    implements Insertable<CareGiverAssignment> {
+class CareGiverAssignmentTableData extends DataClass
+    implements Insertable<CareGiverAssignmentTableData> {
   final int id;
   final int caregiverId;
   final int patientId;
   final String permission;
-  const CareGiverAssignment(
+  const CareGiverAssignmentTableData(
       {required this.id,
       required this.caregiverId,
       required this.patientId,
@@ -366,8 +372,8 @@ class CareGiverAssignment extends DataClass
     return map;
   }
 
-  CareGiverAssignmentsCompanion toCompanion(bool nullToAbsent) {
-    return CareGiverAssignmentsCompanion(
+  CareGiverAssignmentTableCompanion toCompanion(bool nullToAbsent) {
+    return CareGiverAssignmentTableCompanion(
       id: Value(id),
       caregiverId: Value(caregiverId),
       patientId: Value(patientId),
@@ -375,10 +381,10 @@ class CareGiverAssignment extends DataClass
     );
   }
 
-  factory CareGiverAssignment.fromJson(Map<String, dynamic> json,
+  factory CareGiverAssignmentTableData.fromJson(Map<String, dynamic> json,
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return CareGiverAssignment(
+    return CareGiverAssignmentTableData(
       id: serializer.fromJson<int>(json['id']),
       caregiverId: serializer.fromJson<int>(json['caregiverId']),
       patientId: serializer.fromJson<int>(json['patientId']),
@@ -396,16 +402,17 @@ class CareGiverAssignment extends DataClass
     };
   }
 
-  CareGiverAssignment copyWith(
+  CareGiverAssignmentTableData copyWith(
           {int? id, int? caregiverId, int? patientId, String? permission}) =>
-      CareGiverAssignment(
+      CareGiverAssignmentTableData(
         id: id ?? this.id,
         caregiverId: caregiverId ?? this.caregiverId,
         patientId: patientId ?? this.patientId,
         permission: permission ?? this.permission,
       );
-  CareGiverAssignment copyWithCompanion(CareGiverAssignmentsCompanion data) {
-    return CareGiverAssignment(
+  CareGiverAssignmentTableData copyWithCompanion(
+      CareGiverAssignmentTableCompanion data) {
+    return CareGiverAssignmentTableData(
       id: data.id.present ? data.id.value : this.id,
       caregiverId:
           data.caregiverId.present ? data.caregiverId.value : this.caregiverId,
@@ -417,7 +424,7 @@ class CareGiverAssignment extends DataClass
 
   @override
   String toString() {
-    return (StringBuffer('CareGiverAssignment(')
+    return (StringBuffer('CareGiverAssignmentTableData(')
           ..write('id: $id, ')
           ..write('caregiverId: $caregiverId, ')
           ..write('patientId: $patientId, ')
@@ -431,26 +438,26 @@ class CareGiverAssignment extends DataClass
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is CareGiverAssignment &&
+      (other is CareGiverAssignmentTableData &&
           other.id == this.id &&
           other.caregiverId == this.caregiverId &&
           other.patientId == this.patientId &&
           other.permission == this.permission);
 }
 
-class CareGiverAssignmentsCompanion
-    extends UpdateCompanion<CareGiverAssignment> {
+class CareGiverAssignmentTableCompanion
+    extends UpdateCompanion<CareGiverAssignmentTableData> {
   final Value<int> id;
   final Value<int> caregiverId;
   final Value<int> patientId;
   final Value<String> permission;
-  const CareGiverAssignmentsCompanion({
+  const CareGiverAssignmentTableCompanion({
     this.id = const Value.absent(),
     this.caregiverId = const Value.absent(),
     this.patientId = const Value.absent(),
     this.permission = const Value.absent(),
   });
-  CareGiverAssignmentsCompanion.insert({
+  CareGiverAssignmentTableCompanion.insert({
     this.id = const Value.absent(),
     required int caregiverId,
     required int patientId,
@@ -458,7 +465,7 @@ class CareGiverAssignmentsCompanion
   })  : caregiverId = Value(caregiverId),
         patientId = Value(patientId),
         permission = Value(permission);
-  static Insertable<CareGiverAssignment> custom({
+  static Insertable<CareGiverAssignmentTableData> custom({
     Expression<int>? id,
     Expression<int>? caregiverId,
     Expression<int>? patientId,
@@ -472,12 +479,12 @@ class CareGiverAssignmentsCompanion
     });
   }
 
-  CareGiverAssignmentsCompanion copyWith(
+  CareGiverAssignmentTableCompanion copyWith(
       {Value<int>? id,
       Value<int>? caregiverId,
       Value<int>? patientId,
       Value<String>? permission}) {
-    return CareGiverAssignmentsCompanion(
+    return CareGiverAssignmentTableCompanion(
       id: id ?? this.id,
       caregiverId: caregiverId ?? this.caregiverId,
       patientId: patientId ?? this.patientId,
@@ -505,7 +512,7 @@ class CareGiverAssignmentsCompanion
 
   @override
   String toString() {
-    return (StringBuffer('CareGiverAssignmentsCompanion(')
+    return (StringBuffer('CareGiverAssignmentTableCompanion(')
           ..write('id: $id, ')
           ..write('caregiverId: $caregiverId, ')
           ..write('patientId: $patientId, ')
@@ -518,32 +525,33 @@ class CareGiverAssignmentsCompanion
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
-  late final $UsersTable users = $UsersTable(this);
-  late final $CareGiverAssignmentsTable careGiverAssignments =
-      $CareGiverAssignmentsTable(this);
+  late final $UserTableTable userTable = $UserTableTable(this);
+  late final $CareGiverAssignmentTableTable careGiverAssignmentTable =
+      $CareGiverAssignmentTableTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [users, careGiverAssignments];
+      [userTable, careGiverAssignmentTable];
 }
 
-typedef $$UsersTableCreateCompanionBuilder = UsersCompanion Function({
+typedef $$UserTableTableCreateCompanionBuilder = UserTableCompanion Function({
   Value<int> id,
   required String name,
   required String email,
   required String role,
 });
-typedef $$UsersTableUpdateCompanionBuilder = UsersCompanion Function({
+typedef $$UserTableTableUpdateCompanionBuilder = UserTableCompanion Function({
   Value<int> id,
   Value<String> name,
   Value<String> email,
   Value<String> role,
 });
 
-class $$UsersTableFilterComposer extends Composer<_$AppDatabase, $UsersTable> {
-  $$UsersTableFilterComposer({
+class $$UserTableTableFilterComposer
+    extends Composer<_$AppDatabase, $UserTableTable> {
+  $$UserTableTableFilterComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -563,9 +571,9 @@ class $$UsersTableFilterComposer extends Composer<_$AppDatabase, $UsersTable> {
       column: $table.role, builder: (column) => ColumnFilters(column));
 }
 
-class $$UsersTableOrderingComposer
-    extends Composer<_$AppDatabase, $UsersTable> {
-  $$UsersTableOrderingComposer({
+class $$UserTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $UserTableTable> {
+  $$UserTableTableOrderingComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -585,9 +593,9 @@ class $$UsersTableOrderingComposer
       column: $table.role, builder: (column) => ColumnOrderings(column));
 }
 
-class $$UsersTableAnnotationComposer
-    extends Composer<_$AppDatabase, $UsersTable> {
-  $$UsersTableAnnotationComposer({
+class $$UserTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $UserTableTable> {
+  $$UserTableTableAnnotationComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -607,35 +615,38 @@ class $$UsersTableAnnotationComposer
       $composableBuilder(column: $table.role, builder: (column) => column);
 }
 
-class $$UsersTableTableManager extends RootTableManager<
+class $$UserTableTableTableManager extends RootTableManager<
     _$AppDatabase,
-    $UsersTable,
-    User,
-    $$UsersTableFilterComposer,
-    $$UsersTableOrderingComposer,
-    $$UsersTableAnnotationComposer,
-    $$UsersTableCreateCompanionBuilder,
-    $$UsersTableUpdateCompanionBuilder,
-    (User, BaseReferences<_$AppDatabase, $UsersTable, User>),
-    User,
+    $UserTableTable,
+    UserTableData,
+    $$UserTableTableFilterComposer,
+    $$UserTableTableOrderingComposer,
+    $$UserTableTableAnnotationComposer,
+    $$UserTableTableCreateCompanionBuilder,
+    $$UserTableTableUpdateCompanionBuilder,
+    (
+      UserTableData,
+      BaseReferences<_$AppDatabase, $UserTableTable, UserTableData>
+    ),
+    UserTableData,
     PrefetchHooks Function()> {
-  $$UsersTableTableManager(_$AppDatabase db, $UsersTable table)
+  $$UserTableTableTableManager(_$AppDatabase db, $UserTableTable table)
       : super(TableManagerState(
           db: db,
           table: table,
           createFilteringComposer: () =>
-              $$UsersTableFilterComposer($db: db, $table: table),
+              $$UserTableTableFilterComposer($db: db, $table: table),
           createOrderingComposer: () =>
-              $$UsersTableOrderingComposer($db: db, $table: table),
+              $$UserTableTableOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () =>
-              $$UsersTableAnnotationComposer($db: db, $table: table),
+              $$UserTableTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback: ({
             Value<int> id = const Value.absent(),
             Value<String> name = const Value.absent(),
             Value<String> email = const Value.absent(),
             Value<String> role = const Value.absent(),
           }) =>
-              UsersCompanion(
+              UserTableCompanion(
             id: id,
             name: name,
             email: email,
@@ -647,7 +658,7 @@ class $$UsersTableTableManager extends RootTableManager<
             required String email,
             required String role,
           }) =>
-              UsersCompanion.insert(
+              UserTableCompanion.insert(
             id: id,
             name: name,
             email: email,
@@ -660,36 +671,39 @@ class $$UsersTableTableManager extends RootTableManager<
         ));
 }
 
-typedef $$UsersTableProcessedTableManager = ProcessedTableManager<
+typedef $$UserTableTableProcessedTableManager = ProcessedTableManager<
     _$AppDatabase,
-    $UsersTable,
-    User,
-    $$UsersTableFilterComposer,
-    $$UsersTableOrderingComposer,
-    $$UsersTableAnnotationComposer,
-    $$UsersTableCreateCompanionBuilder,
-    $$UsersTableUpdateCompanionBuilder,
-    (User, BaseReferences<_$AppDatabase, $UsersTable, User>),
-    User,
+    $UserTableTable,
+    UserTableData,
+    $$UserTableTableFilterComposer,
+    $$UserTableTableOrderingComposer,
+    $$UserTableTableAnnotationComposer,
+    $$UserTableTableCreateCompanionBuilder,
+    $$UserTableTableUpdateCompanionBuilder,
+    (
+      UserTableData,
+      BaseReferences<_$AppDatabase, $UserTableTable, UserTableData>
+    ),
+    UserTableData,
     PrefetchHooks Function()>;
-typedef $$CareGiverAssignmentsTableCreateCompanionBuilder
-    = CareGiverAssignmentsCompanion Function({
+typedef $$CareGiverAssignmentTableTableCreateCompanionBuilder
+    = CareGiverAssignmentTableCompanion Function({
   Value<int> id,
   required int caregiverId,
   required int patientId,
   required String permission,
 });
-typedef $$CareGiverAssignmentsTableUpdateCompanionBuilder
-    = CareGiverAssignmentsCompanion Function({
+typedef $$CareGiverAssignmentTableTableUpdateCompanionBuilder
+    = CareGiverAssignmentTableCompanion Function({
   Value<int> id,
   Value<int> caregiverId,
   Value<int> patientId,
   Value<String> permission,
 });
 
-class $$CareGiverAssignmentsTableFilterComposer
-    extends Composer<_$AppDatabase, $CareGiverAssignmentsTable> {
-  $$CareGiverAssignmentsTableFilterComposer({
+class $$CareGiverAssignmentTableTableFilterComposer
+    extends Composer<_$AppDatabase, $CareGiverAssignmentTableTable> {
+  $$CareGiverAssignmentTableTableFilterComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -709,9 +723,9 @@ class $$CareGiverAssignmentsTableFilterComposer
       column: $table.permission, builder: (column) => ColumnFilters(column));
 }
 
-class $$CareGiverAssignmentsTableOrderingComposer
-    extends Composer<_$AppDatabase, $CareGiverAssignmentsTable> {
-  $$CareGiverAssignmentsTableOrderingComposer({
+class $$CareGiverAssignmentTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $CareGiverAssignmentTableTable> {
+  $$CareGiverAssignmentTableTableOrderingComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -731,9 +745,9 @@ class $$CareGiverAssignmentsTableOrderingComposer
       column: $table.permission, builder: (column) => ColumnOrderings(column));
 }
 
-class $$CareGiverAssignmentsTableAnnotationComposer
-    extends Composer<_$AppDatabase, $CareGiverAssignmentsTable> {
-  $$CareGiverAssignmentsTableAnnotationComposer({
+class $$CareGiverAssignmentTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $CareGiverAssignmentTableTable> {
+  $$CareGiverAssignmentTableTableAnnotationComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -753,34 +767,35 @@ class $$CareGiverAssignmentsTableAnnotationComposer
       column: $table.permission, builder: (column) => column);
 }
 
-class $$CareGiverAssignmentsTableTableManager extends RootTableManager<
+class $$CareGiverAssignmentTableTableTableManager extends RootTableManager<
     _$AppDatabase,
-    $CareGiverAssignmentsTable,
-    CareGiverAssignment,
-    $$CareGiverAssignmentsTableFilterComposer,
-    $$CareGiverAssignmentsTableOrderingComposer,
-    $$CareGiverAssignmentsTableAnnotationComposer,
-    $$CareGiverAssignmentsTableCreateCompanionBuilder,
-    $$CareGiverAssignmentsTableUpdateCompanionBuilder,
+    $CareGiverAssignmentTableTable,
+    CareGiverAssignmentTableData,
+    $$CareGiverAssignmentTableTableFilterComposer,
+    $$CareGiverAssignmentTableTableOrderingComposer,
+    $$CareGiverAssignmentTableTableAnnotationComposer,
+    $$CareGiverAssignmentTableTableCreateCompanionBuilder,
+    $$CareGiverAssignmentTableTableUpdateCompanionBuilder,
     (
-      CareGiverAssignment,
-      BaseReferences<_$AppDatabase, $CareGiverAssignmentsTable,
-          CareGiverAssignment>
+      CareGiverAssignmentTableData,
+      BaseReferences<_$AppDatabase, $CareGiverAssignmentTableTable,
+          CareGiverAssignmentTableData>
     ),
-    CareGiverAssignment,
+    CareGiverAssignmentTableData,
     PrefetchHooks Function()> {
-  $$CareGiverAssignmentsTableTableManager(
-      _$AppDatabase db, $CareGiverAssignmentsTable table)
+  $$CareGiverAssignmentTableTableTableManager(
+      _$AppDatabase db, $CareGiverAssignmentTableTable table)
       : super(TableManagerState(
           db: db,
           table: table,
           createFilteringComposer: () =>
-              $$CareGiverAssignmentsTableFilterComposer($db: db, $table: table),
+              $$CareGiverAssignmentTableTableFilterComposer(
+                  $db: db, $table: table),
           createOrderingComposer: () =>
-              $$CareGiverAssignmentsTableOrderingComposer(
+              $$CareGiverAssignmentTableTableOrderingComposer(
                   $db: db, $table: table),
           createComputedFieldComposer: () =>
-              $$CareGiverAssignmentsTableAnnotationComposer(
+              $$CareGiverAssignmentTableTableAnnotationComposer(
                   $db: db, $table: table),
           updateCompanionCallback: ({
             Value<int> id = const Value.absent(),
@@ -788,7 +803,7 @@ class $$CareGiverAssignmentsTableTableManager extends RootTableManager<
             Value<int> patientId = const Value.absent(),
             Value<String> permission = const Value.absent(),
           }) =>
-              CareGiverAssignmentsCompanion(
+              CareGiverAssignmentTableCompanion(
             id: id,
             caregiverId: caregiverId,
             patientId: patientId,
@@ -800,7 +815,7 @@ class $$CareGiverAssignmentsTableTableManager extends RootTableManager<
             required int patientId,
             required String permission,
           }) =>
-              CareGiverAssignmentsCompanion.insert(
+              CareGiverAssignmentTableCompanion.insert(
             id: id,
             caregiverId: caregiverId,
             patientId: patientId,
@@ -813,29 +828,30 @@ class $$CareGiverAssignmentsTableTableManager extends RootTableManager<
         ));
 }
 
-typedef $$CareGiverAssignmentsTableProcessedTableManager
+typedef $$CareGiverAssignmentTableTableProcessedTableManager
     = ProcessedTableManager<
         _$AppDatabase,
-        $CareGiverAssignmentsTable,
-        CareGiverAssignment,
-        $$CareGiverAssignmentsTableFilterComposer,
-        $$CareGiverAssignmentsTableOrderingComposer,
-        $$CareGiverAssignmentsTableAnnotationComposer,
-        $$CareGiverAssignmentsTableCreateCompanionBuilder,
-        $$CareGiverAssignmentsTableUpdateCompanionBuilder,
+        $CareGiverAssignmentTableTable,
+        CareGiverAssignmentTableData,
+        $$CareGiverAssignmentTableTableFilterComposer,
+        $$CareGiverAssignmentTableTableOrderingComposer,
+        $$CareGiverAssignmentTableTableAnnotationComposer,
+        $$CareGiverAssignmentTableTableCreateCompanionBuilder,
+        $$CareGiverAssignmentTableTableUpdateCompanionBuilder,
         (
-          CareGiverAssignment,
-          BaseReferences<_$AppDatabase, $CareGiverAssignmentsTable,
-              CareGiverAssignment>
+          CareGiverAssignmentTableData,
+          BaseReferences<_$AppDatabase, $CareGiverAssignmentTableTable,
+              CareGiverAssignmentTableData>
         ),
-        CareGiverAssignment,
+        CareGiverAssignmentTableData,
         PrefetchHooks Function()>;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
   $AppDatabaseManager(this._db);
-  $$UsersTableTableManager get users =>
-      $$UsersTableTableManager(_db, _db.users);
-  $$CareGiverAssignmentsTableTableManager get careGiverAssignments =>
-      $$CareGiverAssignmentsTableTableManager(_db, _db.careGiverAssignments);
+  $$UserTableTableTableManager get userTable =>
+      $$UserTableTableTableManager(_db, _db.userTable);
+  $$CareGiverAssignmentTableTableTableManager get careGiverAssignmentTable =>
+      $$CareGiverAssignmentTableTableTableManager(
+          _db, _db.careGiverAssignmentTable);
 }

@@ -1,6 +1,6 @@
 import 'package:drift/drift.dart';
 
-class Documents extends Table {
+class DocumentTable extends Table {
   IntColumn get id => integer()();
 
   TextColumn get documentName => text()();
