@@ -7,4 +7,7 @@ class CareGiverAssignments extends Table {
   IntColumn get patientId => integer()();
 
   TextColumn get permission => text()();
+
+  @override
+  Set<Column> get primaryKey => {id};
 }

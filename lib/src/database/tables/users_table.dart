@@ -7,6 +7,6 @@ class Users extends Table {
   TextColumn get email => text()();
   TextColumn get role => text()();
 
-  TextColumn get requestsSent => text().nullable()();
-  TextColumn get requestsReceived => text().nullable()();
+  @override
+  Set<Column> get primaryKey => {id};
 }
