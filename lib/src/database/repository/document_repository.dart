@@ -152,17 +152,17 @@ class DocumentRepository {
     return data.map((e) => Appointment.fromJson(e)).toList();
   }
 
-  Future<void> saveLastSyncTime(String serverTime) async {
+  Future<void> saveLastSyncTime(String email, String serverTime) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString("lastSyncTime", serverTime);
+    await prefs.setString("lastSyncTime_$email", serverTime);
 
-    print("✅ Saved last sync time: $serverTime");
+    print("✅ Saved last sync time for user $email: $serverTime");
   }
 
-  Future<DateTime?> getLastSyncTime() async {
+  Future<DateTime?> getLastSyncTime(String email) async {
     final prefs = await SharedPreferences.getInstance();
 
-    final timeString = prefs.getString("lastSyncTime");
+    final timeString = prefs.getString("lastSyncTime_$email");
 
     if (timeString == null) {
       return DateTime.now().toUtc().subtract(const Duration(days: 3650));
@@ -195,7 +195,26 @@ class DocumentRepository {
       id: row.id,
       fileName: row.fileName ?? '',
       fileType: row.fileType ?? '',
-      signedUrl: row.fileUrl ?? '', // local file path OR signed URL
+      signedUrl: row.fileUrl ?? '',
     );
+  }
+
+  Future<List<DocumentReference>> getDocumentReferencesByIds(
+      List<int> ids) async {
+    if (ids.isEmpty) return [];
+
+    final rows = await (db.select(db.documentTable)
+          ..where((tbl) => tbl.id.isIn(ids)))
+        .get();
+
+    return rows
+        .where((row) => row.fileUrl != null && row.fileUrl!.isNotEmpty)
+        .map((row) => DocumentReference(
+              id: row.id,
+              fileName: row.fileName ?? '',
+              fileType: row.fileType ?? '',
+              signedUrl: row.fileUrl!,
+            ))
+        .toList();
   }
 }

@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:care_sync/src/component/text/btnText.dart';
+import 'package:care_sync/src/service/connectivityService.dart';
 import 'package:flutter/material.dart';
 
 class SelectionBottomBar extends StatelessWidget {
@@ -61,7 +62,7 @@ class SelectionBottomBar extends StatelessWidget {
                   text: "$selectedCount Document Selected",
                   fontWeight: FontWeight.bold,
                   color: Theme.of(context).colorScheme.surface),
-              if (fullAccess) ...[
+              if (fullAccess && connectivityService.isOnline) ...[
                 IconButton(
                   icon: Icon(Icons.delete_outline,
                       size: 28, color: Theme.of(context).colorScheme.error),

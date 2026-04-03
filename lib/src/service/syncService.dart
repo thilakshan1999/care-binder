@@ -10,20 +10,25 @@ import 'package:path_provider/path_provider.dart';
 class SyncService {
   final DocumentRepository documentRepo;
   final HttpService httpService;
+  final String email;
 
   SyncService({
     required this.documentRepo,
     required this.httpService,
+    required this.email,
   });
 
   Future<void> syncDocuments() async {
     try {
-      final lastSyncTime = await documentRepo.getLastSyncTime();
+      final lastSyncTime = await documentRepo.getLastSyncTime(email);
 
       if (lastSyncTime == null) {
         print("⚠️ Last sync time is null. Using fallback.");
         return;
       }
+
+      print("last sync time : ----------------");
+      print(lastSyncTime);
 
       final formatted = lastSyncTime
           .toIso8601String()
@@ -108,7 +113,7 @@ class SyncService {
     }
 
     print("serverTime: $serverTime");
-    await documentRepo.saveLastSyncTime(serverTime);
+    await documentRepo.saveLastSyncTime(email, serverTime);
   }
 
   Future<String?> downloadAndSaveFile(String url, String fileName) async {

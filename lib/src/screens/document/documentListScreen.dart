@@ -116,75 +116,11 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
   Future<void> _fetchDocumentReference() async {
     setState(() => isLoadShare = true);
 
-    await ApiHandler.handleApiCall<List<DocumentReference>>(
-        context: context,
-        request: () =>
-            httpService.documentService.getDocumentsFileUrls(selectedIds),
-        onSuccess: (data, _) async {
-          try {
-            // Create a temporary directory to store downloaded files
-            final directory = await getTemporaryDirectory();
-            final List<XFile> sharedFiles = [];
-
-            for (final doc in data) {
-              final filePath = '${directory.path}/${doc.fileName}';
-              final file = File(filePath);
-
-              // Download file from signed URL
-              final response = await http.get(Uri.parse(doc.signedUrl));
-              if (response.statusCode == 200) {
-                await file.writeAsBytes(response.bodyBytes);
-                sharedFiles.add(XFile(filePath));
-              } else {
-                debugPrint('Failed to download ${doc.fileName}');
-              }
-            }
-
-            // Share all downloaded files
-            final params = ShareParams(
-              files: sharedFiles,
-              text:
-                  'Shared medical records for ${widget.patient?.name ?? context.read<UserBloc>().state.name ?? 'Patient'} via CareBinder.',
-            );
-
-            try {
-              setState(() {
-                isLoadShare = false;
-              });
-              await SharePlus.instance.share(params);
-            } finally {
-              setState(() {
-                selectedMode = false;
-                selectedIds.clear();
-              });
-
-              // Clean up temporary files after sharing
-              for (final file in sharedFiles) {
-                final tempFile = File(file.path);
-                if (await tempFile.exists()) {
-                  await tempFile.delete();
-                  print('Deleted temp file: ${tempFile.path}');
-                }
-              }
-            }
-          } catch (e) {
-            setState(() => isLoadShare = false);
-            debugPrint('Error sharing files: $e');
-            CustomSnackbar.showCustomSnackbar(
-              context: context,
-              message: 'Failed to share documents.',
-              backgroundColor: Theme.of(context).colorScheme.error,
-            );
-          }
-        },
-        onError: (message, title) {
-          setState(() => isLoadShare = false);
-          CustomSnackbar.showCustomSnackbar(
-            context: context,
-            message: message,
-            backgroundColor: Theme.of(context).colorScheme.error,
-          );
-        });
+    if (connectivityService.isOnline) {
+      _fetchDocumentReferenceApi();
+    } else {
+      _fetchDocumentReferencesLocally();
+    }
   }
 
   Future<void> _deleteDocuments() async {
@@ -217,6 +153,75 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
             selectedIds.clear();
           });
         });
+  }
+
+  Future<void> _shareDocuments(List<DocumentReference> docs) async {
+    try {
+      final directory = await getTemporaryDirectory();
+      final List<XFile> sharedFiles = [];
+
+      for (final doc in docs) {
+        if (doc.signedUrl.isEmpty) continue;
+
+        if (connectivityService.isOffline) {
+          // ✅ Offline file → directly use
+          final file = File(doc.signedUrl);
+          if (await file.exists()) {
+            sharedFiles.add(XFile(file.path));
+          }
+        } else {
+          // ✅ Online file → download first
+          final filePath = '${directory.path}/${doc.fileName}';
+          final file = File(filePath);
+
+          final response = await http.get(Uri.parse(doc.signedUrl));
+          if (response.statusCode == 200) {
+            await file.writeAsBytes(response.bodyBytes);
+            sharedFiles.add(XFile(filePath));
+          } else {
+            debugPrint('Failed to download ${doc.fileName}');
+          }
+        }
+      }
+
+      if (sharedFiles.isEmpty) {
+        throw Exception("No files available to share");
+      }
+
+      final params = ShareParams(
+        files: sharedFiles,
+        text:
+            'Shared medical records for ${widget.patient?.name ?? context.read<UserBloc>().state.name ?? 'Patient'} via CareBinder.',
+      );
+
+      await SharePlus.instance.share(params);
+
+      // 🔹 Cleanup only temp (downloaded) files
+      for (final file in sharedFiles) {
+        final tempFile = File(file.path);
+
+        if (tempFile.path.contains(directory.path)) {
+          if (await tempFile.exists()) {
+            await tempFile.delete();
+            debugPrint('🗑️ Deleted temp file: ${tempFile.path}');
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint('❌ Error sharing files: $e');
+
+      CustomSnackbar.showCustomSnackbar(
+        context: context,
+        message: 'Failed to share documents.',
+        backgroundColor: Theme.of(context).colorScheme.error,
+      );
+    } finally {
+      setState(() {
+        isLoadShare = false;
+        selectedMode = false;
+        selectedIds.clear();
+      });
+    }
   }
 
   //online
@@ -287,6 +292,25 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
     );
   }
 
+  Future<void> _fetchDocumentReferenceApi() async {
+    await ApiHandler.handleApiCall<List<DocumentReference>>(
+      context: context,
+      request: () =>
+          httpService.documentService.getDocumentsFileUrls(selectedIds),
+      onSuccess: (data, _) async {
+        await _shareDocuments(data);
+      },
+      onError: (message, title) {
+        setState(() => isLoadShare = false);
+        CustomSnackbar.showCustomSnackbar(
+          context: context,
+          message: message,
+          backgroundColor: Theme.of(context).colorScheme.error,
+        );
+      },
+    );
+  }
+
   //offline
   Future<void> _fetchDocumentsLocally(String? type) async {
     try {
@@ -321,6 +345,23 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
           isLoading = false;
         });
       }
+    }
+  }
+
+  Future<void> _fetchDocumentReferencesLocally() async {
+    try {
+      final docs = await OfflineDataManager.documentRepo
+          .getDocumentReferencesByIds(selectedIds);
+
+      await _shareDocuments(docs);
+    } catch (e) {
+      setState(() => isLoadShare = false);
+
+      CustomSnackbar.showCustomSnackbar(
+        context: context,
+        message: 'Failed to share offline documents.',
+        backgroundColor: Theme.of(context).colorScheme.error,
+      );
     }
   }
 

@@ -23,6 +23,7 @@ class OfflineDataManager {
     syncService = SyncService(
       documentRepo: documentRepo,
       httpService: httpService,
+      email: context.read<UserBloc>().state.email!,
     );
   }
 }
