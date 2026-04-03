@@ -4,6 +4,7 @@ import 'package:care_sync/src/component/btn/primaryBtn/priamaryLoadingBtn.dart';
 import 'package:care_sync/src/component/contraintBox/maxWidthConstraintBox.dart';
 import 'package:care_sync/src/component/text/btnText.dart';
 import 'package:care_sync/src/database/app_database.dart';
+import 'package:care_sync/src/database/offlineDataManager.dart';
 import 'package:care_sync/src/database/repository/user_repository.dart';
 import 'package:care_sync/src/models/enums/userRole.dart';
 import 'package:care_sync/src/models/user/careGiverAssignment.dart';
@@ -59,11 +60,13 @@ class _LoginScreenState extends State<LoginScreen> {
                 auth.accessToken,
                 auth.refreshToken,
               );
+          await OfflineDataManager.init(context);
+          await OfflineDataManager.syncService.syncDocuments();
           _fetchUserListApi();
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (context) => const DocumentScreen()),
-            (Route<dynamic> route) => route.isFirst, // keep the root route
+            (Route<dynamic> route) => route.isFirst,
           );
         } else {
           CustomSnackbar.showCustomSnackbar(

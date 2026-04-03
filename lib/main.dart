@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:care_sync/src/database/offlineDataManager.dart';
 import 'package:care_sync/src/screens/login/loginScreen.dart';
 import 'package:care_sync/src/theme/darkTheme.dart';
 import 'package:care_sync/src/theme/lightTheme.dart';
@@ -56,9 +57,15 @@ class _AppEntryState extends State<AppEntry> {
 
   Future<void> startSplash() async {
     await Future.delayed(const Duration(seconds: 2));
-    if (mounted) {
-      setState(() => _showSplash = false);
+
+    if (!mounted) return;
+
+    if (context.read<UserBloc>().state.isLoggedIn) {
+      await OfflineDataManager.init(context);
+      await OfflineDataManager.syncService.syncDocuments();
     }
+
+    setState(() => _showSplash = false);
   }
 
   @override

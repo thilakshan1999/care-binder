@@ -6,6 +6,7 @@ import 'package:care_sync/src/models/apiResponse.dart';
 import 'package:care_sync/src/models/document/document.dart';
 import 'package:care_sync/src/models/document/documentReference.dart';
 import 'package:care_sync/src/models/document/documentSummary.dart';
+import 'package:care_sync/src/models/document/documentSync.dart';
 import 'package:http/http.dart';
 import 'package:http_parser/http_parser.dart';
 
@@ -99,6 +100,21 @@ class DocumentService {
     },
         (data) =>
             (data as List).map((e) => DocumentSummary.fromJson(e)).toList());
+  }
+
+  /// GET /api/documents/sync
+  Future<ApiResponse<documentSync>> syncDocuments({
+    required String lastSyncTime, // ISO-8601 string
+  }) {
+    return ApiHelper.handleRequest<documentSync>(() async {
+      // Build URL with query param
+      final uri = Uri.parse('$baseUrl/documents/sync')
+          .replace(queryParameters: {'lastSyncTime': lastSyncTime});
+
+      var response = await client.get(uri);
+
+      return response;
+    }, (data) => documentSync.fromJson(data));
   }
 
   /// POST /api/documents

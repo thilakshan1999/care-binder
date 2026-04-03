@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:care_sync/src/database/tables/caregivers_assignment_table.dart';
+import 'package:care_sync/src/database/tables/documents_table.dart';
 import 'package:care_sync/src/database/tables/users_table.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
@@ -10,10 +11,7 @@ import 'package:path_provider/path_provider.dart';
 part 'app_database.g.dart';
 
 @DriftDatabase(
-  tables: [
-    UserTable,
-    CareGiverAssignmentTable,
-  ],
+  tables: [UserTable, CareGiverAssignmentTable, DocumentTable],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());

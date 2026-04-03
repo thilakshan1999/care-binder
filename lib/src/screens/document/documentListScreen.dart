@@ -11,6 +11,7 @@ import 'package:care_sync/src/component/filterIcon/filterIcon.dart';
 import 'package:care_sync/src/component/offlineComponent/offlineBanner.dart';
 import 'package:care_sync/src/component/snakbar/customSnakbar.dart';
 import 'package:care_sync/src/component/text/bodyText.dart';
+import 'package:care_sync/src/database/offlineDataManager.dart';
 import 'package:care_sync/src/models/document/documentReference.dart';
 import 'package:care_sync/src/models/enums/careGiverPermission.dart';
 import 'package:care_sync/src/models/enums/documentFilterOption.dart';
@@ -21,6 +22,7 @@ import 'package:care_sync/src/screens/document/component/documentFilterSheet.dar
 import 'package:care_sync/src/screens/document/component/taskCard.dart';
 import 'package:care_sync/src/screens/document/component/uploadOptionSheet.dart';
 import 'package:care_sync/src/screens/document/component/selectionBottomBar.dart';
+import 'package:care_sync/src/service/connectivityService.dart';
 import 'package:care_sync/src/utils/textFormatUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -66,6 +68,18 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
   List<int> selectedIds = [];
 
   @override
+  void initState() {
+    super.initState();
+    connectivityService.addListener(_onConnectivityChange);
+  }
+
+  @override
+  void dispose() {
+    connectivityService.removeListener(_onConnectivityChange);
+    super.dispose();
+  }
+
+  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (!_isInitialized) {
@@ -75,8 +89,14 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
     }
   }
 
+  void _onConnectivityChange() {
+    if (mounted) setState(() {});
+  }
+
   Future<void> _fetchAllDocumentsSummary(String? type) async {
     setState(() {
+      documentList = [];
+      taskList = [];
       isLoading = true;
       hasError = false;
       errorMessage = null;
@@ -254,6 +274,34 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
         });
   }
 
+  //offline
+  Future<void> _fetchDocumentLocally() async {
+    try {
+      int userid =  await OfflineDataManager.userRepo.
+      List<DocumentSummary> data =
+          await OfflineDataManager.documentRepo.getDocumentsByUser(userId);
+
+      if (mounted) {
+        setState(() {
+          documentList = data;
+          hasError = false;
+          errorMessage = null;
+          errorTittle = null;
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          hasError = true;
+          errorMessage = "$e";
+          errorTittle = "Error fetching assignments locally";
+          isLoading = false;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     bool fullAccess = widget.permission != null
@@ -300,13 +348,16 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
         ),
         floatingActionButton: fullAccess
             ? !selectedMode
-                ? CustomFloatingBtn(
-                    onPressed: () {
-                      CustomBottomSheet.show(
-                          context: context,
-                          child: UploadOptionSheet(patient: widget.patient));
-                    },
-                  )
+                ? connectivityService.isOnline
+                    ? CustomFloatingBtn(
+                        onPressed: () {
+                          CustomBottomSheet.show(
+                              context: context,
+                              child:
+                                  UploadOptionSheet(patient: widget.patient));
+                        },
+                      )
+                    : null
                 : null
             : null,
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
@@ -329,7 +380,7 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
                     )
                   : Column(
                       children: [
-                        // const OfflineBanner(),
+                        const OfflineBanner(),
                         Row(
                           children: [
                             Expanded(

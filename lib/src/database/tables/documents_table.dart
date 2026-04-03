@@ -25,4 +25,7 @@ class DocumentTable extends Table {
   TextColumn get vitalsJson => text().nullable()();
   TextColumn get medicinesJson => text().nullable()();
   TextColumn get appointmentsJson => text().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {id};
 }
