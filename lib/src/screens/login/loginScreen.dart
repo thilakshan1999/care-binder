@@ -60,14 +60,16 @@ class _LoginScreenState extends State<LoginScreen> {
                 auth.accessToken,
                 auth.refreshToken,
               );
-          await OfflineDataManager.init(context);
-          await OfflineDataManager.syncService.syncDocuments();
-          _fetchUserListApi();
+
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (context) => const DocumentScreen()),
             (Route<dynamic> route) => route.isFirst,
           );
+
+          await OfflineDataManager.init(context);
+          await OfflineDataManager.syncService.syncDocuments();
+          _fetchUserListApi();
         } else {
           CustomSnackbar.showCustomSnackbar(
             context: context,

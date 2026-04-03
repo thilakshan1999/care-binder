@@ -60,12 +60,12 @@ class _AppEntryState extends State<AppEntry> {
 
     if (!mounted) return;
 
+    setState(() => _showSplash = false);
+
     if (context.read<UserBloc>().state.isLoggedIn) {
       await OfflineDataManager.init(context);
       await OfflineDataManager.syncService.syncDocuments();
     }
-
-    setState(() => _showSplash = false);
   }
 
   @override
