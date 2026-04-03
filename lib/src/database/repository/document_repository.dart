@@ -1,9 +1,16 @@
 import 'dart:convert';
 
 import 'package:care_sync/src/database/app_database.dart';
+import 'package:care_sync/src/models/appointment/appointment.dart';
+import 'package:care_sync/src/models/doctor/doctor.dart';
+import 'package:care_sync/src/models/document/document.dart';
 import 'package:care_sync/src/models/document/documentDto.dart';
+import 'package:care_sync/src/models/document/documentReference.dart';
 import 'package:care_sync/src/models/document/documentSummary.dart';
 import 'package:care_sync/src/models/enums/documentType.dart';
+import 'package:care_sync/src/models/medicine/med.dart';
+import 'package:care_sync/src/models/vital/vital.dart';
+import 'package:care_sync/src/utils/textFormatUtils.dart';
 import 'package:drift/drift.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -48,12 +55,34 @@ class DocumentRepository {
     await (db.delete(db.documentTable)..where((tbl) => tbl.id.isIn(ids))).go();
   }
 
-  Future<List<DocumentSummary>> getDocumentsByUser(int userId) async {
-    final rows = await (db.select(db.documentTable)
-          ..where(
-            (tbl) => tbl.userId.equals(userId) & tbl.isDeleted.equals(false),
-          ))
-        .get();
+  Future<List<DocumentSummary>> getDocumentsByUser(
+    int userId,
+    String? type,
+    String? filterBy,
+    String? sortOrder,
+  ) async {
+    final query = db.select(db.documentTable)
+      ..where((tbl) => tbl.userId.equals(userId) & tbl.isDeleted.equals(false));
+
+    if (type != null && type != "All") {
+      query.where((tbl) =>
+          tbl.documentType.equals(TextFormatUtils.reverseFormatName(type)));
+    }
+
+    query.orderBy([
+      (tbl) => OrderingTerm(
+            expression: (filterBy == "UPLOAD_TIME")
+                ? tbl.updatedTime
+                : (filterBy == "VISIT_TIME")
+                    ? tbl.dateOfVisit
+                    : tbl.dateOfTest,
+            mode: (sortOrder == "DESCENDING")
+                ? OrderingMode.desc
+                : OrderingMode.asc,
+          ),
+    ]);
+
+    final rows = await query.get();
 
     return rows
         .map((row) => DocumentSummary(
@@ -70,9 +99,57 @@ class DocumentRepository {
         .toList();
   }
 
-  Future<DocumentTableData?> getDocumentById(int id) async {
-    return (db.select(db.documentTable)..where((tbl) => tbl.id.equals(id)))
+  Future<Document?> getDocumentById(int id) async {
+    final row = await (db.select(db.documentTable)
+          ..where((tbl) => tbl.id.equals(id)))
         .getSingleOrNull();
+
+    if (row == null) return null;
+
+    return Document(
+      id: row.id,
+      documentName: row.documentName,
+      documentType: DocumentType.values.firstWhere(
+        (e) => e.name == row.documentType,
+      ),
+      summary: row.summary ?? '',
+      fileUrl: row.fileUrl,
+      doctors: _parseDoctors(row.doctorsJson),
+      vitals: _parseVitals(row.vitalsJson),
+      medicines: _parseMedicines(row.medicinesJson),
+      appointments: _parseAppointments(row.appointmentsJson),
+      updatedTime: row.updatedTime,
+      dateOfTest: row.dateOfTest,
+      dateOfVisit: row.dateOfVisit,
+    );
+  }
+
+  List<Doctor> _parseDoctors(String? jsonStr) {
+    if (jsonStr == null || jsonStr.isEmpty) return [];
+
+    final List data = jsonDecode(jsonStr);
+    return data.map((e) => Doctor.fromJson(e)).toList();
+  }
+
+  List<Vital> _parseVitals(String? jsonStr) {
+    if (jsonStr == null || jsonStr.isEmpty) return [];
+
+    final List data = jsonDecode(jsonStr);
+    return data.map((e) => Vital.fromJson(e)).toList();
+  }
+
+  List<Med> _parseMedicines(String? jsonStr) {
+    if (jsonStr == null || jsonStr.isEmpty) return [];
+
+    final List data = jsonDecode(jsonStr);
+    return data.map((e) => Med.fromJson(e)).toList();
+  }
+
+  List<Appointment> _parseAppointments(String? jsonStr) {
+    if (jsonStr == null || jsonStr.isEmpty) return [];
+
+    final List data = jsonDecode(jsonStr);
+    return data.map((e) => Appointment.fromJson(e)).toList();
   }
 
   Future<void> saveLastSyncTime(String serverTime) async {
@@ -105,5 +182,20 @@ class DocumentRepository {
         .getSingleOrNull();
 
     return doc?.fileUrl;
+  }
+
+  Future<DocumentReference?> getDocumentReferenceById(int id) async {
+    final row = await (db.select(db.documentTable)
+          ..where((tbl) => tbl.id.equals(id)))
+        .getSingleOrNull();
+
+    if (row == null) return null;
+
+    return DocumentReference(
+      id: row.id,
+      fileName: row.fileName ?? '',
+      fileType: row.fileType ?? '',
+      signedUrl: row.fileUrl ?? '', // local file path OR signed URL
+    );
   }
 }

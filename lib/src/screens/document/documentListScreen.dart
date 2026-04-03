@@ -90,7 +90,10 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
   }
 
   void _onConnectivityChange() {
-    if (mounted) setState(() {});
+    if (mounted) {
+      _fetchAllDocumentsSummary(categories[selectedIndex]);
+      setState(() {});
+    }
   }
 
   Future<void> _fetchAllDocumentsSummary(String? type) async {
@@ -102,70 +105,12 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
       errorMessage = null;
       errorTittle = null;
     });
-    await ApiHandler.handleApiCall<List<DocumentSummary>>(
-      context: context,
-      request: () => httpService.documentService.getAllDocumentsSummary(
-          type: type,
-          patientId: widget.patient?.id,
-          filterBy: filterOption.name,
-          sortOrder: sortOrder.name),
-      onSuccess: (data, _) {
-        print("type...");
-        print(type);
-        if (type != null && type != "All") {
-          setState(() {
-            documentList = data;
-            isLoading = false;
-            hasError = false;
-            errorMessage = null;
-            errorTittle = null;
-            taskList.clear();
-          });
-        } else {
-          _fetchUploadTask();
-          setState(() {
-            documentList = data;
-          });
-        }
-      },
-      onError: (title, message) {
-        setState(() {
-          isLoading = false;
-          hasError = true;
-          errorMessage = message;
-          errorTittle = title;
-        });
-      },
-    );
-  }
 
-  Future<void> _fetchUploadTask() async {
-    await ApiHandler.handleApiCall<List<UploadTask>>(
-      context: context,
-      request: () => httpService.uploadTaskService.getUserTasks(
-        patientId: widget.patient?.id,
-      ),
-      onSuccess: (data, _) {
-        setState(() {
-          taskList = data;
-          hasError = false;
-          errorMessage = null;
-          errorTittle = null;
-        });
-      },
-      onError: (title, message) {
-        setState(() {
-          hasError = true;
-          errorMessage = message;
-          errorTittle = title;
-        });
-      },
-      onFinally: () {
-        if (mounted) {
-          setState(() => isLoading = false);
-        }
-      },
-    );
+    if (connectivityService.isOnline) {
+      _fetchDocumentListApi(type);
+    } else {
+      _fetchDocumentsLocally(type);
+    }
   }
 
   Future<void> _fetchDocumentReference() async {
@@ -274,12 +219,89 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
         });
   }
 
+  //online
+  Future<void> _fetchDocumentListApi(String? type) async {
+    await ApiHandler.handleApiCall<List<DocumentSummary>>(
+      context: context,
+      request: () => httpService.documentService.getAllDocumentsSummary(
+          type: type,
+          patientId: widget.patient?.id,
+          filterBy: filterOption.name,
+          sortOrder: sortOrder.name),
+      onSuccess: (data, _) {
+        print("type...");
+        print(type);
+        if (type != null && type != "All") {
+          setState(() {
+            documentList = data;
+            isLoading = false;
+            hasError = false;
+            errorMessage = null;
+            errorTittle = null;
+            taskList.clear();
+          });
+        } else {
+          _fetchUploadTask();
+          setState(() {
+            documentList = data;
+          });
+        }
+      },
+      onError: (title, message) {
+        setState(() {
+          isLoading = false;
+          hasError = true;
+          errorMessage = message;
+          errorTittle = title;
+        });
+      },
+    );
+  }
+
+  Future<void> _fetchUploadTask() async {
+    await ApiHandler.handleApiCall<List<UploadTask>>(
+      context: context,
+      request: () => httpService.uploadTaskService.getUserTasks(
+        patientId: widget.patient?.id,
+      ),
+      onSuccess: (data, _) {
+        setState(() {
+          taskList = data;
+          hasError = false;
+          errorMessage = null;
+          errorTittle = null;
+        });
+      },
+      onError: (title, message) {
+        setState(() {
+          hasError = true;
+          errorMessage = message;
+          errorTittle = title;
+        });
+      },
+      onFinally: () {
+        if (mounted) {
+          setState(() => isLoading = false);
+        }
+      },
+    );
+  }
+
   //offline
-  Future<void> _fetchDocumentLocally() async {
+  Future<void> _fetchDocumentsLocally(String? type) async {
     try {
-      int userid =  await OfflineDataManager.userRepo.
-      List<DocumentSummary> data =
-          await OfflineDataManager.documentRepo.getDocumentsByUser(userId);
+      int? userid = await OfflineDataManager.userRepo
+          .getUserIdByEmail(context.read<UserBloc>().state.email!);
+
+      if (userid == null) {
+        print("User id is missing");
+        return;
+      }
+
+      int id = widget.patient != null ? widget.patient!.id : userid;
+
+      List<DocumentSummary> data = await OfflineDataManager.documentRepo
+          .getDocumentsByUser(id, type, filterOption.name, sortOrder.name);
 
       if (mounted) {
         setState(() {

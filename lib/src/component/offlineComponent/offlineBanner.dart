@@ -1,29 +1,8 @@
 import 'package:care_sync/src/service/connectivityService.dart';
 import 'package:flutter/material.dart';
 
-class OfflineBanner extends StatefulWidget {
+class OfflineBanner extends StatelessWidget {
   const OfflineBanner({super.key});
-
-  @override
-  State<OfflineBanner> createState() => _OfflineBannerState();
-}
-
-class _OfflineBannerState extends State<OfflineBanner> {
-  @override
-  void initState() {
-    super.initState();
-    connectivityService.addListener(_onConnectivityChange);
-  }
-
-  @override
-  void dispose() {
-    connectivityService.removeListener(_onConnectivityChange);
-    super.dispose();
-  }
-
-  void _onConnectivityChange() {
-    if (mounted) setState(() {});
-  }
 
   @override
   Widget build(BuildContext context) {

@@ -1,11 +1,14 @@
 import 'package:care_sync/src/component/btn/primaryBtn/primaryBtn.dart';
 import 'package:care_sync/src/component/contraintBox/maxWidthConstraintBox.dart';
+import 'package:care_sync/src/component/offlineComponent/offlineBanner.dart';
 import 'package:care_sync/src/component/text/bodyText.dart';
 import 'package:care_sync/src/component/text/sectionTittleText.dart';
 import 'package:care_sync/src/component/text/subText.dart';
+import 'package:care_sync/src/database/offlineDataManager.dart';
 import 'package:care_sync/src/models/document/document.dart';
 import 'package:care_sync/src/screens/document/documentRefScreen.dart';
 import 'package:care_sync/src/screens/document/documentScreen.dart';
+import 'package:care_sync/src/service/connectivityService.dart';
 import 'package:care_sync/src/utils/textFormatUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -53,12 +56,31 @@ class _DocumentInfoScreenState extends State<DocumentInfoScreen> {
   bool _isInitialized = false;
 
   @override
+  void initState() {
+    super.initState();
+    connectivityService.addListener(_onConnectivityChange);
+  }
+
+  @override
+  void dispose() {
+    connectivityService.removeListener(_onConnectivityChange);
+    super.dispose();
+  }
+
+  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (!_isInitialized) {
       httpService = HttpService(context.read<UserBloc>());
       _fetchDocument();
       _isInitialized = true;
+    }
+  }
+
+  void _onConnectivityChange() {
+    if (mounted) {
+      _fetchDocument();
+      setState(() {});
     }
   }
 
@@ -70,26 +92,11 @@ class _DocumentInfoScreenState extends State<DocumentInfoScreen> {
       errorTittle = null;
     });
 
-    await ApiHandler.handleApiCall<Document>(
-      context: context,
-      request: () => httpService.documentService.getDocumentById(widget.id),
-      onSuccess: (data, _) {
-        setState(() {
-          doc = data;
-          hasError = false;
-          errorMessage = null;
-          errorTittle = null;
-        });
-      },
-      onError: (msg, title) {
-        setState(() {
-          hasError = true;
-          errorMessage = msg;
-          errorTittle = title ?? "Request Failed";
-        });
-      },
-      onFinally: () => setState(() => isProcessing = false),
-    );
+    if (connectivityService.isOnline) {
+      _fetchDocumentApi();
+    } else {
+      _fetchDocumentsLocally();
+    }
   }
 
   Future<void> _deleteDocument() async {
@@ -112,6 +119,57 @@ class _DocumentInfoScreenState extends State<DocumentInfoScreen> {
     );
   }
 
+  //online
+  Future<void> _fetchDocumentApi() async {
+    await ApiHandler.handleApiCall<Document>(
+      context: context,
+      request: () => httpService.documentService.getDocumentById(widget.id),
+      onSuccess: (data, _) {
+        setState(() {
+          doc = data;
+          hasError = false;
+          errorMessage = null;
+          errorTittle = null;
+        });
+      },
+      onError: (msg, title) {
+        setState(() {
+          hasError = true;
+          errorMessage = msg;
+          errorTittle = title ?? "Request Failed";
+        });
+      },
+      onFinally: () => setState(() => isProcessing = false),
+    );
+  }
+
+  //offline
+  Future<void> _fetchDocumentsLocally() async {
+    try {
+      Document? data =
+          await OfflineDataManager.documentRepo.getDocumentById(widget.id);
+
+      if (mounted) {
+        setState(() {
+          doc = data!;
+          hasError = false;
+          errorMessage = null;
+          errorTittle = null;
+          isProcessing = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          hasError = true;
+          errorMessage = "$e";
+          errorTittle = "Error fetching assignments locally";
+          isProcessing = false;
+        });
+      }
+    }
+  }
+
   void navigateToDocumentRef(
     BuildContext context,
   ) {
@@ -132,98 +190,111 @@ class _DocumentInfoScreenState extends State<DocumentInfoScreen> {
           tittle: widget.name,
           showBackButton: true,
         ),
-        body: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Skeletonizer(
-                enabled: isProcessing,
-                child: hasError
-                    ? ErrorBox(
-                        message: errorMessage ?? 'Something went wrong.',
-                        title: errorTittle ?? 'Something went wrong.',
-                        onRetry: () {
-                          _fetchDocument();
-                          setState(() {
-                            hasError = false;
-                            errorMessage = null;
-                            errorTittle = null;
-                          });
-                        },
-                      )
-                    : SingleChildScrollView(
-                        child: Center(
-                        child: MaxWidthConstrainedBox(
-                          child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const SectionTittleText(text: "Basic Info"),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                buildInfoRow("Document Name", doc.documentName),
-                                buildInfoRow(
-                                    "Document Type",
-                                    TextFormatUtils.formatEnum(
-                                        doc.documentType)),
-                                buildInfoRow("Document Summary", doc.summary),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                DoctorDocument(
-                                  doctors: doc.doctors,
-                                  isEditable: false,
-                                ),
+        body: Column(
+          children: [
+            const OfflineBanner(),
+            Expanded(
+                child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Skeletonizer(
+                        enabled: isProcessing,
+                        child: hasError
+                            ? ErrorBox(
+                                message:
+                                    errorMessage ?? 'Something went wrong.',
+                                title: errorTittle ?? 'Something went wrong.',
+                                onRetry: () {
+                                  _fetchDocument();
+                                  setState(() {
+                                    hasError = false;
+                                    errorMessage = null;
+                                    errorTittle = null;
+                                  });
+                                },
+                              )
+                            : SingleChildScrollView(
+                                child: Center(
+                                child: MaxWidthConstrainedBox(
+                                  child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const SectionTittleText(
+                                            text: "Basic Info"),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        buildInfoRow(
+                                            "Document Name", doc.documentName),
+                                        buildInfoRow(
+                                            "Document Type",
+                                            TextFormatUtils.formatEnum(
+                                                doc.documentType)),
+                                        buildInfoRow(
+                                            "Document Summary", doc.summary),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        DoctorDocument(
+                                          doctors: doc.doctors,
+                                          isEditable: false,
+                                        ),
 
-                                //Med
-                                MedDocument(
-                                  medicines: doc.medicines,
-                                  isEditable: false,
-                                ),
+                                        //Med
+                                        MedDocument(
+                                          medicines: doc.medicines,
+                                          isEditable: false,
+                                        ),
 
-                                //Appointment
-                                AppointmentDocument(
-                                  appointments: doc.appointments,
-                                  isEditable: false,
-                                ),
+                                        //Appointment
+                                        AppointmentDocument(
+                                          appointments: doc.appointments,
+                                          isEditable: false,
+                                        ),
 
-                                //Vital
-                                VitalDocument(
-                                  vitals: doc.vitals,
-                                  isEditable: false,
+                                        //Vital
+                                        VitalDocument(
+                                          vitals: doc.vitals,
+                                          isEditable: false,
+                                        ),
+                                        if (widget.fullAccess &&
+                                            connectivityService.isOnline)
+                                          PrimaryLoadingBtn(
+                                            label: 'Delete',
+                                            loading: isLoading,
+                                            backgroundColor: Theme.of(context)
+                                                .colorScheme
+                                                .error,
+                                            onPressed: () {
+                                              showConfirmDialog(
+                                                context: context,
+                                                title: "Delete Document",
+                                                message:
+                                                    "Are you sure you want to delete this document?",
+                                                onConfirm: () {
+                                                  setState(() {
+                                                    isLoading = true;
+                                                  });
+                                                  _deleteDocument();
+                                                },
+                                              );
+                                            },
+                                          ),
+                                        if (doc.fileUrl != null) ...[
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          PrimaryBtn(
+                                              label: "View File",
+                                              onPressed: () {
+                                                navigateToDocumentRef(context);
+                                              })
+                                        ]
+                                      ]),
                                 ),
-                                if (widget.fullAccess)
-                                  PrimaryLoadingBtn(
-                                    label: 'Delete',
-                                    loading: isLoading,
-                                    backgroundColor:
-                                        Theme.of(context).colorScheme.error,
-                                    onPressed: () {
-                                      showConfirmDialog(
-                                        context: context,
-                                        title: "Delete Document",
-                                        message:
-                                            "Are you sure you want to delete this document?",
-                                        onConfirm: () {
-                                          setState(() {
-                                            isLoading = true;
-                                          });
-                                          _deleteDocument();
-                                        },
-                                      );
-                                    },
-                                  ),
-                                if (doc.fileUrl != null) ...[
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  PrimaryBtn(
-                                      label: "View File",
-                                      onPressed: () {
-                                        navigateToDocumentRef(context);
-                                      })
-                                ]
-                              ]),
-                        ),
-                      )))));
+                              )))))
+          ],
+        ));
   }
 
   Widget buildInfoRow(String label, String value) {

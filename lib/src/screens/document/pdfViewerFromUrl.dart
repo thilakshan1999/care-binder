@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:care_sync/src/service/connectivityService.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:http/http.dart' as http;
@@ -19,7 +20,12 @@ class _PdfViewerFromUrlState extends State<PdfViewerFromUrl> {
   @override
   void initState() {
     super.initState();
-    _downloadFile();
+    if (connectivityService.isOnline) {
+      _downloadFile();
+    } else {
+      localPath = widget.url;
+      isLoading = false;
+    }
   }
 
   Future<void> _downloadFile() async {

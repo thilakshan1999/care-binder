@@ -11,6 +11,10 @@ class TextFormatUtils {
         .join(' ');
   }
 
+  static String reverseFormatName(String name) {
+    return name.trim().replaceAll(' ', '_').toUpperCase();
+  }
+
   static List<String> enumListToStringList<T>(List<T> enumList) {
     return [
       "All",

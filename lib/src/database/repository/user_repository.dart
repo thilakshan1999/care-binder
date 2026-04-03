@@ -129,4 +129,12 @@ class UserRepository {
       );
     }).toList();
   }
+
+  Future<int?> getUserIdByEmail(String email) async {
+    final user = await (db.select(db.userTable)
+          ..where((u) => u.email.equals(email)))
+        .getSingleOrNull();
+
+    return user?.id;
+  }
 }
