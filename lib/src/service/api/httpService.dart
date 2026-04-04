@@ -23,8 +23,9 @@ class HttpService {
   late final UploadTaskService uploadTaskService;
 
   HttpService(UserBloc userBloc)
-      : baseUrl = "http://10.0.2.2:8080/api" // Staging
-  // "https://caresync-service-309965347032.us-central1.run.app/api" // Live
+      : baseUrl =
+            // "http://10.0.2.2:8080/api" // Staging
+            "https://caresync-service-309965347032.us-central1.run.app/api" // Live
   {
     httpClient = InterceptedClient.build(
       interceptors: [
