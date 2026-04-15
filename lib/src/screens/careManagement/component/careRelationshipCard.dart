@@ -1,5 +1,9 @@
+import 'package:care_sync/src/component/snakbar/customSnakbar.dart';
+import 'package:care_sync/src/component/text/subText.dart';
 import 'package:care_sync/src/service/connectivityService.dart';
+import 'package:care_sync/src/theme/customColors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../../component/badge/simpleBadge.dart';
 import '../../../component/text/bodyText.dart';
@@ -55,6 +59,14 @@ class CareRelationshipCard extends StatelessWidget {
                   text: userSummary.email,
                 ),
                 const SizedBox(height: 4),
+                if (userSummary.systemEmail != null) ...[
+                  const SizedBox(height: 2),
+                  const BodyText(
+                    text: "Inbox Mail",
+                  ),
+                  SubText(text: userSummary.systemEmail!),
+                  const SizedBox(height: 6),
+                ],
                 SimpleBadge(
                   color:
                       IconAndColorUtils.getPermissionColor(member.permission),
@@ -79,6 +91,18 @@ class CareRelationshipCard extends StatelessWidget {
                     onUpdate();
                   } else if (value == 'delete') {
                     onDelete();
+                  } else if (value == 'copyMail') {
+                    Clipboard.setData(
+                            ClipboardData(text: userSummary.systemEmail!))
+                        .then((_) {
+                      CustomSnackbar.showCustomSnackbar(
+                        context: context,
+                        message: "Email copied",
+                        backgroundColor: Theme.of(context)
+                            .extension<CustomColors>()!
+                            .success,
+                      );
+                    });
                   }
                 },
                 itemBuilder: (BuildContext context) => [
@@ -92,6 +116,22 @@ class CareRelationshipCard extends StatelessWidget {
                               color: Theme.of(context).colorScheme.onSecondary),
                           BtnText(
                             text: "Access",
+                            color: Theme.of(context).colorScheme.onSecondary,
+                            fontWeight: FontWeight.w400,
+                          )
+                        ],
+                      ),
+                    ),
+                  if (userSummary.systemEmail != null)
+                    PopupMenuItem(
+                      value: 'copyMail',
+                      child: Row(
+                        children: [
+                          Icon(Icons.copy_rounded,
+                              size: 20,
+                              color: Theme.of(context).colorScheme.onSecondary),
+                          BtnText(
+                            text: "Copy Mail",
                             color: Theme.of(context).colorScheme.onSecondary,
                             fontWeight: FontWeight.w400,
                           )

@@ -5,6 +5,7 @@ class UserTable extends Table {
 
   TextColumn get name => text()();
   TextColumn get email => text()();
+  TextColumn get systemEmail => text().nullable()();
   TextColumn get role => text()();
 
   @override

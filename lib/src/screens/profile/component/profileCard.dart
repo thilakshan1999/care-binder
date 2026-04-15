@@ -1,3 +1,4 @@
+import 'package:care_sync/src/component/text/subText.dart';
 import 'package:care_sync/src/theme/customColors.dart';
 import 'package:flutter/material.dart';
 
@@ -6,14 +7,18 @@ import '../../../component/text/primaryText.dart';
 class ProfileCard extends StatelessWidget {
   final IconData icon;
   final String title;
+  final String? subTitle;
   final VoidCallback onTap;
-  final bool showLogout;
+  final bool showTrailing;
+  final bool isImportant;
   const ProfileCard({
     super.key,
     required this.icon,
     required this.title,
     required this.onTap,
-    this.showLogout = false,
+    this.subTitle,
+    this.showTrailing = true,
+    this.isImportant = false,
   });
 
   @override
@@ -25,14 +30,15 @@ class ProfileCard extends StatelessWidget {
       child: ListTile(
         leading: Icon(
           icon,
-          color: showLogout
+          color: isImportant
               ? Theme.of(context).colorScheme.error
               : Theme.of(context).colorScheme.primary,
           size: 28,
         ),
         title: PrimaryText(text: title),
+        subtitle: subTitle != null ? SubText(text: subTitle!) : null,
         trailing:
-            showLogout ? null : const Icon(Icons.arrow_forward_ios, size: 20),
+            showTrailing ? const Icon(Icons.arrow_forward_ios, size: 20) : null,
         onTap: onTap,
       ),
     );

@@ -4,6 +4,7 @@ import 'package:care_sync/src/component/contraintBox/maxWidthConstraintBox.dart'
 import 'package:care_sync/src/component/offlineComponent/offlineBanner.dart';
 import 'package:care_sync/src/component/text/primaryText.dart';
 import 'package:care_sync/src/component/text/subText.dart';
+import 'package:care_sync/src/database/offlineDataManager.dart';
 import 'package:care_sync/src/models/enums/userRole.dart';
 import 'package:care_sync/src/screens/document/documentScreen.dart';
 import 'package:care_sync/src/screens/login/loginScreen.dart';
@@ -13,7 +14,9 @@ import 'package:care_sync/src/screens/profile/component/roleBadge.dart';
 import 'package:care_sync/src/screens/qr/component/qrPermissionSheet.dart';
 import 'package:care_sync/src/screens/qr/qrScanScreen.dart';
 import 'package:care_sync/src/service/connectivityService.dart';
+import 'package:care_sync/src/theme/customColors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../component/bottomSheet/bottomSheet.dart';
@@ -29,9 +32,12 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  String? systemEmail;
+
   @override
   void initState() {
     super.initState();
+    _loadSystemEmail();
     connectivityService.addListener(_onConnectivityChange);
   }
 
@@ -43,6 +49,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   void _onConnectivityChange() {
     if (mounted) setState(() {});
+  }
+
+  Future<void> _loadSystemEmail() async {
+    final email = context.read<UserBloc>().state.email;
+    if (email != null) {
+      final result =
+          await OfflineDataManager.userRepo.getUserSystemEmailByEmail(email);
+
+      if (mounted) {
+        setState(() {
+          systemEmail = result;
+        });
+      }
+    }
   }
 
   Future<void> _logout(BuildContext context) async {
@@ -70,6 +90,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
         backgroundColor: Theme.of(context).colorScheme.error,
       );
     }
+  }
+
+  void _copyToClipboard(BuildContext context, String text) {
+    Clipboard.setData(ClipboardData(text: text)).then((_) {
+      CustomSnackbar.showCustomSnackbar(
+        context: context,
+        message: "Email copied",
+        backgroundColor: Theme.of(context).extension<CustomColors>()!.success,
+      );
+    });
   }
 
   @override
@@ -109,15 +139,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 const SizedBox(height: 10),
 
                 // User Info
-                Column(
-                  children: [
-                    PrimaryText(text: userBloc.state.name!),
-                    const SizedBox(height: 5),
-                    SubText(text: userBloc.state.email!),
-                    const SizedBox(height: 5),
-                    RoleBadge(role: userBloc.state.role!)
-                  ],
-                ),
+                Column(children: [
+                  PrimaryText(text: userBloc.state.name!),
+                  const SizedBox(height: 5),
+                  SubText(text: userBloc.state.email!),
+                  const SizedBox(height: 5),
+                  RoleBadge(role: userBloc.state.role!),
+                  const SizedBox(height: 5),
+                ]),
 
                 const SizedBox(height: 10),
 
@@ -197,7 +226,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
 
                           const SizedBox(height: 12),
-                        ]
+                        ],
+
+                        if (systemEmail != null)
+                          ProfileCard(
+                            icon: Icons.copy_rounded,
+                            title: "Document Inbox",
+                            subTitle: systemEmail,
+                            onTap: () {
+                              _copyToClipboard(context, systemEmail!);
+                            },
+                            showTrailing: false,
+                          ),
+
+                        const SizedBox(height: 12),
                       ],
 
                       //App Setting
@@ -225,7 +267,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             btnLabel: "Ok",
                           );
                         },
-                        showLogout: true,
+                        showTrailing: false,
+                        isImportant: true,
                       ),
 
                       const SizedBox(height: 12),
@@ -245,7 +288,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             btnLabel: "Ok",
                           );
                         },
-                        showLogout: true,
+                        showTrailing: false,
+                        isImportant: true,
                       ),
                     ],
                   ),

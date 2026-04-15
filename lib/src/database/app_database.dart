@@ -17,7 +17,24 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+
+  @override
+  MigrationStrategy get migration {
+    return MigrationStrategy(
+      onUpgrade: (m, from, to) async {
+        if (from < 2) {
+          // This adds the 'systemEmail' column to the 'userTable'
+          // 'userTable' is the field name generated in your _$AppDatabase
+          await m.addColumn(userTable, userTable.systemEmail);
+        }
+      },
+      // Optional: useful for debugging to ensure foreign keys work
+      beforeOpen: (details) async {
+        await customStatement('PRAGMA foreign_keys = ON');
+      },
+    );
+  }
 }
 
 // 🔹 Create SQLite file in device

@@ -22,6 +22,7 @@ class UserRepository {
               id: Value(caregiver.id),
               name: Value(caregiver.name),
               email: Value(caregiver.email),
+              systemEmail: Value(caregiver.systemEmail),
               role: Value(caregiver.role.name), // assuming role is enum
             ),
           );
@@ -32,6 +33,7 @@ class UserRepository {
               id: Value(patient.id),
               name: Value(patient.name),
               email: Value(patient.email),
+              systemEmail: Value(patient.systemEmail),
               role: Value(patient.role.name),
             ),
           );
@@ -136,5 +138,15 @@ class UserRepository {
         .getSingleOrNull();
 
     return user?.id;
+  }
+
+  Future<String?> getUserSystemEmailByEmail(String email) async {
+    final results = await (db.select(db.userTable)
+          ..where((u) => u.email.equals(email))
+          ..limit(1)) // Forces the DB to only give us one
+        .get();
+
+    if (results.isEmpty) return null;
+    return results.first.systemEmail;
   }
 }

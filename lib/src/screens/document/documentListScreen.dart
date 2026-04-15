@@ -234,8 +234,6 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
           filterBy: filterOption.name,
           sortOrder: sortOrder.name),
       onSuccess: (data, _) {
-        print("type...");
-        print(type);
         if (type != null && type != "All") {
           setState(() {
             documentList = data;
