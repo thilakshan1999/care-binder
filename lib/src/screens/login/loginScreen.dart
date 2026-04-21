@@ -28,9 +28,6 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  late final AppDatabase _db;
-  late final UserRepository _userRepo;
-
   bool isLoading = false;
   final _formKey = GlobalKey<FormState>();
   String password = "";
@@ -40,8 +37,6 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    _db = AppDatabase();
-    _userRepo = UserRepository(_db);
     httpService = HttpService(context.read<UserBloc>());
   }
 
@@ -68,8 +63,8 @@ class _LoginScreenState extends State<LoginScreen> {
           );
 
           await OfflineDataManager.init(context);
-          await OfflineDataManager.syncService.syncDocuments();
           _fetchUserListApi();
+          await OfflineDataManager.syncService.syncDocuments();
         } else {
           CustomSnackbar.showCustomSnackbar(
             context: context,
@@ -111,7 +106,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _saveAssignmentsLocally(
       List<CareGiverAssignment> assignments) async {
     try {
-      await _userRepo.saveCaregiverAssignments(assignments);
+      await OfflineDataManager.userRepo.saveCaregiverAssignments(assignments);
     } catch (e) {
       print("Error saving assignments locally: $e");
     }

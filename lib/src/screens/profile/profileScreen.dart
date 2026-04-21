@@ -18,6 +18,7 @@ import 'package:care_sync/src/theme/customColors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../component/bottomSheet/bottomSheet.dart';
 import '../../component/dialog/confirmDeleteDialog.dart';
@@ -33,6 +34,7 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   String? systemEmail;
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -60,7 +62,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (mounted) {
         setState(() {
           systemEmail = result;
+          isLoading = false;
         });
+        print("---------------------------------------------------------");
+        print("systemEmail : ");
+        print(result);
+        print("---------------------------------------------------------");
       }
     }
   }
@@ -120,6 +127,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         body: Center(
           child: MaxWidthConstrainedBox(
+              child: Skeletonizer(
+            enabled: isLoading,
             child: Column(
               children: [
                 const OfflineBanner(),
@@ -228,7 +237,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           const SizedBox(height: 12),
                         ],
 
-                        if (systemEmail != null)
+                        if (systemEmail != null) ...[
                           ProfileCard(
                             icon: Icons.copy_rounded,
                             title: "Document Inbox",
@@ -238,8 +247,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             },
                             showTrailing: false,
                           ),
-
-                        const SizedBox(height: 12),
+                          const SizedBox(height: 12),
+                        ]
                       ],
 
                       //App Setting
@@ -298,7 +307,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 const AppVersionWidget(),
               ],
             ),
-          ),
+          )),
         ));
   }
 }
