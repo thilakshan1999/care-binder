@@ -49,6 +49,31 @@ class DocumentRepository {
     });
   }
 
+  Future<void> saveSingleDocument(DocumentDto doc) async {
+    await db.into(db.documentTable).insert(
+          DocumentTableCompanion(
+            id: Value(doc.id),
+            documentName: Value(doc.documentName),
+            documentType: Value(doc.documentType),
+            summary: Value(doc.summary),
+            dateOfTest: Value(doc.dateOfTest),
+            dateOfVisit: Value(doc.dateOfVisit),
+            updatedTime: Value(doc.updatedTime),
+            fileUrl: Value(doc.fileUrl),
+            fileName: Value(doc.fileName),
+            fileType: Value(doc.fileType),
+            userId: Value(doc.userId),
+            doctorsJson: Value(doc.doctorsJson),
+            vitalsJson: Value(doc.vitalsJson),
+            medicinesJson: Value(doc.medicinesJson),
+            appointmentsJson: Value(doc.appointmentsJson),
+            isUpdated: const Value(false),
+            isDeleted: const Value(false),
+          ),
+          mode: InsertMode.insertOrReplace,
+        );
+  }
+
   Future<void> deleteDocumentsByIds(List<int> ids) async {
     if (ids.isEmpty) return;
 

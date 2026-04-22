@@ -61,7 +61,19 @@ class SyncService {
     }
 
     for (final doc in docs) {
-      await _handleSingleDocument(doc);
+      try {
+        await _handleSingleDocument(doc);
+
+        await documentRepo.saveSingleDocument(doc);
+
+        String timeToSave = doc.updatedTime.toIso8601String().split('.').first;
+        await documentRepo.saveLastSyncTime(email, timeToSave);
+
+        print("💾 Progress saved for doc: ${doc.id}");
+      } catch (e) {
+        print("⚠️ Failed to process doc ${doc.id}: $e");
+        continue;
+      }
     }
 
     await documentRepo.saveDocuments(docs);

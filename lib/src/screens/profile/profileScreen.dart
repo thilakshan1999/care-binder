@@ -64,10 +64,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           systemEmail = result;
           isLoading = false;
         });
-        print("---------------------------------------------------------");
-        print("systemEmail : ");
-        print(result);
-        print("---------------------------------------------------------");
       }
     }
   }
