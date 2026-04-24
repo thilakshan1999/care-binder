@@ -2,7 +2,7 @@ import 'package:care_sync/src/component/badge/simpleBadge.dart';
 import 'package:care_sync/src/component/text/primaryText.dart';
 import 'package:care_sync/src/component/text/subText.dart';
 import 'package:care_sync/src/models/task/uploadTask.dart';
-import 'package:care_sync/src/screens/document/taskInfoScreen.dart';
+import 'package:care_sync/src/screens/task/taskInfoScreen.dart';
 import 'package:care_sync/src/utils/textFormatUtils.dart';
 import 'package:flutter/material.dart';
 

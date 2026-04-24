@@ -19,7 +19,7 @@ import 'package:care_sync/src/models/enums/documentType.dart';
 import 'package:care_sync/src/models/task/uploadTask.dart';
 import 'package:care_sync/src/models/user/userSummary.dart';
 import 'package:care_sync/src/screens/document/component/documentFilterSheet.dart';
-import 'package:care_sync/src/screens/document/component/taskCard.dart';
+import 'package:care_sync/src/screens/task/component/taskCard.dart';
 import 'package:care_sync/src/screens/document/component/uploadOptionSheet.dart';
 import 'package:care_sync/src/screens/document/component/selectionBottomBar.dart';
 import 'package:care_sync/src/service/connectivityService.dart';
@@ -56,7 +56,6 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
   String? errorMessage;
   String? errorTittle;
   List<DocumentSummary> documentList = mockDocumentSummaries;
-  List<UploadTask> taskList = [];
   List<String> categories =
       TextFormatUtils.enumListToStringList(DocumentType.values);
   int selectedIndex = 0;
@@ -99,7 +98,6 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
   Future<void> _fetchAllDocumentsSummary(String? type) async {
     setState(() {
       documentList = [];
-      taskList = [];
       isLoading = true;
       hasError = false;
       errorMessage = null;
@@ -227,67 +225,32 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
   //online
   Future<void> _fetchDocumentListApi(String? type) async {
     await ApiHandler.handleApiCall<List<DocumentSummary>>(
-      context: context,
-      request: () => httpService.documentService.getAllDocumentsSummary(
-          type: type,
-          patientId: widget.patient?.id,
-          filterBy: filterOption.name,
-          sortOrder: sortOrder.name),
-      onSuccess: (data, _) {
-        if (type != null && type != "All") {
+        context: context,
+        request: () => httpService.documentService.getAllDocumentsSummary(
+            type: type,
+            patientId: widget.patient?.id,
+            filterBy: filterOption.name,
+            sortOrder: sortOrder.name),
+        onSuccess: (data, _) {
           setState(() {
             documentList = data;
-            isLoading = false;
             hasError = false;
             errorMessage = null;
             errorTittle = null;
-            taskList.clear();
           });
-        } else {
-          _fetchUploadTask();
+        },
+        onError: (title, message) {
           setState(() {
-            documentList = data;
+            hasError = true;
+            errorMessage = message;
+            errorTittle = title;
           });
-        }
-      },
-      onError: (title, message) {
-        setState(() {
-          isLoading = false;
-          hasError = true;
-          errorMessage = message;
-          errorTittle = title;
+        },
+        onFinally: () {
+          setState(() {
+            isLoading = false;
+          });
         });
-      },
-    );
-  }
-
-  Future<void> _fetchUploadTask() async {
-    await ApiHandler.handleApiCall<List<UploadTask>>(
-      context: context,
-      request: () => httpService.uploadTaskService.getUserTasks(
-        patientId: widget.patient?.id,
-      ),
-      onSuccess: (data, _) {
-        setState(() {
-          taskList = data;
-          hasError = false;
-          errorMessage = null;
-          errorTittle = null;
-        });
-      },
-      onError: (title, message) {
-        setState(() {
-          hasError = true;
-          errorMessage = message;
-          errorTittle = title;
-        });
-      },
-      onFinally: () {
-        if (mounted) {
-          setState(() => isLoading = false);
-        }
-      },
-    );
   }
 
   Future<void> _fetchDocumentReferenceApi() async {
@@ -491,14 +454,6 @@ class _DocumentListScreenState extends State<DocumentListScreen> {
                                     child: MaxWidthConstrainedBox(
                                         child: Column(
                                       children: [
-                                        if (taskList.isNotEmpty)
-                                          ...taskList.map((task) => TaskCard(
-                                                task: task,
-                                                context: context,
-                                                selectedMode: selectedMode,
-                                                fullAccess: fullAccess,
-                                                patientId: widget.patient?.id,
-                                              )),
                                         Accordion(
                                           maxOpenSections: 1,
                                           disableScrolling: true,

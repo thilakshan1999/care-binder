@@ -13,6 +13,7 @@ import 'package:care_sync/src/screens/profile/component/profileCard.dart';
 import 'package:care_sync/src/screens/profile/component/roleBadge.dart';
 import 'package:care_sync/src/screens/qr/component/qrPermissionSheet.dart';
 import 'package:care_sync/src/screens/qr/qrScanScreen.dart';
+import 'package:care_sync/src/screens/task/taskListScreen.dart';
 import 'package:care_sync/src/service/connectivityService.dart';
 import 'package:care_sync/src/theme/customColors.dart';
 import 'package:flutter/material.dart';
@@ -93,6 +94,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
         backgroundColor: Theme.of(context).colorScheme.error,
       );
     }
+  }
+
+  void _navigateToTaskListScreen(BuildContext context) {
+    final userRole = context.read<UserBloc>().state.role;
+
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => const TaskListScreen(),
+      ),
+    );
   }
 
   void _copyToClipboard(BuildContext context, String text) {
@@ -255,6 +266,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       // ),
 
                       // const SizedBox(height: 12),
+
+                      ProfileCard(
+                        icon: Icons.sync,
+                        title: "Task Status",
+                        onTap: () {
+                          _navigateToTaskListScreen(context);
+                        },
+                      ),
+
+                      const SizedBox(height: 12),
 
                       //Logout
                       ProfileCard(
