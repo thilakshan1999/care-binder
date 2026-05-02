@@ -206,9 +206,11 @@ class _TaskInfoScreenState extends State<TaskInfoScreen> {
                                   height: 10,
                                 ),
                                 if (widget.fullAccess &&
-                                    task.status == "FAILED") ...[
+                                    task.status != "PROCESSING") ...[
                                   PrimaryLoadingBtn(
-                                    label: 'Retry',
+                                    label: task.status == 'PAUSED'
+                                        ? 'Upload Anyway'
+                                        : 'Retry',
                                     loading: isLoadingRetry,
                                     backgroundColor:
                                         Theme.of(context).colorScheme.primary,

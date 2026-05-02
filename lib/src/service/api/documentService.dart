@@ -157,6 +157,43 @@ class DocumentService {
     }, (_) {});
   }
 
+  /// POST /api/check-duplicate
+  Future<ApiResponse<Map<String, dynamic>>> checkDuplicate(
+    File file,
+    int? patientId,
+    String token,
+  ) {
+    return ApiHelper.handleRequest<Map<String, dynamic>>(() async {
+      var queryParams = <String, String>{};
+
+      if (patientId != null) {
+        queryParams['patientId'] = patientId.toString();
+      }
+
+      var uri = Uri.parse('$baseUrl/documents/check-duplicate')
+          .replace(queryParameters: queryParams);
+
+      var request = MultipartRequest('POST', uri);
+
+      request.files.add(
+        await MultipartFile.fromPath(
+          'file',
+          file.path,
+        ),
+      );
+
+      request.headers.addAll({
+        'Authorization': 'Bearer $token',
+        'Accept': 'application/json',
+      });
+
+      var streamedResponse = await client.send(request);
+      return await Response.fromStream(streamedResponse);
+    }, (json) {
+      return json as Map<String, dynamic>;
+    });
+  }
+
   /// DELETE /api/documents/bulk-delete
   Future<ApiResponse<void>> deleteMultipleDocuments(List<int> ids) {
     return ApiHelper.handleRequest<void>(() async {

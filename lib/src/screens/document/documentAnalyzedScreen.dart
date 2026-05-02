@@ -11,6 +11,7 @@ import 'package:care_sync/src/screens/document/component/analyzedScreen/appointm
 import 'package:care_sync/src/screens/document/component/analyzedScreen/doctorDocument.dart';
 import 'package:care_sync/src/screens/document/component/analyzedScreen/medDocument.dart';
 import 'package:care_sync/src/screens/document/component/analyzedScreen/vitalDocument.dart';
+import 'package:care_sync/src/screens/document/component/duplicateWarningBanner.dart';
 import 'package:care_sync/src/screens/document/documentScreen.dart';
 import 'package:care_sync/src/screens/document/textEditScreen.dart';
 import 'package:care_sync/src/service/documentPickerService.dart';
@@ -48,6 +49,7 @@ class _DocumentAnalyzedScreenState extends State<DocumentAnalyzedScreen> {
   bool isProcessing = true;
   bool isLoading = false;
   bool hasError = false;
+  bool isDuplicate = false;
   String? errorMessage;
   String? errorTittle;
 
@@ -84,6 +86,7 @@ class _DocumentAnalyzedScreenState extends State<DocumentAnalyzedScreen> {
       request: () => httpService.documentService
           .analyzeDocument(extractedText, widget.patient?.id),
       onSuccess: (data, msg) {
+        _checkDuplicate();
         setState(() {
           context.read<AnalyzedDocumentBloc>().setDocument(data);
           hasError = false;
@@ -96,9 +99,9 @@ class _DocumentAnalyzedScreenState extends State<DocumentAnalyzedScreen> {
           hasError = true;
           errorMessage = msg;
           errorTittle = title ?? "Request Failed";
+          isProcessing = false;
         });
       },
-      onFinally: () => setState(() => isProcessing = false),
     );
   }
 
@@ -133,6 +136,37 @@ class _DocumentAnalyzedScreenState extends State<DocumentAnalyzedScreen> {
         setState(() => isLoading = false);
       },
     );
+  }
+
+  Future<bool> _checkDuplicate() async {
+    File? fileToSend;
+    if (widget.imageFile != null) {
+      fileToSend = widget.imageFile!;
+    } else if (widget.documentData?.file != null) {
+      fileToSend = widget.documentData!.file;
+    }
+
+    await ApiHandler.handleApiCall<Map<String, dynamic>>(
+      context: context,
+      request: () => httpService.documentService.checkDuplicate(
+        fileToSend!,
+        widget.patient?.id,
+        context.read<UserBloc>().state.accessToken!,
+      ),
+      onSuccess: (data, msg) async {
+        isDuplicate = data['duplicate'] == true;
+
+        print("-----------------------------");
+        print("Is Duplicate : ");
+        print(isDuplicate);
+        print("-----------------------------");
+      },
+      onFinally: () {
+        setState(() => isProcessing = false);
+      },
+    );
+
+    return isDuplicate;
   }
 
   @override
@@ -197,10 +231,13 @@ class _DocumentAnalyzedScreenState extends State<DocumentAnalyzedScreen> {
                           children: [
                             Expanded(
                               child: SingleChildScrollView(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 16),
+                                  padding: EdgeInsets.only(
+                                      bottom: 16, top: isDuplicate ? 0 : 16),
                                   child: Column(
                                     children: [
+                                      DuplicateWarningBanner(
+                                        isDuplicate: isDuplicate,
+                                      ),
                                       SimpleTextField(
                                         initialText: document.documentName,
                                         labelText: 'Document Name',

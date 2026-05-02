@@ -28,6 +28,8 @@ class TaskCard extends StatelessWidget {
         return Colors.green;
       case 'PROCESSING':
         return Colors.orange;
+      case 'PAUSED':
+        return Colors.blueGrey; // 👈 added
       case 'FAILED':
       case 'ERROR':
         return Colors.red;
@@ -115,8 +117,12 @@ class TaskCard extends StatelessWidget {
         color = Colors.green;
         break;
       case 'PROCESSING':
-        iconData = Icons.autorenew; // spinning/process icon
+        iconData = Icons.autorenew;
         color = Colors.orange;
+        break;
+      case 'PAUSED':
+        iconData = Icons.pause_circle; // 👈 added
+        color = Colors.blueGrey;
         break;
       case 'FAILED':
       case 'ERROR':
